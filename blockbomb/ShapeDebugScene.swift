@@ -9,32 +9,43 @@ class ShapeDebugScene: SKScene {
     override func didMove(to view: SKView) {
         backgroundColor = SKColor(red: 0.1, green: 0.1, blue: 0.2, alpha: 1.0)
         
-        // Add title
+        // Get safe area insets
+        let safeAreaInsets = getSafeAreaInsets(for: view)
+        
+        // Add title - positioned below top safe area
         let titleLabel = SKLabelNode(text: "Tetromino Shape Gallery")
         titleLabel.fontName = "AvenirNext-Bold"
         titleLabel.fontSize = 24
-        titleLabel.position = CGPoint(x: frame.midX, y: frame.height - titleHeight/2)
+        titleLabel.position = CGPoint(x: frame.midX, y: frame.height - safeAreaInsets.top - 40)
         addChild(titleLabel)
         
-        // Add back button
+        // Add back button - positioned below top safe area
         let backButton = SKLabelNode(text: "< Back to Game")
         backButton.fontName = "AvenirNext-Medium"
         backButton.fontSize = 18
-        backButton.position = CGPoint(x: 100, y: frame.height - titleHeight/2)
+        backButton.position = CGPoint(x: safeAreaInsets.left + 100, y: frame.height - safeAreaInsets.top - 80)
         backButton.name = "backButton"
         addChild(backButton)
         
-        // Display all shapes
-        displayAllShapes()
+        // Display all shapes - start below the title with appropriate spacing
+        displayAllShapes(startY: frame.height - safeAreaInsets.top - 100, safeAreaInsets: safeAreaInsets)
     }
     
-    private func displayAllShapes() {
+    // Helper method to get safe area insets
+    private func getSafeAreaInsets(for view: SKView) -> UIEdgeInsets {
+        if #available(iOS 11.0, *) {
+            return view.safeAreaInsets
+        } else {
+            return UIEdgeInsets(top: 44, left: 0, bottom: 34, right: 0) // Default values for older iOS
+        }
+    }
+    
+    private func displayAllShapes(startY: CGFloat, safeAreaInsets: UIEdgeInsets) {
         // Calculate layout
         let numColumns = 3
-        let columnWidth = frame.width / CGFloat(numColumns)
-        let startY = frame.height - titleHeight - 30
+        let columnWidth = (frame.width - safeAreaInsets.left - safeAreaInsets.right) / CGFloat(numColumns)
         
-        var currentX: CGFloat = columnWidth / 2
+        var currentX: CGFloat = safeAreaInsets.left + columnWidth / 2
         var currentY: CGFloat = startY
         var column = 0
         
@@ -60,7 +71,7 @@ class ShapeDebugScene: SKScene {
             column += 1
             if column >= numColumns {
                 column = 0
-                currentX = columnWidth / 2
+                currentX = safeAreaInsets.left + columnWidth / 2
                 currentY -= 120
             } else {
                 currentX += columnWidth
@@ -71,8 +82,8 @@ class ShapeDebugScene: SKScene {
     private func createShapeNode(for shape: TetrominoShape) -> SKNode {
         let container = SKNode()
         
-        // Get cells for this shape
-        let cells = shape.relativeCells(rotation: 0)
+        // Get cells for this shape - update to use cells() instead of relativeCells
+        let cells = shape.cells()
         
         // Find minimum and maximum coordinates to center the shape
         var minX = Int.max, minY = Int.max

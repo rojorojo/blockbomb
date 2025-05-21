@@ -9,9 +9,12 @@ enum TetrominoShape: CaseIterable {
     // Rectangle shapes
     case rectWide     // 3x2 rectangle (wide)
     case rectTall     // 2x3 rectangle (tall)
-    case stick3       // 3-block row/column
-    case stick4       // 4-block row/column
-    case stick5       // 5-block row/column
+    case stick3       // 3-block row
+    case stick3Vert   // 3-block column
+    case stick4       // 4-block row
+    case stick4Vert   // 4-block column
+    case stick5       // 5-block row
+    case stick5Vert   // 5-block column
     
     // L-shaped pieces
     case lShapeSit    // Standard L shape
@@ -32,226 +35,135 @@ enum TetrominoShape: CaseIterable {
     case zigzag       // Z shape
     case cross        // Plus sign shape
     
-    // Returns the cells for a specific rotation of this shape
-    func relativeCells(rotation: Int) -> [GridCell] {
-        let rotations = cellRotations()
-        let index = rotation % rotations.count
-        return rotations[index]
+    // Returns the cells for this shape (no rotation)
+    func cells() -> [GridCell] {
+        return shapeCells()
     }
     
-    // Returns the number of possible rotations for this shape
-    var rotationCount: Int {
-        return cellRotations().count
-    }
-    
-    // Determines which rotation index the current cells represent
-    func rotationIndexFor(cells: [GridCell]) -> Int {
-        let rotations = cellRotations()
-        for (index, rotation) in rotations.enumerated() {
-            if rotation == cells {
-                return index
-            }
-        }
-        return 0 // Default to first rotation if not found
-    }
-    
-    // All possible rotations of this shape
-    private func cellRotations() -> [[GridCell]] {
+    // All shape cells (no rotations)
+    private func shapeCells() -> [GridCell] {
         switch self {
         case .squareBig:  // 3x3 square
             return [
-                [
-                    GridCell(column: 0, row: 0), GridCell(column: 1, row: 0), GridCell(column: 2, row: 0),
-                    GridCell(column: 0, row: 1), GridCell(column: 1, row: 1), GridCell(column: 2, row: 1),
-                    GridCell(column: 0, row: 2), GridCell(column: 1, row: 2), GridCell(column: 2, row: 2)
-                ]
+                GridCell(column: 0, row: 0), GridCell(column: 1, row: 0), GridCell(column: 2, row: 0),
+                GridCell(column: 0, row: 1), GridCell(column: 1, row: 1), GridCell(column: 2, row: 1),
+                GridCell(column: 0, row: 2), GridCell(column: 1, row: 2), GridCell(column: 2, row: 2)
             ]
         
-        case .rectWide:  // 3x2 rectangle
+        case .rectWide:  // 3x2 rectangle (wide)
             return [
-                [
-                    GridCell(column: 0, row: 0), GridCell(column: 1, row: 0), GridCell(column: 2, row: 0),
-                    GridCell(column: 0, row: 1), GridCell(column: 1, row: 1), GridCell(column: 2, row: 1)
-                ],
-                [
-                    GridCell(column: 0, row: 0), GridCell(column: 1, row: 0),
-                    GridCell(column: 0, row: 1), GridCell(column: 1, row: 1),
-                    GridCell(column: 0, row: 2), GridCell(column: 1, row: 2)
-                ]
+                GridCell(column: 0, row: 0), GridCell(column: 1, row: 0), GridCell(column: 2, row: 0),
+                GridCell(column: 0, row: 1), GridCell(column: 1, row: 1), GridCell(column: 2, row: 1)
             ]
         
-        case .rectTall:  // 2x3 rectangle
+        case .rectTall:  // 2x3 rectangle (tall)
             return [
-                [
-                    GridCell(column: 0, row: 0), GridCell(column: 1, row: 0),
-                    GridCell(column: 0, row: 1), GridCell(column: 1, row: 1),
-                    GridCell(column: 0, row: 2), GridCell(column: 1, row: 2)
-                ],
-                [
-                    GridCell(column: 0, row: 0), GridCell(column: 1, row: 0), GridCell(column: 2, row: 0),
-                    GridCell(column: 0, row: 1), GridCell(column: 1, row: 1), GridCell(column: 2, row: 1)
-                ]
+                GridCell(column: 0, row: 0), GridCell(column: 1, row: 0),
+                GridCell(column: 0, row: 1), GridCell(column: 1, row: 1),
+                GridCell(column: 0, row: 2), GridCell(column: 1, row: 2)
             ]
         
         case .lShapeSit:  // L shape
             return [
-                [
-                    GridCell(column: 0, row: 0), 
-                    GridCell(column: 0, row: 1), 
-                    GridCell(column: 0, row: 2), GridCell(column: 1, row: 2)
-                ],
-                [
-                    GridCell(column: 0, row: 0), GridCell(column: 1, row: 0), GridCell(column: 2, row: 0),
-                    GridCell(column: 0, row: 1)
-                ],
-                [
-                    GridCell(column: 0, row: 0), GridCell(column: 1, row: 0),
-                    GridCell(column: 1, row: 1),
-                    GridCell(column: 1, row: 2)
-                ],
-                [
-                    GridCell(column: 2, row: 0),
-                    GridCell(column: 0, row: 1), GridCell(column: 1, row: 1), GridCell(column: 2, row: 1)
-                ]
+                GridCell(column: 0, row: 0), 
+                GridCell(column: 0, row: 1), 
+                GridCell(column: 0, row: 2), GridCell(column: 1, row: 2)
             ]
         
         case .cornerWide:  // Corner shape with extension
             return [
-                [
-                    GridCell(column: 0, row: 0), GridCell(column: 1, row: 0),
-                    GridCell(column: 0, row: 1),
-                    GridCell(column: 0, row: 2)
-                ],
-                [
-                    GridCell(column: 0, row: 0), GridCell(column: 1, row: 0), GridCell(column: 2, row: 0),
-                    GridCell(column: 2, row: 1)
-                ],
-                [
-                    GridCell(column: 1, row: 0),
-                    GridCell(column: 1, row: 1),
-                    GridCell(column: 0, row: 2), GridCell(column: 1, row: 2)
-                ],
-                [
-                    GridCell(column: 0, row: 0),
-                    GridCell(column: 0, row: 1), GridCell(column: 1, row: 1), GridCell(column: 2, row: 1)
-                ]
+                GridCell(column: 0, row: 0), GridCell(column: 1, row: 0),
+                GridCell(column: 0, row: 1),
+                GridCell(column: 0, row: 2)
             ]
         
         case .squareSmall:  // 2x2 square
             return [
-                [
-                    GridCell(column: 0, row: 0), GridCell(column: 1, row: 0),
-                    GridCell(column: 0, row: 1), GridCell(column: 1, row: 1)
-                ]
+                GridCell(column: 0, row: 0), GridCell(column: 1, row: 0),
+                GridCell(column: 0, row: 1), GridCell(column: 1, row: 1)
             ]
         
-        // Formerly shape1-7
-        case .lShapeReversed:  // L with top piece (formerly shape1)
+        case .lShapeReversed:  // Reversed L shape
             return [
-                [
-                    GridCell(column: 0, row: 0),
-                    GridCell(column: 0, row: 1), GridCell(column: 1, row: 1), GridCell(column: 2, row: 1)
-                ],
-                // Add other rotations as needed
+                GridCell(column: 0, row: 0),
+                GridCell(column: 0, row: 1), GridCell(column: 1, row: 1), GridCell(column: 2, row: 1)
             ]
             
-        case .cornerSmall:  // Corner with top left (formerly shape2)
+        case .cornerSmall:  // Corner with top left
             return [
-                [
-                    GridCell(column: 0, row: 0),
-                    GridCell(column: 0, row: 1), GridCell(column: 1, row: 0), GridCell(column: 2, row: 0)
-                ],
-                // Add other rotations as needed
+                GridCell(column: 0, row: 0),
+                GridCell(column: 0, row: 1), GridCell(column: 1, row: 0), GridCell(column: 2, row: 0)
             ]
             
-        case .tShape:  // T shape (formerly shape3)
+        case .tShape:  // T shape
             return [
-                [
-                    GridCell(column: 1, row: 0),
-                    GridCell(column: 0, row: 1), GridCell(column: 1, row: 1), GridCell(column: 2, row: 1)
-                ],
-                // Add other rotations as needed
+                GridCell(column: 1, row: 0),
+                GridCell(column: 0, row: 1), GridCell(column: 1, row: 1), GridCell(column: 2, row: 1)
             ]
             
-        case .blockDouble:  // 2-block corner (formerly shape4)
+        case .blockDouble:  // 2-block corner
             return [
-                [
-                    GridCell(column: 0, row: 0), GridCell(column: 1, row: 0),
-                    GridCell(column: 0, row: 1)
-                ],
-                // Add other rotations as needed
+                GridCell(column: 0, row: 0), GridCell(column: 1, row: 0),
+                GridCell(column: 0, row: 1)
             ]
             
-        case .zigzag:  // Corner with top and right (formerly shape5)
+        case .zigzag:  // Corner with top and right
             return [
-                [
-                    GridCell(column: 0, row: 0), GridCell(column: 1, row: 0),
-                    GridCell(column: 1, row: 1)
-                ],
-                // Add other rotations as needed
+                GridCell(column: 0, row: 0), GridCell(column: 1, row: 0),
+                GridCell(column: 1, row: 1)
             ]
             
-        case .stick3:  // Row/column of 3 blocks (combines threeBlock and threeColumn)
+        case .stick3:  // 3-block horizontal row
             return [
-                // Horizontal orientation
-                [
-                    GridCell(column: 0, row: 0), GridCell(column: 1, row: 0), GridCell(column: 2, row: 0)
-                ],
-                // Vertical orientation
-                [
-                    GridCell(column: 0, row: 0),
-                    GridCell(column: 0, row: 1),
-                    GridCell(column: 0, row: 2)
-                ]
+                GridCell(column: 0, row: 0), GridCell(column: 1, row: 0), GridCell(column: 2, row: 0)
             ]
             
-        case .stick4:  // Row/column of 4 blocks (combines fourBlock and fourColumn)
+        case .stick3Vert:  // 3-block vertical column
             return [
-                // Horizontal orientation
-                [
-                    GridCell(column: 0, row: 0), GridCell(column: 1, row: 0), 
-                    GridCell(column: 2, row: 0), GridCell(column: 3, row: 0)
-                ],
-                // Vertical orientation
-                [
-                    GridCell(column: 0, row: 0),
-                    GridCell(column: 0, row: 1),
-                    GridCell(column: 0, row: 2),
-                    GridCell(column: 0, row: 3)
-                ]
+                GridCell(column: 0, row: 0),
+                GridCell(column: 0, row: 1),
+                GridCell(column: 0, row: 2)
             ]
             
-        case .stick5:  // Row/column of 5 blocks (combines fiveBlock and fiveColumn)
+        case .stick4:  // 4-block horizontal row
             return [
-                // Horizontal orientation
-                [
-                    GridCell(column: 0, row: 0), GridCell(column: 1, row: 0), GridCell(column: 2, row: 0), 
-                    GridCell(column: 3, row: 0), GridCell(column: 4, row: 0)
-                ],
-                // Vertical orientation
-                [
-                    GridCell(column: 0, row: 0),
-                    GridCell(column: 0, row: 1),
-                    GridCell(column: 0, row: 2),
-                    GridCell(column: 0, row: 3),
-                    GridCell(column: 0, row: 4)
-                ]
+                GridCell(column: 0, row: 0), GridCell(column: 1, row: 0), 
+                GridCell(column: 2, row: 0), GridCell(column: 3, row: 0)
+            ]
+            
+        case .stick4Vert:  // 4-block vertical column
+            return [
+                GridCell(column: 0, row: 0),
+                GridCell(column: 0, row: 1),
+                GridCell(column: 0, row: 2),
+                GridCell(column: 0, row: 3)
+            ]
+            
+        case .stick5:  // 5-block horizontal row
+            return [
+                GridCell(column: 0, row: 0), GridCell(column: 1, row: 0), GridCell(column: 2, row: 0), 
+                GridCell(column: 3, row: 0), GridCell(column: 4, row: 0)
+            ]
+            
+        case .stick5Vert:  // 5-block vertical column
+            return [
+                GridCell(column: 0, row: 0),
+                GridCell(column: 0, row: 1),
+                GridCell(column: 0, row: 2),
+                GridCell(column: 0, row: 3),
+                GridCell(column: 0, row: 4)
             ]
             
         case .blockSingle:  // Single block
             return [
-                [
-                    GridCell(column: 0, row: 0)
-                ]
+                GridCell(column: 0, row: 0)
             ]
             
-        case .cross:  // Plus shape (additional shape)
+        case .cross:  // Plus shape
             return [
-                [
-                    GridCell(column: 1, row: 0),
-                    GridCell(column: 0, row: 1), GridCell(column: 1, row: 1), GridCell(column: 2, row: 1),
-                    GridCell(column: 1, row: 2)
-                ]
+                GridCell(column: 1, row: 0),
+                GridCell(column: 0, row: 1), GridCell(column: 1, row: 1), GridCell(column: 2, row: 1),
+                GridCell(column: 1, row: 2)
             ]
         }
     }
@@ -271,18 +183,19 @@ enum TetrominoShape: CaseIterable {
         case .blockDouble: return SKColor(red: 0.5, green: 0.5, blue: 0.0, alpha: 1.0)  // Olive
         case .zigzag: return SKColor(red: 1.0, green: 0.0, blue: 0.5, alpha: 1.0)  // Pink
         case .stick3: return SKColor(red: 0.0, green: 0.5, blue: 0.5, alpha: 1.0)  // Teal
+        case .stick3Vert: return SKColor(red: 0.0, green: 0.5, blue: 0.5, alpha: 1.0)  // Teal
         case .stick4: return SKColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1.0)  // Gray
+        case .stick4Vert: return SKColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1.0)  // Gray
         case .stick5: return SKColor(red: 0.7, green: 0.3, blue: 0.1, alpha: 1.0)  // Brown
+        case .stick5Vert: return SKColor(red: 0.7, green: 0.3, blue: 0.1, alpha: 1.0)  // Brown
         case .blockSingle: return SKColor(red: 0.9, green: 0.9, blue: 0.9, alpha: 1.0)  // Light gray
         case .cross: return SKColor(red: 0.0, green: 0.8, blue: 0.2, alpha: 1.0)  // Lime green
         }
     }
     
-    // The block offsets are kept for backward compatibility
-    var blockOffsets: [[CGPoint]] {
-        // Convert grid cells to points for backwards compatibility
-        return cellRotations().map { rotation in
-            rotation.map { CGPoint(x: CGFloat($0.column), y: CGFloat($0.row)) }
-        }
+    // For backward compatibility
+    var blockOffsets: [CGPoint] {
+        // Convert grid cells to points
+        return cells().map { CGPoint(x: CGFloat($0.column), y: CGFloat($0.row)) }
     }
 }

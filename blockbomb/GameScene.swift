@@ -18,17 +18,20 @@ class GameScene: SKScene {
     override func didMove(to view: SKView) {
         backgroundColor = SKColor(red: 0.1, green: 0.1, blue: 0.2, alpha: 1.0)
         
+        // Get safe area insets
+        let safeAreaInsets = getSafeAreaInsets(for: view)
+        
         // Setup game board - 10x10 grid
         gameBoard = GameBoard()
         gameBoard.boardNode.position = CGPoint(
             x: frame.midX - (CGFloat(gameBoard.columns) * gameBoard.blockSize / 2),
-            y: frame.midY - (CGFloat(gameBoard.rows) * gameBoard.blockSize / 2) + 50 // Move up slightly
+            y: frame.midY - (CGFloat(gameBoard.rows) * gameBoard.blockSize / 2) + 20 // Adjust position
         )
         addChild(gameBoard.boardNode)
         
-        // Setup score display
+        // Setup score display - position below top safe area
         scoreLabel = SKLabelNode(text: "Score: 0")
-        scoreLabel.position = CGPoint(x: frame.midX, y: frame.height - 50)
+        scoreLabel.position = CGPoint(x: frame.midX, y: frame.height - safeAreaInsets.top - 40)
         scoreLabel.fontName = "AvenirNext-Bold"
         scoreLabel.fontSize = 24
         addChild(scoreLabel)
@@ -40,7 +43,16 @@ class GameScene: SKScene {
         setupDraggablePieces()
         
         // Add debug button
-        addDebugButton()
+        addDebugButton(safeAreaInsets: safeAreaInsets)
+    }
+    
+    // Helper method to get safe area insets
+    private func getSafeAreaInsets(for view: SKView) -> UIEdgeInsets {
+        if #available(iOS 11.0, *) {
+            return view.safeAreaInsets
+        } else {
+            return UIEdgeInsets(top: 44, left: 0, bottom: 34, right: 0) // Default values for older iOS
+        }
     }
     
     private func addBoardBorder() {
@@ -92,9 +104,10 @@ class GameScene: SKScene {
             selectedShapes.append(contentsOf: remainingShapes.prefix(3 - selectedShapes.count))
         }
         
-        // Create and position pieces along the bottom
+        // Create and position pieces along the bottom - respect safe area
         let spacing: CGFloat = frame.width / 4
-        let yPosition = gameBoard.boardNode.position.y - CGFloat(3) * gameBoard.blockSize
+        let safeAreaInsets = getSafeAreaInsets(for: self.view!)
+        let yPosition = safeAreaInsets.bottom + 220 // Position above bottom safe area
         
         for (index, shape) in selectedShapes.enumerated() {
             let piece = PieceNode(shape: shape, color: shape.color)
@@ -113,7 +126,7 @@ class GameScene: SKScene {
             piece.run(SKAction.repeatForever(moveAction))
         }
         
-        // Instruction label
+        // Instruction label - positioned above pieces
         let instructionLabel = SKLabelNode(text: "Drag pieces onto the grid")
         instructionLabel.fontName = "AvenirNext-Medium"
         instructionLabel.fontSize = 18
@@ -122,12 +135,12 @@ class GameScene: SKScene {
         addChild(instructionLabel)
     }
     
-    private func addDebugButton() {
+    private func addDebugButton(safeAreaInsets: UIEdgeInsets) {
         let debugButton = SKLabelNode(text: "View All Shapes")
         debugButton.fontName = "AvenirNext-Medium"
         debugButton.fontSize = 16
         debugButton.fontColor = .white
-        debugButton.position = CGPoint(x: frame.width - 80, y: 30)
+        debugButton.position = CGPoint(x: frame.width - 80, y: safeAreaInsets.bottom + 40)
         debugButton.name = "debugButton"
         addChild(debugButton)
     }

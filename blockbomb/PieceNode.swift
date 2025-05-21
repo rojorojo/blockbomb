@@ -15,11 +15,11 @@ class PieceNode: SKNode {
     
     init(shape: TetrominoShape, color: SKColor) {
         self.shape = shape
-        // Always use the shape's designated color for consistency
-        self.gridPiece = GridPiece(shape: shape, color: shape.color)
+        // Use the shape's designated color as a fallback if needed
+        self.gridPiece = GridPiece(shape: shape, color: color)
         super.init()
         
-        setupBlocks(color: shape.color) // Use the shape's color by default
+        setupBlocks(color: color)
     }
     
     required init?(coder aDecoder: NSCoder) {
@@ -41,15 +41,6 @@ class PieceNode: SKNode {
             addChild(block)
             blocks.append(block)
         }
-    }
-    
-    func rotate() {
-        // Keep track of the current rotation for display purposes
-        gridPiece.rotate()
-        setupBlocks(color: gridPiece.color)
-        
-        // Play a subtle rotation sound or effect if available
-        // This could be added in the future
     }
     
     // Legacy method kept for compatibility
