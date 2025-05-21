@@ -6,6 +6,10 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		EAA4F3ED2DD6B8F00053186B /* build_instructions.md in Resources */ = {isa = PBXBuildFile; fileRef = EAA4F3EC2DD6B8F00053186B /* build_instructions.md */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXContainerItemProxy section */
 		EAA4F3C92DD6705C0053186B /* PBXContainerItemProxy */ = {
 			isa = PBXContainerItemProxy;
@@ -27,6 +31,7 @@
 		EAA4F3AF2DD6705B0053186B /* blockbomb.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = blockbomb.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EAA4F3C82DD6705C0053186B /* blockbombTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = blockbombTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EAA4F3D22DD6705C0053186B /* blockbombUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = blockbombUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
+		EAA4F3EC2DD6B8F00053186B /* build_instructions.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = build_instructions.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -75,6 +80,7 @@
 		EAA4F3A62DD6705B0053186B = {
 			isa = PBXGroup;
 			children = (
+				EAA4F3EC2DD6B8F00053186B /* build_instructions.md */,
 				EAA4F3B12DD6705B0053186B /* blockbomb */,
 				EAA4F3CB2DD6705C0053186B /* blockbombTests */,
 				EAA4F3D52DD6705C0053186B /* blockbombUITests */,
@@ -212,6 +218,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EAA4F3ED2DD6B8F00053186B /* build_instructions.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
