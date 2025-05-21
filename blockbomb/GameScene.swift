@@ -1,5 +1,6 @@
 import SpriteKit
 import GameplayKit
+import SwiftUI
 
 // GameScene.swift - The main game scene implementation
 class GameScene: SKScene {
@@ -8,7 +9,9 @@ class GameScene: SKScene {
     private var gameBoard: GameBoard!
     private var pieceNodes: [PieceNode] = []
     private var scoreLabel: SKLabelNode!
+    private var scoreValueLabel: SKLabelNode!
     private var score = 0
+    private var scorePopups: [SKNode] = []
     
     // Dragging support
     private var selectedNode: PieceNode?
@@ -30,11 +33,7 @@ class GameScene: SKScene {
         addChild(gameBoard.boardNode)
         
         // Setup score display - position below top safe area
-        scoreLabel = SKLabelNode(text: "Score: 0")
-        scoreLabel.position = CGPoint(x: frame.midX, y: frame.height - safeAreaInsets.top - 40)
-        scoreLabel.fontName = "AvenirNext-Bold"
-        scoreLabel.fontSize = 24
-        addChild(scoreLabel)
+        setupScoreDisplay(safeAreaInsets: safeAreaInsets)
         
         // Add border around game area
         addBoardBorder()
@@ -81,10 +80,10 @@ class GameScene: SKScene {
             [.squareSmall, .squareBig],                      // Square shapes
             [.rectWide, .rectTall],                          // Rectangle shapes
             [.stick3, .stick4, .stick5],                     // Sticks
-            [.lShapeSit, .lShapeReversed],              // L shapes
-            [.blockSingle, .blockDouble],                    // Block pieces
-            [.cornerSmall, .cornerWide],                     // Corner shapes
-            [.tShape, .zigzag, .cross]                       // Special shapes
+            [.lShapeSit, .lShapeReversed, .lShapeLayingDown, .lShapeStand],              // L shapes
+            [.cornerTopLeft, .cornerBottomLeft, .cornerBottomRight, .cornerTopRight],                    // Corner shapes
+            [.tShapeDown, .tShapeUp],                       // T shapes
+            [.cross, .blockSingle] // Special shapes
         ]
         
         var selectedShapes: [TetrominoShape] = []
@@ -145,8 +144,85 @@ class GameScene: SKScene {
         addChild(debugButton)
     }
     
+    private func setupScoreDisplay(safeAreaInsets: UIEdgeInsets) {
+        // Score title label
+        scoreLabel = SKLabelNode(text: "Score:")
+        scoreLabel.fontName = "AvenirNext-Bold"
+        scoreLabel.fontSize = 24
+        scoreLabel.position = CGPoint(x: frame.midX - 40, y: frame.height - safeAreaInsets.top - 80)
+        scoreLabel.horizontalAlignmentMode = .right
+        addChild(scoreLabel)
+        
+        // Score value label (separate for animation effects)
+        scoreValueLabel = SKLabelNode(text: "0")
+        scoreValueLabel.fontName = "AvenirNext-Bold"
+        scoreValueLabel.fontSize = 30
+        scoreValueLabel.fontColor = .yellow
+        scoreValueLabel.position = CGPoint(x: frame.midX + 20, y: frame.height - safeAreaInsets.top - 80)
+        scoreValueLabel.horizontalAlignmentMode = .left
+        addChild(scoreValueLabel)
+    }
+    
     private func updateScoreLabel() {
-        scoreLabel.text = "Score: \(score)"
+        // Create a score update animation
+        let oldScore = Int(scoreValueLabel.text ?? "0") ?? 0
+        let scoreIncrement = score - oldScore
+        
+        // Animate the score change
+        animateScoreChange(from: oldScore, to: score)
+        
+        // Show score popup if points were gained
+        if scoreIncrement > 0 {
+            showScorePopup(points: scoreIncrement)
+        }
+    }
+    
+    private func animateScoreChange(from oldScore: Int, to newScore: Int) {
+        // Scale up animation
+        let scaleUp = SKAction.scale(to: 1.3, duration: 0.1)
+        let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
+        
+        // Create animation sequence
+        let animationSequence = SKAction.sequence([scaleUp, scaleDown])
+        
+        // Update the score with animation
+        scoreValueLabel.run(animationSequence) { [weak self] in
+            self?.scoreValueLabel.text = "\(newScore)"
+        }
+    }
+    
+    private func showScorePopup(points: Int) {
+        guard let gridCell = currentGridCell else { return }
+        
+        // Convert grid cell to scene coordinates
+        let popupPosition = gameBoard.boardPositionForCell(gridCell)
+        let scenePosition = gameBoard.boardNode.convert(popupPosition, to: self)
+        
+        // Create popup node
+        let popupNode = SKNode()
+        popupNode.position = scenePosition
+        popupNode.zPosition = 300
+        addChild(popupNode)
+        scorePopups.append(popupNode)
+        
+        // Add text with points
+        let pointsLabel = SKLabelNode(text: "+\(points)")
+        pointsLabel.fontName = "AvenirNext-Bold"
+        pointsLabel.fontSize = 22
+        pointsLabel.fontColor = .green
+        popupNode.addChild(pointsLabel)
+        
+        // Animate popup
+        let moveUp = SKAction.moveBy(x: 0, y: 50, duration: 1.0)
+        let fadeOut = SKAction.fadeOut(withDuration: 1.0)
+        let group = SKAction.group([moveUp, fadeOut])
+        let sequence = SKAction.sequence([group, SKAction.removeFromParent()])
+        
+        popupNode.run(sequence) { [weak self] in
+            if let index = self?.scorePopups.firstIndex(of: popupNode) {
+                self?.scorePopups.remove(at: index)
+            }
+        }
     }
     
     // MARK: - Touch Handling
@@ -157,10 +233,8 @@ class GameScene: SKScene {
         
         // Check if we touched the debug button
         if let touchedNode = nodes(at: location).first, touchedNode.name == "debugButton" {
-            // Show the shape debug scene
-            let debugScene = ShapeDebugScene(size: size)
-            debugScene.scaleMode = scaleMode
-            view?.presentScene(debugScene, transition: SKTransition.fade(withDuration: 0.5))
+            // Present the SwiftUI gallery view instead of the SpriteKit version
+            presentSwiftUIShapeGallery()
             return
         }
         
@@ -206,11 +280,28 @@ class GameScene: SKScene {
                 // Place piece on grid and get lines cleared
                 let linesCleared = gameBoard.placePiece(selectedNode.gridPiece, at: gridCell)
                 
-                // Update score if lines were cleared
-                if linesCleared > 0 {
-                    let basePoints = calculatePoints(forLines: linesCleared)
-                    score += basePoints
-                    updateScoreLabel()
+                // Award points for the piece and cleared lines
+                let piecePoints = calculatePointsForPiece(selectedNode.gridPiece)
+                let rowPoints = calculatePoints(forLines: linesCleared.rows)
+                let columnPoints = calculatePoints(forLines: linesCleared.columns) 
+                
+                // Add bonus for clearing both rows and columns at once
+                let comboBonus = (linesCleared.rows > 0 && linesCleared.columns > 0) ? 500 : 0
+                
+                // Update score
+                let totalPoints = piecePoints + rowPoints + columnPoints + comboBonus
+                score += totalPoints
+                updateScoreLabel()
+                
+                // Show appropriate confirmation based on what was cleared
+                if linesCleared.rows > 0 || linesCleared.columns > 0 {
+                    // Show more dramatic confirmation for line clears
+                    flashLinesClearedConfirmation(at: selectedNode.position, 
+                                               rows: linesCleared.rows, 
+                                               columns: linesCleared.columns)
+                } else {
+                    // Simple confirmation for just placing a piece
+                    flashConfirmation(at: selectedNode.position)
                 }
                 
                 // Remove from draggable pieces array
@@ -306,14 +397,91 @@ class GameScene: SKScene {
         flash.run(sequence)
     }
     
+    // Visual feedback for clearing lines
+    private func flashLinesClearedConfirmation(at position: CGPoint, rows: Int, columns: Int) {
+        // First, show a flash effect
+        let flash = SKShapeNode(circleOfRadius: 60)
+        flash.position = position
+        flash.fillColor = .green
+        flash.alpha = 0.3
+        flash.zPosition = 200
+        addChild(flash)
+        
+        // Create the text label showing what was cleared
+        let messageNode = SKNode()
+        messageNode.position = position
+        messageNode.zPosition = 200
+        addChild(messageNode)
+        
+        // Text showing what was cleared
+        var message = ""
+        if (rows > 0 && columns > 0) {
+            message = "COMBO!\n\(rows) rows\n\(columns) columns"
+        } else if (rows > 0) {
+            message = "\(rows) " + (rows == 1 ? "row" : "rows")
+        } else if (columns > 0) {
+            message = "\(columns) " + (columns == 1 ? "column" : "columns")
+        }
+        
+        let label = SKLabelNode(text: message)
+        label.fontName = "AvenirNext-Bold"
+        label.fontSize = 24
+        label.fontColor = .yellow
+        label.numberOfLines = 3
+        label.horizontalAlignmentMode = .center
+        label.verticalAlignmentMode = .center
+        messageNode.addChild(label)
+        
+        // Create animations
+        let flashSequence = SKAction.sequence([
+            SKAction.fadeIn(withDuration: 0.1),
+            SKAction.wait(forDuration: 0.2),
+            SKAction.fadeOut(withDuration: 0.3),
+            SKAction.removeFromParent()
+        ])
+        
+        let messageSequence = SKAction.sequence([
+            SKAction.scale(to: 1.3, duration: 0.2),
+            SKAction.wait(forDuration: 0.8),
+            SKAction.group([
+                SKAction.moveBy(x: 0, y: 50, duration: 0.7),
+                SKAction.fadeOut(withDuration: 0.5)
+            ]),
+            SKAction.removeFromParent()
+        ])
+        
+        flash.run(flashSequence)
+        messageNode.run(messageSequence)
+    }
+    
     private func calculatePoints(forLines lines: Int) -> Int {
         switch lines {
         case 1: return 100
         case 2: return 300
         case 3: return 500
         case 4: return 800
+        case 5...: return 1000 + (lines - 5) * 200  // Higher bonus for more lines
         default: return 0
         }
+    }
+    
+    private func calculatePointsForPiece(_ piece: GridPiece) -> Int {
+        // Award points based on piece complexity
+        return piece.cells.count * 5
+    }
+    
+    // Add this new method to present SwiftUI view
+    private func presentSwiftUIShapeGallery() {
+        // Get the view controller that's presenting the game
+        guard let viewController = self.view?.window?.rootViewController else { return }
+        
+        // Create and configure the SwiftUI view
+        let galleryView = ShapeGalleryView()
+        let hostingController = UIHostingController(rootView: galleryView)
+        hostingController.modalPresentationStyle = .fullScreen
+        
+        // Present the SwiftUI view controller
+        viewController.present(hostingController, animated: true)
     }
 }
 

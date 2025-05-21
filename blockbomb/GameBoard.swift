@@ -97,7 +97,7 @@ class GameBoard {
     }
     
     // Place a piece at the given grid cell
-    func placePiece(_ piece: GridPiece, at origin: GridCell) -> Int {
+    func placePiece(_ piece: GridPiece, at origin: GridCell) -> (rows: Int, columns: Int) {
         let cellsToOccupy = piece.absoluteCells(at: origin)
         
         // Place blocks on the grid
@@ -109,8 +109,8 @@ class GameBoard {
         
         clearGhostPiece()
         
-        // Check for completed rows
-        return clearCompletedRows()
+        // Check for completed rows and columns
+        return clearCompletedLines()
     }
     
     // Show a ghost preview of where the piece would be placed
@@ -151,13 +151,18 @@ class GameBoard {
         return block
     }
     
-    private func clearCompletedRows() -> Int {
+    // Modified method to check and clear both rows and columns
+    func clearCompletedLines() -> (rows: Int, columns: Int) {
         var rowsCleared = 0
+        var columnsCleared = 0
         
+        // Track which rows/columns need to be cleared
+        var rowsToClear = Set<Int>()
+        var columnsToClear = Set<Int>()
+        
+        // Check for completed rows
         for row in 0..<rows {
             var rowComplete = true
-            
-            // Check if row is complete
             for col in 0..<columns {
                 if grid[row][col] == nil {
                     rowComplete = false
@@ -166,37 +171,77 @@ class GameBoard {
             }
             
             if rowComplete {
-                clearRow(row)
-                //shiftRowsDown(startingAt: row + 1)
+                rowsToClear.insert(row)
                 rowsCleared += 1
             }
         }
         
-        return rowsCleared
+        // Check for completed columns
+        for col in 0..<columns {
+            var columnComplete = true
+            for row in 0..<rows {
+                if grid[row][col] == nil {
+                    columnComplete = false
+                    break
+                }
+            }
+            
+            if columnComplete {
+                columnsToClear.insert(col)
+                columnsCleared += 1
+            }
+        }
+        
+        // Clear completed rows and columns
+        for row in rowsToClear {
+            clearRow(row)
+        }
+        
+        for col in columnsToClear {
+            clearColumn(col)
+        }
+        
+        // Return the counts - no gravity/falling blocks
+        return (rowsCleared, columnsCleared)
     }
     
+    // Clear a single row with animation
     private func clearRow(_ row: Int) {
         for col in 0..<columns {
             if let block = grid[row][col] {
-                block.run(SKAction.sequence([
-                    SKAction.scale(to: 1.2, duration: 0.05),
-                    SKAction.scale(to: 0.1, duration: 0.1),
-                    SKAction.removeFromParent()
-                ]))
+                animateBlockClearing(block)
                 grid[row][col] = nil
             }
         }
     }
     
-    private func shiftRowsDown(startingAt startRow: Int) {
-        for row in (startRow..<rows).reversed() {
-            for col in 0..<columns {
-                if let block = grid[row][col] {
-                    grid[row-1][col] = block
-                    block.run(SKAction.moveBy(x: 0, y: -blockSize, duration: 0.1))
-                    grid[row][col] = nil
-                }
+    // Clear a single column with animation
+    private func clearColumn(_ col: Int) {
+        for row in 0..<rows {
+            if let block = grid[row][col] {
+                animateBlockClearing(block)
+                grid[row][col] = nil
             }
         }
+    }
+    
+    // Common animation for clearing blocks
+    private func animateBlockClearing(_ block: SKShapeNode) {
+        // Simple block clearing animation
+        block.run(SKAction.sequence([
+            SKAction.group([
+                SKAction.scale(to: 1.3, duration: 0.1),
+                SKAction.fadeOut(withDuration: 0.2)
+            ]),
+            SKAction.removeFromParent()
+        ]))
+    }
+
+    func boardPositionForCell(_ cell: GridCell) -> CGPoint {
+        // Convert grid cell to position in board coordinates
+        return CGPoint(
+            x: CGFloat(cell.column) * blockSize + blockSize/2,
+            y: CGFloat(cell.row) * blockSize + blockSize/2
+        )
     }
 }

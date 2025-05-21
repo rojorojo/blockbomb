@@ -1,7 +1,7 @@
 import Foundation
 import SpriteKit
 
-enum TetrominoShape: CaseIterable {
+enum TetrominoShape: String, CaseIterable, Hashable {
     // Square shapes
     case squareSmall  // 2x2 square
     case squareBig    // 3x3 square
@@ -19,20 +19,27 @@ enum TetrominoShape: CaseIterable {
     // L-shaped pieces
     case lShapeSit    // Standard L shape
     case lShapeReversed    // Reversed L shape
-    
+    case lShapeStand   // Standing L shape
+    case lShapeLayingDown // L shape laying down on its back
+
     // T-shaped pieces
-    case tShape       // T shape
-    
+    case tShapeDown       // T shape pointing down
+    case tShapeUp         // T shape pointing up
+
+
     // Small pieces
     case blockSingle  // Single block
-    case blockDouble  // 2 blocks
+    
     
     // Corner shapes
-    case cornerSmall  // L shape with 2 blocks on each side
-    case cornerWide   // Corner with extension
+    case cornerTopLeft // Corner with top left
+    case cornerTopRight // Corner with top right
+    case cornerBottomLeft // Corner with bottom left
+    case cornerBottomRight // Corner with bottom right
+    
     
     // Special shapes
-    case zigzag       // Z shape
+   
     case cross        // Plus sign shape
     
     // Returns the cells for this shape (no rotation)
@@ -43,6 +50,34 @@ enum TetrominoShape: CaseIterable {
     // All shape cells (no rotations)
     private func shapeCells() -> [GridCell] {
         switch self {
+
+        case .cornerTopLeft:  // Corner top left
+            return [
+                GridCell(column: 0, row: 0),
+                GridCell(column: 0, row: 1), GridCell(column: 1, row: 1)
+                
+            ]
+
+        case .cornerBottomLeft:  // Corner bottom left
+            return [
+                GridCell(column: 0, row: 0), GridCell(column: 1, row: 0),
+                GridCell(column: 0, row: 1)
+            ]
+            
+        case .cornerBottomRight:  // Corner bottom right
+            return [
+                GridCell(column: 0, row: 0), GridCell(column: 1, row: 0),
+                GridCell(column: 1, row: 1)
+            ]
+
+        case .cornerTopRight:  // Corner top right
+            return [
+                GridCell(column: 0, row: 1), GridCell(column: 1, row: 1),
+                GridCell(column: 1, row: 0), 
+            ]
+
+        
+
         case .squareBig:  // 3x3 square
             return [
                 GridCell(column: 0, row: 0), GridCell(column: 1, row: 0), GridCell(column: 2, row: 0),
@@ -65,16 +100,16 @@ enum TetrominoShape: CaseIterable {
         
         case .lShapeSit:  // L shape
             return [
-                GridCell(column: 0, row: 0), 
-                GridCell(column: 0, row: 1), 
-                GridCell(column: 0, row: 2), GridCell(column: 1, row: 2)
-            ]
-        
-        case .cornerWide:  // Corner shape with extension
-            return [
                 GridCell(column: 0, row: 0), GridCell(column: 1, row: 0),
                 GridCell(column: 0, row: 1),
-                GridCell(column: 0, row: 2)
+                GridCell(column: 0, row: 2), 
+            ]
+        
+        case .lShapeStand:  // Standing L shape
+            return [
+                GridCell(column: 0, row: 0),  
+                GridCell(column: 0, row: 1),
+                GridCell(column: 0, row: 2), GridCell(column: 1, row: 2)
             ]
         
         case .squareSmall:  // 2x2 square
@@ -89,28 +124,22 @@ enum TetrominoShape: CaseIterable {
                 GridCell(column: 0, row: 1), GridCell(column: 1, row: 1), GridCell(column: 2, row: 1)
             ]
             
-        case .cornerSmall:  // Corner with top left
+        case .lShapeLayingDown:  // Corner with top left
             return [
                 GridCell(column: 0, row: 0),
                 GridCell(column: 0, row: 1), GridCell(column: 1, row: 0), GridCell(column: 2, row: 0)
             ]
             
-        case .tShape:  // T shape
+        case .tShapeDown:  // T shape
             return [
                 GridCell(column: 1, row: 0),
                 GridCell(column: 0, row: 1), GridCell(column: 1, row: 1), GridCell(column: 2, row: 1)
             ]
             
-        case .blockDouble:  // 2-block corner
+        case .tShapeUp:  // T shape
             return [
-                GridCell(column: 0, row: 0), GridCell(column: 1, row: 0),
-                GridCell(column: 0, row: 1)
-            ]
-            
-        case .zigzag:  // Corner with top and right
-            return [
-                GridCell(column: 0, row: 0), GridCell(column: 1, row: 0),
-                GridCell(column: 1, row: 1)
+                GridCell(column: 0, row: 0),GridCell(column: 1, row: 0),GridCell(column: 2, row: 0),
+                GridCell(column: 1, row: 1),
             ]
             
         case .stick3:  // 3-block horizontal row
@@ -171,17 +200,20 @@ enum TetrominoShape: CaseIterable {
     // Define colors for each shape
     var color: SKColor {
         switch self {
+        case .cornerTopRight: return SKColor(red: 0.2, green: 0.2, blue: 0.8, alpha: 1.0)  // Blue
+        case .cornerTopLeft: return SKColor(red: 0.8, green: 0.2, blue: 0.2, alpha: 1.0)  // Red
         case .squareBig: return .red
         case .rectWide: return .orange
         case .rectTall: return .yellow
         case .lShapeSit: return .green
-        case .cornerWide: return .blue
+        case .lShapeStand: return .blue
         case .squareSmall: return .purple
         case .lShapeReversed: return .cyan
-        case .cornerSmall: return .magenta
-        case .tShape: return SKColor(red: 0.5, green: 0.0, blue: 0.5, alpha: 1.0)  // Purple
-        case .blockDouble: return SKColor(red: 0.5, green: 0.5, blue: 0.0, alpha: 1.0)  // Olive
-        case .zigzag: return SKColor(red: 1.0, green: 0.0, blue: 0.5, alpha: 1.0)  // Pink
+        case .lShapeLayingDown: return .magenta
+        case .tShapeDown: return SKColor(red: 0.5, green: 0.0, blue: 0.5, alpha: 1.0)  // Purple
+        case .tShapeUp: return SKColor(red: 0.5, green: 0.5, blue: 0.0, alpha: 1.0)  // Olive
+        case .cornerBottomLeft: return SKColor(red: 0.5, green: 0.5, blue: 0.0, alpha: 1.0)  // Olive
+        case .cornerBottomRight: return SKColor(red: 1.0, green: 0.0, blue: 0.5, alpha: 1.0)  // Pink
         case .stick3: return SKColor(red: 0.0, green: 0.5, blue: 0.5, alpha: 1.0)  // Teal
         case .stick3Vert: return SKColor(red: 0.0, green: 0.5, blue: 0.5, alpha: 1.0)  // Teal
         case .stick4: return SKColor(red: 0.5, green: 0.5, blue: 0.5, alpha: 1.0)  // Gray
