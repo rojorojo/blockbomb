@@ -1,6 +1,7 @@
 import Foundation
 import SpriteKit
 
+// Update the enum definition to add needed conformance
 enum TetrominoShape: String, CaseIterable, Hashable {
     // Square shapes
     case squareSmall  // 2x2 square

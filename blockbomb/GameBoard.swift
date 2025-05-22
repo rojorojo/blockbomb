@@ -1,9 +1,9 @@
 import SpriteKit
 
 class GameBoard {
-    let rows = 10
-    let columns = 10
-    let blockSize: CGFloat = 30
+    let rows = 8
+    let columns = 8
+    let blockSize: CGFloat = 40
     let boardNode = SKNode()
     
     // Grid state
@@ -243,5 +243,73 @@ class GameBoard {
             x: CGFloat(cell.column) * blockSize + blockSize/2,
             y: CGFloat(cell.row) * blockSize + blockSize/2
         )
+    }
+
+    // Improved resetBoard method
+    func resetBoard() {
+        // Clear the grid data and remove blocks from the scene
+        for row in 0..<rows {
+            for column in 0..<columns {
+                if let block = grid[row][column] {
+                    block.removeFromParent()
+                }
+                grid[row][column] = nil
+            }
+        }
+        
+        clearGhostPiece()
+        
+        // Redraw the game board
+        let background = SKShapeNode(rectOf: CGSize(width: CGFloat(columns) * blockSize,
+                                                  height: CGFloat(rows) * blockSize))
+        background.fillColor = SKColor(white: 0.2, alpha: 0.8)
+        background.strokeColor = .clear
+        background.lineWidth = 0
+        background.position = CGPoint(x: CGFloat(columns) * blockSize / 2, y: CGFloat(rows) * blockSize / 2)
+        background.name = "gridBackground"
+        boardNode.addChild(background)
+        
+        // Draw grid lines
+        let gridLines = SKShapeNode()
+        let path = CGMutablePath()
+        
+        // Vertical lines
+        for i in 0...columns {
+            let x = CGFloat(i) * blockSize
+            path.move(to: CGPoint(x: x, y: 0))
+            path.addLine(to: CGPoint(x: x, y: CGFloat(rows) * blockSize))
+        }
+        
+        // Horizontal lines
+        for i in 0...rows {
+            let y = CGFloat(i) * blockSize
+            path.move(to: CGPoint(x: 0, y: y))
+            path.addLine(to: CGPoint(x: CGFloat(columns) * blockSize, y: y))
+        }
+        
+        gridLines.path = path
+        gridLines.strokeColor = SKColor(white: 0.0, alpha: 0.9)
+        gridLines.lineWidth = 1
+        gridLines.name = "gridLines"
+        boardNode.addChild(gridLines)
+    }
+    
+    // Modified method without rotations - simply check if the piece can be placed anywhere
+    func canPlacePieceAnywhereWithRotations(_ piece: GridPiece) -> Bool {
+        // No rotations allowed, just check if the piece can be placed anywhere
+        return canPlacePieceAnywhere(piece)
+    }
+    
+    // Check if a piece can be placed anywhere on the board
+    func canPlacePieceAnywhere(_ piece: GridPiece) -> Bool {
+        for row in 0..<rows {
+            for col in 0..<columns {
+                let cell = GridCell(column: col, row: row)
+                if canPlacePiece(piece, at: cell) {
+                    return true
+                }
+            }
+        }
+        return false
     }
 }

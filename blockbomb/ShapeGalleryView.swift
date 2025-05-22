@@ -14,48 +14,51 @@ struct ShapeGalleryView: View {
                 ], spacing: 20) {
                     ForEach(TetrominoShape.allCases, id: \.self) { shape in
                         VStack {
-                            TetrominoPreviewView(shape: shape)
+                            ShapePreviewView(shape: shape)
                                 .frame(height: 80)
-                                .padding(10)
-                                .background(Color(UIColor.systemGray6))
+                                .padding(8)
+                                .background(Color.gray.opacity(0.2))
                                 .cornerRadius(8)
                             
                             Text(String(describing: shape))
                                 .font(.caption)
                                 .foregroundColor(.white)
-                                .padding(.top, 4)
                         }
+                        .padding(.bottom, 8)
                     }
                 }
                 .padding()
             }
-            .background(Color(red: 0.1, green: 0.1, blue: 0.2))
+            .background(Color(UIColor(red: 0.1, green: 0.1, blue: 0.2, alpha: 1.0)))
+            .edgesIgnoringSafeArea([.horizontal, .bottom])
             .navigationTitle("Shape Gallery")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Back to Game") {
+                    Button("Back") {
                         dismiss()
                     }
                     .foregroundColor(.white)
                 }
             }
         }
-        .navigationViewStyle(.stack)
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 
-struct TetrominoPreviewView: UIViewRepresentable {
+struct ShapePreviewView: UIViewRepresentable {
     let shape: TetrominoShape
     
     func makeUIView(context: Context) -> SKView {
         let view = SKView()
-        view.allowsTransparency = true
-        view.backgroundColor = UIColor.black
+        view.backgroundColor = .clear
         
-        let scene = TetrominoPreviewScene(shape: shape, size: CGSize(width: 100, height: 80))
-        scene.scaleMode = .aspectFit
-        scene.backgroundColor = UIColor.black
+        let scene = SKScene(size: CGSize(width: 100, height: 100))
+        scene.backgroundColor = .clear
+        
+        let node = createShapeNode(for: shape)
+        node.position = CGPoint(x: scene.size.width/2, y: scene.size.height/2)
+        scene.addChild(node)
         
         view.presentScene(scene)
         return view
@@ -64,39 +67,16 @@ struct TetrominoPreviewView: UIViewRepresentable {
     func updateUIView(_ uiView: SKView, context: Context) {
         // No updates needed
     }
-}
-
-class TetrominoPreviewScene: SKScene {
-    let shape: TetrominoShape
-    let blockSize: CGFloat = 12
-    
-    init(shape: TetrominoShape, size: CGSize) {
-        self.shape = shape
-        super.init(size: size)
-    }
-    
-    required init?(coder aDecoder: NSCoder) {
-        fatalError("init(coder:) has not been implemented")
-    }
-    
-    override func didMove(to view: SKView) {
-        backgroundColor = .clear
-        
-        let shapeNode = createShapeNode(for: shape)
-        shapeNode.position = CGPoint(x: size.width/2, y: size.height/2)
-        addChild(shapeNode)
-    }
     
     private func createShapeNode(for shape: TetrominoShape) -> SKNode {
         let container = SKNode()
+        let blockSize: CGFloat = 15
         
         // Get cells for this shape
         let cells = shape.cells()
         
-        // Find minimum and maximum coordinates to center the shape
-        var minX = Int.max, minY = Int.max
-        var maxX = Int.min, maxY = Int.min
-        
+        // Find min/max coordinates to center the shape
+        var minX = Int.max, minY = Int.max, maxX = Int.min, maxY = Int.min
         for cell in cells {
             minX = min(minX, cell.column)
             minY = min(minY, cell.row)
@@ -109,12 +89,12 @@ class TetrominoPreviewScene: SKScene {
         
         // Create blocks
         for cell in cells {
-            let block = SKShapeNode(rectOf: CGSize(width: blockSize - 2, height: blockSize - 2), cornerRadius: 3)
+            let block = SKShapeNode(rectOf: CGSize(width: blockSize-2, height: blockSize-2), cornerRadius: 2)
             block.fillColor = shape.color
             block.strokeColor = UIColor.black
             block.lineWidth = 1
-            
-            // Position block relative to shape center
+UIColor.black            
+            // Position relative to shape center
             let xOffset = CGFloat(cell.column - minX - width/2) * blockSize
             let yOffset = CGFloat(cell.row - minY - height/2) * blockSize
             block.position = CGPoint(x: xOffset + blockSize/2, y: yOffset + blockSize/2)

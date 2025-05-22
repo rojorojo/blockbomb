@@ -10,13 +10,31 @@ class GameScene: SKScene {
     private var pieceNodes: [PieceNode] = []
     private var scoreLabel: SKLabelNode!
     private var scoreValueLabel: SKLabelNode!
-    private var score = 0
+    private var score = 0 {
+        didSet {
+            scoreUpdateHandler?(score)
+        }
+    }
     private var scorePopups: [SKNode] = []
+    
+    // Communication with SwiftUI
+    var scoreUpdateHandler: ((Int) -> Void)?
+    var shapeGalleryRequestHandler: (() -> Void)?
+    var gameOverHandler: ((Int) -> Void)?  // New handler for game over
+    
+    // Flag to control score display in SpriteKit
+    var shouldDisplayScore: Bool = true
+    
+    // Flag to control game over display in SpriteKit
+    var shouldDisplayGameOver: Bool = true
     
     // Dragging support
     private var selectedNode: PieceNode?
     private var originalPosition: CGPoint?
     private var currentGridCell: GridCell?
+    
+    // Game state
+    private var isGameOver = false
     
     override func didMove(to view: SKView) {
         backgroundColor = SKColor(red: 0.1, green: 0.1, blue: 0.2, alpha: 1.0)
@@ -103,14 +121,20 @@ class GameScene: SKScene {
             selectedShapes.append(contentsOf: remainingShapes.prefix(3 - selectedShapes.count))
         }
         
-        // Create and position pieces along the bottom - respect safe area
-        let spacing: CGFloat = frame.width / 4
+        // Calculate position below the grid
+        let gridBottom = gameBoard.boardNode.position.y - (CGFloat(gameBoard.rows) * gameBoard.blockSize / 2)
         let safeAreaInsets = getSafeAreaInsets(for: self.view!)
-        let yPosition = safeAreaInsets.bottom + 220 // Position above bottom safe area
+        let yPosition = gridBottom - 80 // Add more space below the grid
+        
+        // Calculate horizontal spacing based on number of pieces
+        let numberOfPieces = selectedShapes.count
+        let boardWidth = CGFloat(gameBoard.columns) * gameBoard.blockSize
+        let pieceSpacing = boardWidth / CGFloat(numberOfPieces + 1)
+        let startX = gameBoard.boardNode.position.x + pieceSpacing
         
         for (index, shape) in selectedShapes.enumerated() {
             let piece = PieceNode(shape: shape, color: shape.color)
-            piece.position = CGPoint(x: spacing * CGFloat(index + 1), y: yPosition)
+            piece.position = CGPoint(x: startX + pieceSpacing * CGFloat(index), y: yPosition)
             piece.name = "draggable_piece"
             piece.zPosition = 100
             piece.setScale(0.6) // Scale down for better fit
@@ -125,13 +149,18 @@ class GameScene: SKScene {
             piece.run(SKAction.repeatForever(moveAction))
         }
         
-        // Instruction label - positioned above pieces
+        // Instruction label - positioned below pieces
         let instructionLabel = SKLabelNode(text: "Drag pieces onto the grid")
         instructionLabel.fontName = "AvenirNext-Medium"
         instructionLabel.fontSize = 18
         instructionLabel.fontColor = SKColor(white: 0.8, alpha: 1.0)
-        instructionLabel.position = CGPoint(x: frame.midX, y: yPosition - 40)
+        instructionLabel.position = CGPoint(x: frame.midX, y: yPosition - 50)
         addChild(instructionLabel)
+        
+        // After creating pieces, check if any of them can be placed
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.checkForGameOver()
+        }
     }
     
     private func addDebugButton(safeAreaInsets: UIEdgeInsets) {
@@ -139,12 +168,19 @@ class GameScene: SKScene {
         debugButton.fontName = "AvenirNext-Medium"
         debugButton.fontSize = 16
         debugButton.fontColor = .white
-        debugButton.position = CGPoint(x: frame.width - 80, y: safeAreaInsets.bottom + 40)
+        
+        // Position the button below the pieces
+        let gridBottom = gameBoard.boardNode.position.y - (CGFloat(gameBoard.rows) * gameBoard.blockSize / 2)
+        debugButton.position = CGPoint(x: frame.width - 80, y: gridBottom - 120)
+        
         debugButton.name = "debugButton"
         addChild(debugButton)
     }
     
     private func setupScoreDisplay(safeAreaInsets: UIEdgeInsets) {
+        // Only set up score display if flag is true
+        guard shouldDisplayScore else { return }
+        
         // Score title label
         scoreLabel = SKLabelNode(text: "Score:")
         scoreLabel.fontName = "AvenirNext-Bold"
@@ -164,6 +200,13 @@ class GameScene: SKScene {
     }
     
     private func updateScoreLabel() {
+        // Only update if we should display score
+        guard shouldDisplayScore else {
+            // Just notify the handler of the score change
+            scoreUpdateHandler?(score)
+            return
+        }
+        
         // Create a score update animation
         let oldScore = Int(scoreValueLabel.text ?? "0") ?? 0
         let scoreIncrement = score - oldScore
@@ -315,6 +358,9 @@ class GameScene: SKScene {
                 // Check if we need new pieces
                 if pieceNodes.isEmpty {
                     setupDraggablePieces()
+                } else {
+                    // Check if remaining pieces can still be placed
+                    checkGameStateAfterPlacement()
                 }
                 
                 // Reset selection
@@ -482,6 +528,131 @@ class GameScene: SKScene {
         
         // Present the SwiftUI view controller
         viewController.present(hostingController, animated: true)
+    }
+    
+    // MARK: - Game Over Logic
+    
+    /// Check if any of the current pieces can be placed on the board
+    private func checkForGameOver() {
+        guard !isGameOver && !pieceNodes.isEmpty else { return }
+        
+        // Debug logging
+        print("Checking for game over with \(pieceNodes.count) pieces")
+        
+        var canPlaceAnyPiece = false
+        
+        for piece in pieceNodes {
+            // Check if the piece can be placed anywhere (no rotations allowed)
+            if gameBoard.canPlacePieceAnywhere(piece.gridPiece) {
+                canPlaceAnyPiece = true
+                print("Piece \(piece.gridPiece.shape) can be placed")
+                break // At least one piece can be placed, game continues
+            } else {
+                print("Piece \(piece.gridPiece.shape) cannot be placed anywhere")
+            }
+        }
+        
+        if !canPlaceAnyPiece {
+            print("GAME OVER: No pieces can be placed")
+            handleGameOver()
+        }
+    }
+    
+    /// Check if a specific piece can be placed anywhere on the board
+    private func canPlacePieceAnywhere(_ piece: GridPiece) -> Bool {
+        // Delegate to the GameBoard implementation
+        return gameBoard.canPlacePieceAnywhere(piece)
+    }
+    
+    // Add a forced check that runs after each piece placement
+    private func checkGameStateAfterPlacement() {
+        // Give a moment for animations to complete
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in
+            self?.checkForGameOver()
+        }
+    }
+    
+    /// Handle the game over state
+    private func handleGameOver() {
+        isGameOver = true
+        
+        // Stop all piece animations
+        pieceNodes.forEach { $0.removeAllActions() }
+        
+        // Show game over effect in SpriteKit if enabled
+        showGameOverEffect()
+        
+        // Call the SwiftUI handler to show game over screen
+        gameOverHandler?(score)
+    }
+    
+    /// Visual effect for game over
+    private func showGameOverEffect() {
+        // Only show game over effect if flag is true
+        guard shouldDisplayGameOver else { return }
+        
+        // Darken the screen
+        let overlay = SKShapeNode(rect: self.frame)
+        overlay.fillColor = SKColor.black.withAlphaComponent(0.5)
+        overlay.strokeColor = SKColor.clear
+        overlay.zPosition = 500
+        overlay.alpha = 0
+        addChild(overlay)
+        
+        // Fade in the overlay
+        overlay.run(SKAction.fadeIn(withDuration: 0.5))
+        
+        // Add game over text
+        let gameOverLabel = SKLabelNode(text: "GAME OVER")
+        gameOverLabel.fontName = "AvenirNext-Bold"
+        gameOverLabel.fontSize = 40
+        gameOverLabel.fontColor = .red
+        gameOverLabel.position = CGPoint(x: frame.midX, y: frame.midY + 50)
+        gameOverLabel.alpha = 0
+        gameOverLabel.zPosition = 501
+        addChild(gameOverLabel)
+        
+        let scoreLabel = SKLabelNode(text: "Final Score: \(score)")
+        scoreLabel.fontName = "AvenirNext-Medium"
+        scoreLabel.fontSize = 30
+        scoreLabel.fontColor = .white
+        scoreLabel.position = CGPoint(x: frame.midX, y: frame.midY - 10)
+        scoreLabel.alpha = 0
+        scoreLabel.zPosition = 501
+        addChild(scoreLabel)
+        
+        let tapInfoLabel = SKLabelNode(text: "Tap to continue")
+        tapInfoLabel.fontName = "AvenirNext-Medium"
+        tapInfoLabel.fontSize = 20
+        tapInfoLabel.fontColor = .lightGray
+        tapInfoLabel.position = CGPoint(x: frame.midX, y: frame.midY - 60)
+        tapInfoLabel.alpha = 0
+        tapInfoLabel.zPosition = 501
+        addChild(tapInfoLabel)
+        
+        // Animate text
+        let fadeIn = SKAction.fadeIn(withDuration: 0.5)
+        gameOverLabel.run(SKAction.sequence([SKAction.wait(forDuration: 0.3), fadeIn]))
+        scoreLabel.run(SKAction.sequence([SKAction.wait(forDuration: 0.6), fadeIn]))
+        tapInfoLabel.run(SKAction.sequence([SKAction.wait(forDuration: 0.9), fadeIn]))
+    }
+    
+    /// Reset the game to starting state
+    func resetGame() {
+        isGameOver = false
+        
+        // Remove game over visuals
+        self.children.filter { $0.zPosition >= 500 }.forEach { $0.removeFromParent() }
+        
+        // Reset the game board
+        gameBoard.resetBoard()
+        
+        // Reset score
+        score = 0
+        updateScoreLabel()
+        
+        // Set up new pieces
+        setupDraggablePieces()
     }
 }
 
