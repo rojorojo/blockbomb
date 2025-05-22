@@ -9,7 +9,7 @@ class GridPiece {
     init(shape: TetrominoShape, color: SKColor) {
         self.shape = shape
         self.color = color
-        self.cells = shape.cells()
+        self.cells = shape.cells
     }
     
     // Returns the cells this piece would occupy if placed at the given origin

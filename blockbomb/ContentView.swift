@@ -1,10 +1,10 @@
-import SwiftUI
 import SpriteKit
+import SwiftUI
 
 struct ContentView: View {
     // Use a single source of truth with @StateObject
     @StateObject private var gameController = GameController()
-    
+
     var body: some View {
         ZStack {
             // Game scene
@@ -15,19 +15,24 @@ struct ContentView: View {
                 }
             )
             .ignoresSafeArea()
-            
+
             // Score overlay
+            
             VStack {
-                HStack {
-                    Spacer()
+                Spacer().frame(height: 50)
+                
+
+                    ScoreView(
+                        score: gameController.score,
+                        highScore: gameController.highScore
+                    )
                     
-                    ScoreView(score: gameController.score)
-                        .padding(.top, 10)
-                        .padding(.trailing, 20)
-                }
+                
                 Spacer()
             }
-            
+            .padding(.horizontal)
+            .frame(maxWidth: .infinity) 
+
             // Game over overlay
             if gameController.isGameOver {
                 GameOverView(
@@ -50,22 +55,32 @@ struct ContentView: View {
 // Score view component remains unchanged
 struct ScoreView: View {
     let score: Int
-    
+    let highScore: Int
+
     var body: some View {
-        HStack {
-            Text("Score:")
-                .font(.headline)
-                .foregroundColor(.white)
-            
-            Text("\(score)")
-                .font(.title2)
-                .fontWeight(.bold)
-                .foregroundColor(.yellow)
+        VStack {
+            HStack {
+
+                Text("\(score)")
+                    .font(.largeTitle)
+                    .fontWeight(.bold)
+                    .foregroundColor(.white)
+            }
+            .padding(8)
+            .background(
+                RoundedRectangle(cornerRadius: 8)
+                    .fill(Color.black.opacity(0.6))
+            )
+            HStack {
+                Text("Best")
+                    .font(.body)
+                    .foregroundColor(.white.opacity(0.8))
+
+                Text("\(highScore)")
+                    .font(.body)
+                    .fontWeight(.semibold)
+                    .foregroundColor(BlockColors.cyan)  // Use a different color
+            }
         }
-        .padding(8)
-        .background(
-            RoundedRectangle(cornerRadius: 8)
-                .fill(Color.black.opacity(0.6))
-        )
     }
 }

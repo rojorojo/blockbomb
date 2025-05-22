@@ -2,41 +2,41 @@ import SwiftUI
 import SpriteKit
 
 struct ShapeGalleryView: View {
-    @Environment(\.dismiss) private var dismiss
+    @Environment(\.presentationMode) var presentationMode
     
     var body: some View {
         NavigationView {
-            ScrollView {
-                LazyVGrid(columns: [
-                    GridItem(.flexible()),
-                    GridItem(.flexible()),
-                    GridItem(.flexible())
-                ], spacing: 20) {
-                    ForEach(TetrominoShape.allCases, id: \.self) { shape in
-                        VStack {
-                            ShapePreviewView(shape: shape)
-                                .frame(height: 80)
-                                .padding(8)
-                                .background(Color.gray.opacity(0.2))
-                                .cornerRadius(8)
-                            
-                            Text(String(describing: shape))
-                                .font(.caption)
-                                .foregroundColor(.white)
+            
+                List {
+                ForEach(TetrominoShape.Category.allCases, id: \.self) { category in
+                    Section(header: Text(category.rawValue)) {
+                        ForEach(TetrominoShape.shapes(in: category), id: \.self) { shape in
+                            HStack {
+                                ShapePreviewView(shape: shape)
+                                    .frame(width: 60, height: 60)
+                                    .background(shape.uiColor.opacity(0.3))
+                                    .cornerRadius(6)
+                                
+                                Text(shape.displayName)
+                                    .font(.body)
+                            }
                         }
-                        .padding(.bottom, 8)
                     }
                 }
-                .padding()
             }
+            .navigationTitle("Shape Gallery")
+            .navigationBarItems(trailing: Button("Done") {
+                presentationMode.wrappedValue.dismiss()
+            })
+            
             .background(Color(UIColor(red: 0.1, green: 0.1, blue: 0.2, alpha: 1.0)))
             .edgesIgnoringSafeArea([.horizontal, .bottom])
-            .navigationTitle("Shape Gallery")
+            
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Back") {
-                        dismiss()
+                        presentationMode.wrappedValue.dismiss()
                     }
                     .foregroundColor(.white)
                 }
@@ -73,7 +73,7 @@ struct ShapePreviewView: UIViewRepresentable {
         let blockSize: CGFloat = 15
         
         // Get cells for this shape
-        let cells = shape.cells()
+        let cells = shape.cells
         
         // Find min/max coordinates to center the shape
         var minX = Int.max, minY = Int.max, maxX = Int.min, maxY = Int.min
@@ -93,7 +93,7 @@ struct ShapePreviewView: UIViewRepresentable {
             block.fillColor = shape.color
             block.strokeColor = UIColor.black
             block.lineWidth = 1
-UIColor.black            
+           
             // Position relative to shape center
             let xOffset = CGFloat(cell.column - minX - width/2) * blockSize
             let yOffset = CGFloat(cell.row - minY - height/2) * blockSize

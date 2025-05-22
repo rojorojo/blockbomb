@@ -7,12 +7,16 @@ class GameController: ObservableObject {
     @Published var score: Int = 0
     @Published var isGameOver: Bool = false
     @Published var finalScore: Int = 0
-    
+    @Published var highScore: Int = 0
+
     // Internal reference to game scene
     private(set) var gameScene: GameScene?
     
     // Init with default values
-    init() {}
+    init() {
+        // Load saved high score from UserDefaults
+        highScore = UserDefaults.standard.integer(forKey: "highScore")
+    }
     
     // Associate a game scene with this controller
     func setGameScene(_ scene: GameScene) {
@@ -21,13 +25,20 @@ class GameController: ObservableObject {
         // Configure scene callbacks
         scene.scoreUpdateHandler = { [weak self] newScore in
             DispatchQueue.main.async {
-                self?.score = newScore
+                self?.updateScore(newScore) 
             }
         }
         
         scene.gameOverHandler = { [weak self] finalScore in
             DispatchQueue.main.async {
                 self?.finalScore = finalScore
+
+                // Update high score if needed before showing game over
+                if finalScore > self?.highScore ?? 0 {
+                    self?.highScore = finalScore
+                    UserDefaults.standard.set(finalScore, forKey: "highScore")
+                }
+                
                 self?.isGameOver = true
             }
         }
@@ -35,6 +46,18 @@ class GameController: ObservableObject {
         // Disable native SpriteKit UI since we're using SwiftUI
         scene.shouldDisplayScore = false
         scene.shouldDisplayGameOver = false
+    }
+
+    // New method to update score and check for high score
+    func updateScore(_ newScore: Int) {
+        score = newScore
+        
+        // Check if this is a new high score
+        if score > highScore {
+            highScore = score
+            // Save high score to UserDefaults
+            UserDefaults.standard.set(highScore, forKey: "highScore")
+        }
     }
     
     // Game control methods

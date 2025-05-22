@@ -140,7 +140,7 @@ class ShapeDebugScene: SKScene {
         let container = SKNode()
         
         // Get cells for this shape
-        let cells = shape.cells()
+        let cells = shape.cells
         
         // Find minimum and maximum coordinates to center the shape
         var minX = Int.max, minY = Int.max
