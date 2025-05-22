@@ -32,6 +32,8 @@ class GameScene: SKScene {
     private var selectedNode: PieceNode?
     private var originalPosition: CGPoint?
     private var currentGridCell: GridCell?
+    private var touchOffset: CGPoint = .zero // Store offset between touch point and piece center
+    private let dragVerticalOffset: CGFloat = 100 // Increase from 60 to 100 for more distance from finger
     
     // Game state
     private var isGameOver = false
@@ -85,24 +87,20 @@ class GameScene: SKScene {
         addChild(borderNode)
     }
     
+    // MARK: - Pieces Setup
     private func setupDraggablePieces() {
         // Clear any existing pieces
         pieceNodes.forEach { $0.removeFromParent() }
         pieceNodes.removeAll()
         
+        // Remove any existing containers
+        children.filter { $0.name?.starts(with: "pieceContainer") ?? false }.forEach { $0.removeFromParent() }
+        
         // Get a more varied selection of shapes to display
         let availableShapes = TetrominoShape.allCases
         
-        // Prioritize displaying a mix of different shape categories
-        let shapeCategories: [[TetrominoShape]] = [
-            [.squareSmall, .squareBig],                      // Square shapes
-            [.rectWide, .rectTall],                          // Rectangle shapes
-            [.stick3, .stick4, .stick5],                     // Sticks
-            [.lShapeSit, .lShapeReversed, .lShapeLayingDown, .lShapeStand],              // L shapes
-            [.cornerTopLeft, .cornerBottomLeft, .cornerBottomRight, .cornerTopRight],                    // Corner shapes
-            [.tShapeDown, .tShapeUp],                       // T shapes
-            [.cross, .blockSingle] // Special shapes
-        ]
+        // Get shape categories from TetrominoShape
+        let shapeCategories = TetrominoShape.shapeCategories
         
         var selectedShapes: [TetrominoShape] = []
         
@@ -124,29 +122,67 @@ class GameScene: SKScene {
         // Calculate position below the grid
         let gridBottom = gameBoard.boardNode.position.y - (CGFloat(gameBoard.rows) * gameBoard.blockSize / 2)
         let safeAreaInsets = getSafeAreaInsets(for: self.view!)
-        let yPosition = gridBottom - 80 // Add more space below the grid
+        let yPosition = gridBottom + 80 // Add more space below the grid
         
-        // Calculate horizontal spacing based on number of pieces
-        let numberOfPieces = selectedShapes.count
+        // Calculate container width based on the board width
         let boardWidth = CGFloat(gameBoard.columns) * gameBoard.blockSize
-        let pieceSpacing = boardWidth / CGFloat(numberOfPieces + 1)
-        let startX = gameBoard.boardNode.position.x + pieceSpacing
+        let containerWidth = boardWidth / 3
         
-        for (index, shape) in selectedShapes.enumerated() {
-            let piece = PieceNode(shape: shape, color: shape.color)
-            piece.position = CGPoint(x: startX + pieceSpacing * CGFloat(index), y: yPosition)
-            piece.name = "draggable_piece"
-            piece.zPosition = 100
-            piece.setScale(0.6) // Scale down for better fit
-            addChild(piece)
-            pieceNodes.append(piece)
+        // Create and position the containers
+        for i in 0..<3 {
+            // Create container node
+            let container = SKNode()
+            container.name = "pieceContainer\(i)"
+            container.position = CGPoint(
+                x: gameBoard.boardNode.position.x + containerWidth * CGFloat(i) + containerWidth/2,
+                y: yPosition
+            )
+            addChild(container)
             
-            // Add a subtle animation
-            let moveAction = SKAction.sequence([
-                SKAction.moveBy(x: 0, y: 5, duration: 0.5),
-                SKAction.moveBy(x: 0, y: -5, duration: 0.5)
-            ])
-            piece.run(SKAction.repeatForever(moveAction))
+            // Add debug border for the container
+            let borderRect = SKShapeNode(rectOf: CGSize(width: containerWidth, height: containerWidth))
+            borderRect.strokeColor = .cyan
+            borderRect.lineWidth = 1.0
+            borderRect.fillColor = .clear
+            borderRect.alpha = 0.5 // Subtle border
+            container.addChild(borderRect)
+            
+            // Add piece to container if we have one for this position
+            if i < selectedShapes.count {
+                let shape = selectedShapes[i]
+                let piece = PieceNode(shape: shape, color: shape.color)
+                
+                // Calculate the piece's bounding box center offset
+                let centerOffset = calculatePieceCenterOffset(piece)
+                
+                // Scale the piece down first, then apply positioning
+                piece.setScale(0.6) // Scale down for better fit
+                
+                // Position the piece at the center of the container, accounting for the offset
+                // Adjust the offset by the scale factor since we're scaling the piece
+                piece.position = CGPoint(x: -centerOffset.x * 0.6, y: -centerOffset.y * 0.6)
+                
+                piece.name = "draggable_piece"
+                piece.zPosition = 100
+                container.addChild(piece)
+                pieceNodes.append(piece)
+                
+                // Debug visualization of the piece's center (optional)
+                let centerMarker = SKShapeNode(circleOfRadius: 3)
+                centerMarker.fillColor = .red
+                centerMarker.strokeColor = .clear
+                centerMarker.position = .zero // Container center
+                centerMarker.zPosition = 110
+                centerMarker.alpha = 0.7
+                container.addChild(centerMarker)
+                
+                // Add a subtle animation that keeps the piece within its container
+                let moveAction = SKAction.sequence([
+                    SKAction.moveBy(x: 0, y: 5, duration: 0.5),
+                    SKAction.moveBy(x: 0, y: -5, duration: 0.5)
+                ])
+                piece.run(SKAction.repeatForever(moveAction))
+            }
         }
         
         // Instruction label - positioned below pieces
@@ -163,16 +199,46 @@ class GameScene: SKScene {
         }
     }
     
+    // Calculate the center point of a piece's bounding box
+    private func calculatePieceCenterOffset(_ piece: PieceNode) -> CGPoint {
+        let cells = piece.gridPiece.cells
+        
+        // If no cells, return zero offset
+        guard !cells.isEmpty else { return .zero }
+        
+        // Find the min and max coordinates
+        var minRow = Int.max
+        var maxRow = Int.min
+        var minColumn = Int.max
+        var maxColumn = Int.min
+        
+        for cell in cells {
+            minRow = min(minRow, cell.row)
+            maxRow = max(maxRow, cell.row)
+            minColumn = min(minColumn, cell.column)
+            maxColumn = max(maxColumn, cell.column)
+        }
+        
+        // Calculate the center of the bounding box in grid coordinates
+        let centerRow = Float(minRow + maxRow) / 2.0
+        let centerColumn = Float(minColumn + maxColumn) / 2.0
+        
+        // Convert to points (assuming each cell is blockSize x blockSize)
+        let blockSize = gameBoard.blockSize
+        let centerX = CGFloat(centerColumn) * blockSize
+        let centerY = CGFloat(centerRow) * blockSize
+        
+        return CGPoint(x: centerX, y: centerY)
+    }
+    
     private func addDebugButton(safeAreaInsets: UIEdgeInsets) {
         let debugButton = SKLabelNode(text: "View All Shapes")
         debugButton.fontName = "AvenirNext-Medium"
         debugButton.fontSize = 16
         debugButton.fontColor = .white
-        
         // Position the button below the pieces
         let gridBottom = gameBoard.boardNode.position.y - (CGFloat(gameBoard.rows) * gameBoard.blockSize / 2)
         debugButton.position = CGPoint(x: frame.width - 80, y: gridBottom - 120)
-        
         debugButton.name = "debugButton"
         addChild(debugButton)
     }
@@ -180,7 +246,6 @@ class GameScene: SKScene {
     private func setupScoreDisplay(safeAreaInsets: UIEdgeInsets) {
         // Only set up score display if flag is true
         guard shouldDisplayScore else { return }
-        
         // Score title label
         scoreLabel = SKLabelNode(text: "Score:")
         scoreLabel.fontName = "AvenirNext-Bold"
@@ -188,7 +253,6 @@ class GameScene: SKScene {
         scoreLabel.position = CGPoint(x: frame.midX - 40, y: frame.height - safeAreaInsets.top - 80)
         scoreLabel.horizontalAlignmentMode = .right
         addChild(scoreLabel)
-        
         // Score value label (separate for animation effects)
         scoreValueLabel = SKLabelNode(text: "0")
         scoreValueLabel.fontName = "AvenirNext-Bold"
@@ -201,16 +265,14 @@ class GameScene: SKScene {
     
     private func updateScoreLabel() {
         // Only update if we should display score
-        guard shouldDisplayScore else {
+        guard shouldDisplayScore else { 
             // Just notify the handler of the score change
             scoreUpdateHandler?(score)
             return
         }
-        
         // Create a score update animation
         let oldScore = Int(scoreValueLabel.text ?? "0") ?? 0
         let scoreIncrement = score - oldScore
-        
         // Animate the score change
         animateScoreChange(from: oldScore, to: score)
         
@@ -224,7 +286,6 @@ class GameScene: SKScene {
         // Scale up animation
         let scaleUp = SKAction.scale(to: 1.3, duration: 0.1)
         let scaleDown = SKAction.scale(to: 1.0, duration: 0.1)
-        
         // Create animation sequence
         let animationSequence = SKAction.sequence([scaleUp, scaleDown])
         
@@ -260,7 +321,6 @@ class GameScene: SKScene {
         let fadeOut = SKAction.fadeOut(withDuration: 1.0)
         let group = SKAction.group([moveUp, fadeOut])
         let sequence = SKAction.sequence([group, SKAction.removeFromParent()])
-        
         popupNode.run(sequence) { [weak self] in
             if let index = self?.scorePopups.firstIndex(of: popupNode) {
                 self?.scorePopups.remove(at: index)
@@ -269,7 +329,6 @@ class GameScene: SKScene {
     }
     
     // MARK: - Touch Handling
-    
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first else { return }
         let location = touch.location(in: self)
@@ -284,10 +343,26 @@ class GameScene: SKScene {
         // Check if we touched a draggable piece
         if let node = nodes(at: location).first(where: { $0.name == "draggable_piece" }) as? PieceNode {
             selectedNode = node
-            originalPosition = node.position
-            
+            // Convert the node's position to scene coordinates for dragging
+            // This is important because the node is now inside a container
+            let nodePositionInScene = node.parent!.convert(node.position, to: self)
+            originalPosition = nodePositionInScene
+            // Remove from parent container and add directly to scene for dragging
+            let nodeScale = node.xScale
+            let zPosition = node.zPosition
+            node.removeFromParent()
+            node.position = nodePositionInScene
+            node.setScale(nodeScale)
+            node.zPosition = zPosition
+            addChild(node)
+            // Calculate offset between touch point and node center
+            // Apply additional vertical offset to position piece above finger
+            touchOffset = CGPoint(
+                x: node.position.x - location.x,
+                y: node.position.y - location.y + dragVerticalOffset
+            )
             // Scale up slightly to indicate selection
-            node.run(SKAction.scale(to: 1.1, duration: 0.1))
+            node.run(SKAction.scale(to: 1.1 * nodeScale, duration: 0.1))
             node.zPosition = 150
         }
     }
@@ -295,10 +370,17 @@ class GameScene: SKScene {
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let touch = touches.first, let selectedNode = selectedNode else { return }
         let location = touch.location(in: self)
-        selectedNode.position = location
         
-        // Update ghost piece preview
-        if let gridCell = gameBoard.gridCellAt(scenePosition: location) {
+        // Apply the stored offset to position the piece above the finger
+        let offsetPosition = CGPoint(
+            x: location.x + touchOffset.x,
+            y: location.y + touchOffset.y
+        )
+        selectedNode.position = offsetPosition
+        
+        // Update ghost piece preview - use the piece position (not touch location)
+        // to determine grid cell, since the piece has been offset from the touch
+        if let gridCell = gameBoard.gridCellAt(scenePosition: offsetPosition) {
             if gridCell != currentGridCell {
                 currentGridCell = gridCell
                 gameBoard.showGhostPiece(selectedNode.gridPiece, at: gridCell)
@@ -306,77 +388,127 @@ class GameScene: SKScene {
         } else {
             // Not over grid, clear ghost
             currentGridCell = nil
-            // Clear ghost display if needed
+            gameBoard.clearGhostPiece() // Add this method to GameBoard if it doesn't exist
         }
     }
     
     override func touchesEnded(_ touches: Set<UITouch>, with event: UIEvent?) {
         guard let selectedNode = selectedNode, let originalPosition = originalPosition else { return }
         
+        // Reset the touch offset
+        touchOffset = .zero
+        
         // Check if we have a valid grid cell
         if let gridCell = currentGridCell {
-            // Try to place the piece at this grid cell
             if gameBoard.canPlacePiece(selectedNode.gridPiece, at: gridCell) {
-                // Place the piece on the board
-                selectedNode.removeAllActions()
-                
-                // Place piece on grid and get lines cleared
-                let linesCleared = gameBoard.placePiece(selectedNode.gridPiece, at: gridCell)
-                
                 // Award points for the piece and cleared lines
-                let piecePoints = calculatePointsForPiece(selectedNode.gridPiece)
+                let linesCleared = gameBoard.placePiece(selectedNode.gridPiece, at: gridCell)
                 let rowPoints = calculatePoints(forLines: linesCleared.rows)
-                let columnPoints = calculatePoints(forLines: linesCleared.columns) 
-                
-                // Add bonus for clearing both rows and columns at once
+                let columnPoints = calculatePoints(forLines: linesCleared.columns)
                 let comboBonus = (linesCleared.rows > 0 && linesCleared.columns > 0) ? 500 : 0
-                
-                // Update score
-                let totalPoints = piecePoints + rowPoints + columnPoints + comboBonus
-                score += totalPoints
+                let piecePoints = calculatePointsForPiece(selectedNode.gridPiece)
+                score += piecePoints + rowPoints + columnPoints + comboBonus
                 updateScoreLabel()
                 
-                // Show appropriate confirmation based on what was cleared
+                // Show more dramatic confirmation for line clears
                 if linesCleared.rows > 0 || linesCleared.columns > 0 {
-                    // Show more dramatic confirmation for line clears
                     flashLinesClearedConfirmation(at: selectedNode.position, 
-                                               rows: linesCleared.rows, 
-                                               columns: linesCleared.columns)
+                                                  rows: linesCleared.rows, 
+                                                  columns: linesCleared.columns)
                 } else {
-                    // Simple confirmation for just placing a piece
                     flashConfirmation(at: selectedNode.position)
                 }
+                
+                // Remove the piece from the scene
+                selectedNode.removeFromParent()
                 
                 // Remove from draggable pieces array
                 if let index = pieceNodes.firstIndex(of: selectedNode) {
                     pieceNodes.remove(at: index)
                 }
                 
-                // Remove the piece node from the scene
-                selectedNode.removeFromParent()
-                
-                // Check if we need new pieces
-                if pieceNodes.isEmpty {
-                    setupDraggablePieces()
-                } else {
-                    // Check if remaining pieces can still be placed
-                    checkGameStateAfterPlacement()
-                }
-                
                 // Reset selection
                 self.selectedNode = nil
                 self.originalPosition = nil
                 self.currentGridCell = nil
+                
+                // Check if we need to set up new pieces
+                if pieceNodes.isEmpty {
+                    setupDraggablePieces()
+                } else {
+                    // After placing a piece, check if any remaining pieces can be placed
+                    checkGameStateAfterPlacement()
+                }
+                
                 return
             }
         }
         
-        // If we couldn't place the piece, return it to its original position
-        returnPieceToOriginalPosition()
+        // If we couldn't place the piece, return it to its original container
+        returnPieceToContainer()
         
         // Reset selection
-        selectedNode.zPosition = 100
-        selectedNode.run(SKAction.scale(to: 1.0, duration: 0.1))
+        self.selectedNode = nil
+        self.originalPosition = nil
+        self.currentGridCell = nil
+    }
+    
+    override func touchesCancelled(_ touches: Set<UITouch>, with event: UIEvent?) {
+        // Handle touch cancellation (like system interruption) the same as touchesEnded
+        touchOffset = .zero
+        returnPieceToContainer()
+        self.selectedNode = nil
+        self.originalPosition = nil
+        self.currentGridCell = nil
+    }
+    
+    private func returnPieceToContainer() {
+        guard let selectedNode = selectedNode else { return }
+        
+        // Find the container this piece belongs to
+        if let index = pieceNodes.firstIndex(of: selectedNode) {
+            if let container = childNode(withName: "pieceContainer\(index)") {
+                // Calculate the piece's bounding box center offset
+                let centerOffset = calculatePieceCenterOffset(selectedNode)
+                
+                // Calculate the destination position (the center of the container in scene coordinates)
+                let containerCenter = container.position
+                
+                // Create animation to move back
+                let moveBack = SKAction.move(to: containerCenter, duration: 0.2)
+                let scaleBack = SKAction.scale(to: 0.6, duration: 0.1)
+                
+                selectedNode.run(SKAction.group([moveBack, scaleBack])) { [weak self] in
+                    // Remove from scene and add back to the container
+                    guard let self = self, let selectedNode = self.selectedNode else { return }
+                    let nodeScale = selectedNode.xScale
+                    let zPosition = 100.0
+                    selectedNode.removeFromParent()
+                    
+                    // Position the piece centered in the container, accounting for the offset
+                    // Apply the same scale factor as in setupDraggablePieces
+                    selectedNode.position = CGPoint(x: -centerOffset.x * 0.6, y: -centerOffset.y * 0.6)
+                    
+                    selectedNode.zPosition = zPosition
+                    container.addChild(selectedNode)
+                    
+                    // Restore the floating animation
+                    let moveAction = SKAction.sequence([
+                        SKAction.moveBy(x: 0, y: 5, duration: 0.5),
+                        SKAction.moveBy(x: 0, y: -5, duration: 0.5)
+                    ])
+                    selectedNode.run(SKAction.repeatForever(moveAction))
+                }
+            } else {
+                // Fallback if container not found
+                returnPieceToOriginalPosition()
+            }
+        } else {
+            // Fallback if piece not in pieceNodes
+            returnPieceToOriginalPosition()
+        }
+        
+        // Reset selection
         self.selectedNode = nil
         self.originalPosition = nil
         self.currentGridCell = nil
@@ -436,8 +568,8 @@ class GameScene: SKScene {
         
         let sequence = SKAction.sequence([
             SKAction.fadeIn(withDuration: 0.1),
-            SKAction.wait(forDuration: 0.1),
-            SKAction.fadeOut(withDuration: 0.2),
+            SKAction.wait(forDuration: 0.2),
+            SKAction.fadeOut(withDuration: 0.3),
             SKAction.removeFromParent()
         ])
         flash.run(sequence)
@@ -540,9 +672,8 @@ class GameScene: SKScene {
         print("Checking for game over with \(pieceNodes.count) pieces")
         
         var canPlaceAnyPiece = false
-        
+        // Check if any piece can be placed anywhere (no rotations allowed)
         for piece in pieceNodes {
-            // Check if the piece can be placed anywhere (no rotations allowed)
             if gameBoard.canPlacePieceAnywhere(piece.gridPiece) {
                 canPlaceAnyPiece = true
                 print("Piece \(piece.gridPiece.shape) can be placed")

@@ -132,7 +132,8 @@ class GameBoard {
         }
     }
     
-    private func clearGhostPiece() {
+    // Change from private to public
+    func clearGhostPiece() {
         for ghost in ghostBlocks {
             ghost.removeFromParent()
         }

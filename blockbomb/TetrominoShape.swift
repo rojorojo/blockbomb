@@ -288,5 +288,10 @@ enum TetrominoShape: CaseIterable {
 
     }
     
-    
+    // Replace the duplicate shapeCategories with a property that uses the Category enum
+    static var shapeCategories: [[TetrominoShape]] {
+        return Category.allCases.map { category in
+            shapes(in: category)
+        }
+    }
 }
