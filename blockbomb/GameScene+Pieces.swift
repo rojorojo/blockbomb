@@ -56,12 +56,12 @@ extension GameScene {
             addChild(container)
             
             // Add debug border for the container
-            let borderRect = SKShapeNode(rectOf: CGSize(width: containerWidth, height: containerWidth))
+            /*let borderRect = SKShapeNode(rectOf: CGSize(width: containerWidth, height: containerWidth))
             borderRect.strokeColor = .cyan
             borderRect.lineWidth = 1.0
             borderRect.fillColor = .clear
             borderRect.alpha = 0.5 // Subtle border
-            container.addChild(borderRect)
+            container.addChild(borderRect)*/
             
             // Add piece to container if we have one for this position
             if i < selectedShapes.count {
@@ -97,7 +97,7 @@ extension GameScene {
                 pieceNodes.append(piece)
                 
                 // Debug visualization of the piece's center and bounds
-                if true { // Set to false to hide debug visuals
+               /* if true { // Set to false to hide debug visuals
                     // Container center marker
                     let centerMarker = SKShapeNode(circleOfRadius: 3)
                     centerMarker.fillColor = .red
@@ -107,9 +107,9 @@ extension GameScene {
                     centerMarker.alpha = 0.7
                     container.addChild(centerMarker)
                     
-                    // Piece bounds visualization
-                    let boundsMarker = SKShapeNode(rect: CGRect(origin: CGPoint(x: -centerOffsetX - bounds.width/2, 
-                                                                               y: -centerOffsetY - bounds.height/2),
+                    // Piece bounds visualization - adjust to show the actual bounds centered on the piece
+                    let boundsMarker = SKShapeNode(rect: CGRect(origin: CGPoint(x: -bounds.width/2, 
+                                                                               y: -bounds.height/2),
                                                                size: bounds.size))
                     boundsMarker.strokeColor = .green
                     boundsMarker.lineWidth = 1.0
@@ -117,7 +117,11 @@ extension GameScene {
                     boundsMarker.alpha = 0.3
                     boundsMarker.zPosition = 105
                     container.addChild(boundsMarker)
-                }
+                }*/
+                
+                // Save the calculated center offset with the piece for later repositioning
+                piece.userData = NSMutableDictionary()
+                piece.userData?.setValue(NSValue(cgPoint: CGPoint(x: centerOffsetX, y: centerOffsetY)), forKey: "centerOffset")
                 
                 // Add a subtle animation that keeps the piece within its container
                 let moveAction = SKAction.sequence([
@@ -129,12 +133,12 @@ extension GameScene {
         }
         
         // Instruction label - positioned below pieces
-        let instructionLabel = SKLabelNode(text: "Drag pieces onto the grid")
+        /*let instructionLabel = SKLabelNode(text: "Drag pieces onto the grid")
         instructionLabel.fontName = "AvenirNext-Medium"
         instructionLabel.fontSize = 18
         instructionLabel.fontColor = SKColor(white: 0.8, alpha: 1.0)
         instructionLabel.position = CGPoint(x: frame.midX, y: yPosition - 50)
-        addChild(instructionLabel)
+        addChild(instructionLabel)*/
         
         // After creating pieces, check if any of them can be placed
         DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) { [weak self] in

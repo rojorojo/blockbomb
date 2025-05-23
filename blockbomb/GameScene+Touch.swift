@@ -145,42 +145,60 @@ extension GameScene {
                 // Calculate the destination position (the center of the container in scene coordinates)
                 let containerCenter = container.position
                 
-                // Create animation to move back
+                // Create animation to move back to container center
                 let moveBack = SKAction.move(to: containerCenter, duration: 0.2)
                 let scaleBack = SKAction.scale(to: 0.6, duration: 0.1)
                 
+                // Store the piece's shape to recreate it correctly
+                let pieceShape = selectedNode.gridPiece.shape
+                let pieceColor = selectedNode.gridPiece.shape.color // Fix: Use shape.color instead of blockColor
+                
                 selectedNode.run(SKAction.group([moveBack, scaleBack])) { [weak self] in
-                    // Remove from scene and add back to the container
-                    guard let self = self, let selectedNode = self.selectedNode else { return }
+                    guard let self = self else { return }
+                    
+                    // Remove the existing piece
                     selectedNode.removeFromParent()
                     
-                    // First measure the piece to find its center offset
+                    // Instead of trying to reposition the existing piece, create a new one
+                    // This ensures it's created using the same code path as the initial setup
+                    let newPiece = PieceNode(shape: pieceShape, color: pieceColor)
+                    
+                    // Apply scale first
+                    newPiece.setScale(0.6)
+                    
+                    // This matches the code in setupDraggablePieces to ensure consistency
                     let tempNode = SKNode()
                     self.addChild(tempNode)
-                    tempNode.addChild(selectedNode)
+                    tempNode.addChild(newPiece)
                     
                     // Get the bounding box of the piece
-                    let bounds = selectedNode.calculateAccumulatedFrame()
+                    let bounds = newPiece.calculateAccumulatedFrame()
                     
                     // Calculate the offset from the piece's registration point to its visual center
-                    let centerOffsetX = bounds.midX - selectedNode.position.x
-                    let centerOffsetY = bounds.midY - selectedNode.position.y
+                    let centerOffsetX = bounds.midX - newPiece.position.x
+                    let centerOffsetY = bounds.midY - newPiece.position.y
                     
                     // Remove from temp measurement node
-                    selectedNode.removeFromParent()
+                    newPiece.removeFromParent()
                     tempNode.removeFromParent()
                     
-                    // Position the piece so its visual center aligns with the container center
-                    selectedNode.position = CGPoint(x: -centerOffsetX, y: -centerOffsetY)
-                    selectedNode.zPosition = 100.0
-                    container.addChild(selectedNode)
+                    // Position exactly as in setupDraggablePieces
+                    newPiece.position = CGPoint(x: -centerOffsetX, y: -centerOffsetY)
+                    newPiece.name = "draggable_piece"
+                    newPiece.zPosition = 100
+                    container.addChild(newPiece)
                     
-                    // Restore the floating animation
+                    // Replace the old piece reference with the new one
+                    if let selectedIndex = self.pieceNodes.firstIndex(of: selectedNode) {
+                        self.pieceNodes[selectedIndex] = newPiece
+                    }
+                    
+                    // Add the floating animation
                     let moveAction = SKAction.sequence([
                         SKAction.moveBy(x: 0, y: 5, duration: 0.5),
                         SKAction.moveBy(x: 0, y: -5, duration: 0.5)
                     ])
-                    selectedNode.run(SKAction.repeatForever(moveAction))
+                    newPiece.run(SKAction.repeatForever(moveAction))
                 }
             } else {
                 // Fallback if container not found
