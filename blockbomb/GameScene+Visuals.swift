@@ -44,7 +44,7 @@ extension GameScene {
                                                 width: boardWidth + 4,
                                                 height: boardHeight + 4))
         borderNode.lineWidth = 2.0
-        borderNode.strokeColor = .white
+        borderNode.strokeColor = SKColor(white: 0.7, alpha: 0.5)
         addChild(borderNode)
     }
     

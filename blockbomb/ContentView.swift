@@ -62,15 +62,15 @@ struct ScoreView: View {
             HStack {
 
                 Text("\(score)")
-                    .font(.largeTitle)
+                    .font(.system(size: 60, weight: .bold))
                     .fontWeight(.bold)
                     .foregroundColor(.white)
             }
             .padding(8)
-            .background(
+            /*.background(
                 RoundedRectangle(cornerRadius: 8)
                     .fill(Color.black.opacity(0.6))
-            )
+            )*/
             HStack {
                 Text("Best")
                     .font(.body)
