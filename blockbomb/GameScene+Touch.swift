@@ -14,31 +14,85 @@ extension GameScene {
             return
         }
         
-        // Check if we touched a draggable piece
-        if let node = nodes(at: location).first(where: { $0.name == "draggable_piece" }) as? PieceNode {
-            selectedNode = node
-            // Convert the node's position to scene coordinates for dragging
-            // This is important because the node is now inside a container
-            let nodePositionInScene = node.parent!.convert(node.position, to: self)
-            originalPosition = nodePositionInScene
-            // Remove from parent container and add directly to scene for dragging
-            let nodeScale = node.xScale
-            let zPosition = node.zPosition
-            node.removeFromParent()
-            node.position = nodePositionInScene
-            node.setScale(nodeScale)
-            node.zPosition = zPosition
-            addChild(node)
-            // Calculate offset between touch point and node center
-            // Apply additional vertical offset to position piece above finger
-            touchOffset = CGPoint(
-                x: node.position.x - location.x,
-                y: node.position.y - location.y + dragVerticalOffset
-            )
-            // Scale up slightly to indicate selection
-            node.run(SKAction.scale(to: 1.1 * nodeScale, duration: 0.1))
-            node.zPosition = 150
+        // Look for a draggable node (either piece or container touch target)
+        if let touchedNode = nodes(at: location).first(where: { $0.name == "draggable_piece" }) {
+            
+            // Handle touch differently based on node type
+            if let pieceNode = touchedNode as? PieceNode {
+                // Direct piece touch - use existing handling
+                handlePieceTouchBegan(pieceNode, at: location)
+            }
+            else {
+                // Container touch target - extract container index and find piece
+                handleContainerTouchBegan(touchedNode, at: location)
+            }
         }
+    }
+    
+    // Helper to handle touches that hit a piece directly
+    private func handlePieceTouchBegan(_ pieceNode: PieceNode, at location: CGPoint) {
+        selectedNode = pieceNode
+        
+        // Convert the node's position to scene coordinates for dragging
+        let nodePositionInScene = pieceNode.parent!.convert(pieceNode.position, to: self)
+        originalPosition = nodePositionInScene
+        
+        // Standard piece handling
+        let nodeScale = pieceNode.xScale
+        pieceNode.removeFromParent()
+        pieceNode.position = nodePositionInScene
+        pieceNode.zPosition = 150
+        addChild(pieceNode)
+        
+        // Scale up for dragging
+        pieceNode.run(SKAction.scale(to: 1.2, duration: 0.1))
+        
+        // Apply offset
+        touchOffset = CGPoint(
+            x: pieceNode.position.x - location.x,
+            y: pieceNode.position.y - location.y + dragVerticalOffset
+        )
+    }
+    
+    // Helper to handle touches that hit a container's touch target
+    private func handleContainerTouchBegan(_ touchTarget: SKNode, at location: CGPoint) {
+        // Extract container info from the touch target
+        guard let containerIndex = touchTarget.userData?.value(forKey: "containerIndex") as? Int,
+              let container = childNode(withName: "pieceContainer\(containerIndex)"),
+              let pieceNode = container.children.first(where: { $0.name == "piece" }) as? PieceNode else {
+            return
+        }
+        
+        // Set this as our selected node
+        selectedNode = pieceNode
+        
+        // Get position info
+        let nodePositionInScene = container.convert(pieceNode.position, to: self)
+        originalPosition = nodePositionInScene
+        
+        // Remove piece from container
+        pieceNode.removeFromParent()
+        
+        // Position piece at original position first
+        pieceNode.position = nodePositionInScene
+        pieceNode.zPosition = 150
+        addChild(pieceNode)
+        
+        // Scale up for dragging
+        pieceNode.run(SKAction.scale(to: 1.2, duration: 0.1))
+        
+        // Calculate offset for finger position
+        touchOffset = CGPoint(
+            x: pieceNode.position.x - location.x,
+            y: pieceNode.position.y - location.y + dragVerticalOffset
+        )
+        
+        // Move piece immediately to correct finger offset position
+        let newPosition = CGPoint(
+            x: location.x + touchOffset.x,
+            y: location.y + touchOffset.y
+        )
+        pieceNode.position = newPosition
     }
     
     override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
@@ -147,11 +201,11 @@ extension GameScene {
                 
                 // Create animation to move back to container center
                 let moveBack = SKAction.move(to: containerCenter, duration: 0.2)
-                let scaleBack = SKAction.scale(to: 0.6, duration: 0.1)
+                let scaleBack = SKAction.scale(to: 0.6, duration: 0.1)  // Scale back to container size
                 
                 // Store the piece's shape to recreate it correctly
                 let pieceShape = selectedNode.gridPiece.shape
-                let pieceColor = selectedNode.gridPiece.shape.color // Fix: Use shape.color instead of blockColor
+                let pieceColor = selectedNode.gridPiece.shape.color
                 
                 selectedNode.run(SKAction.group([moveBack, scaleBack])) { [weak self] in
                     guard let self = self else { return }
@@ -184,7 +238,7 @@ extension GameScene {
                     
                     // Position exactly as in setupDraggablePieces
                     newPiece.position = CGPoint(x: -centerOffsetX, y: -centerOffsetY)
-                    newPiece.name = "draggable_piece"
+                    newPiece.name = "piece"  // Use the new piece name
                     newPiece.zPosition = 100
                     container.addChild(newPiece)
                     

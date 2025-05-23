@@ -63,6 +63,16 @@ extension GameScene {
             borderRect.alpha = 0.5 // Subtle border
             container.addChild(borderRect)*/
             
+            // Create a touch target node that fills the container and make it draggable
+            let touchTarget = SKShapeNode(rectOf: CGSize(width: containerWidth, height: containerWidth))
+            touchTarget.fillColor = .clear
+            touchTarget.strokeColor = .clear
+            touchTarget.alpha = 0.8 // Almost invisible but touchable
+            touchTarget.name = "draggable_piece" // Use the original draggable name to work with existing code
+            touchTarget.userData = NSMutableDictionary()
+            touchTarget.userData?.setValue(i, forKey: "containerIndex") // Store which container this belongs to
+            container.addChild(touchTarget)
+            
             // Add piece to container if we have one for this position
             if i < selectedShapes.count {
                 let shape = selectedShapes[i]
@@ -91,37 +101,18 @@ extension GameScene {
                 // Now add to its proper container, but with position adjusted to center the visual content
                 // We negate the offset to move the visual center to the container's center
                 piece.position = CGPoint(x: -centerOffsetX, y: -centerOffsetY)
-                piece.name = "draggable_piece"
+                piece.name = "piece" // Not directly draggable - container handles this
                 piece.zPosition = 100
                 container.addChild(piece)
                 pieceNodes.append(piece)
                 
-                // Debug visualization of the piece's center and bounds
-               /* if true { // Set to false to hide debug visuals
-                    // Container center marker
-                    let centerMarker = SKShapeNode(circleOfRadius: 3)
-                    centerMarker.fillColor = .red
-                    centerMarker.strokeColor = .clear
-                    centerMarker.position = .zero
-                    centerMarker.zPosition = 110
-                    centerMarker.alpha = 0.7
-                    container.addChild(centerMarker)
-                    
-                    // Piece bounds visualization - adjust to show the actual bounds centered on the piece
-                    let boundsMarker = SKShapeNode(rect: CGRect(origin: CGPoint(x: -bounds.width/2, 
-                                                                               y: -bounds.height/2),
-                                                               size: bounds.size))
-                    boundsMarker.strokeColor = .green
-                    boundsMarker.lineWidth = 1.0
-                    boundsMarker.fillColor = .clear
-                    boundsMarker.alpha = 0.3
-                    boundsMarker.zPosition = 105
-                    container.addChild(boundsMarker)
-                }*/
-                
                 // Save the calculated center offset with the piece for later repositioning
                 piece.userData = NSMutableDictionary()
                 piece.userData?.setValue(NSValue(cgPoint: CGPoint(x: centerOffsetX, y: centerOffsetY)), forKey: "centerOffset")
+                
+                // Also link the touch target to this piece
+                touchTarget.userData?.setValue(piece.gridPiece.shape, forKey: "pieceShape")
+                touchTarget.userData?.setValue(piece.gridPiece.shape.color, forKey: "pieceColor")
                 
                 // Add a subtle animation that keeps the piece within its container
                 let moveAction = SKAction.sequence([
