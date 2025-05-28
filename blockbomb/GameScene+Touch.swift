@@ -106,15 +106,20 @@ extension GameScene {
         )
         selectedNode.position = offsetPosition
         
-        // Update ghost piece preview - use the piece position (not touch location)
+        // Update ghost piece preview and glow effects - use the piece position (not touch location)
         // to determine grid cell, since the piece has been offset from the touch
         if let gridCell = gameBoard.gridCellAt(scenePosition: offsetPosition) {
             if gridCell != currentGridCell {
                 currentGridCell = gridCell
                 gameBoard.showGhostPiece(selectedNode.gridPiece, at: gridCell)
+                
+                // Show completion glow preview if piece can be placed
+                if gameBoard.canPlacePiece(selectedNode.gridPiece, at: gridCell) {
+                    gameBoard.showCompletionGlow(for: selectedNode.gridPiece, at: gridCell)
+                }
             }
         } else {
-            // Not over grid, clear ghost
+            // Not over grid, clear ghost and glow
             currentGridCell = nil
             gameBoard.clearGhostPiece() 
         }

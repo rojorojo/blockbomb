@@ -8,6 +8,9 @@ class GameController: ObservableObject {
     @Published var isGameOver: Bool = false
     @Published var finalScore: Int = 0
     @Published var highScore: Int = 0
+    
+    // Rarity system configuration
+    @Published var selectionMode: TetrominoShape.SelectionMode = .balancedWeighted
 
     // Internal reference to game scene
     private(set) var gameScene: GameScene?
@@ -21,6 +24,9 @@ class GameController: ObservableObject {
     // Associate a game scene with this controller
     func setGameScene(_ scene: GameScene) {
         gameScene = scene
+        
+        // Establish bidirectional connection
+        scene.gameController = self
         
         // Configure scene callbacks
         scene.scoreUpdateHandler = { [weak self] newScore in

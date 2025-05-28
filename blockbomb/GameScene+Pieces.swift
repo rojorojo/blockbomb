@@ -12,28 +12,29 @@ extension GameScene {
         // Remove any existing containers
         children.filter { $0.name?.starts(with: "pieceContainer") ?? false }.forEach { $0.removeFromParent() }
         
-        // Get a more varied selection of shapes to display
-        let availableShapes = TetrominoShape.allCases
+        // Get selection using the new weighted rarity system
+        // Default to balancedWeighted if gameController is not available
+        let selectionMode = gameController?.selectionMode ?? .balancedWeighted
+        let selectedShapes = TetrominoShape.selection(count: 3, mode: selectionMode, gameBoard: gameBoard)
         
-        // Get shape categories from TetrominoShape
-        let shapeCategories = TetrominoShape.shapeCategories
+        // Log selection for debugging (only in debug builds)
+        #if DEBUG
+        TetrominoShape.logSelection(selectedShapes)
+        print("Selected shapes: \(selectedShapes.map { $0.displayName })")
+        print("Rarity distribution: \(selectedShapes.map { "\($0.displayName): \($0.rarity.rawValue)" })")
         
-        var selectedShapes: [TetrominoShape] = []
-        
-        // Try to select one shape from each category
-        for category in shapeCategories.shuffled() {
-            if selectedShapes.count >= 3 { break }
-            
-            if let shape = category.shuffled().first, !selectedShapes.contains(shape) {
-                selectedShapes.append(shape)
+        // Print statistics every 10 selections
+        let stats = TetrominoShape.getSelectionStats()
+        if let totalSelections = stats["totalSelections"] as? Int, totalSelections % 30 == 0 {
+            print("\n=== Selection Statistics after \(totalSelections) selections ===")
+            if let rarityPercentages = stats["rarityPercentages"] as? [String: Double] {
+                for (rarity, percentage) in rarityPercentages.sorted(by: { $0.key < $1.key }) {
+                    print("\(rarity): \(String(format: "%.2f", percentage))%")
+                }
             }
+            print("===")
         }
-        
-        // If we need more shapes, fill with random ones
-        if selectedShapes.count < 3 {
-            let remainingShapes = availableShapes.filter { !selectedShapes.contains($0) }.shuffled()
-            selectedShapes.append(contentsOf: remainingShapes.prefix(3 - selectedShapes.count))
-        }
+        #endif
         
         // Calculate position below the grid
         let gridBottom = gameBoard.boardNode.position.y - (CGFloat(gameBoard.rows) * gameBoard.blockSize / 2)

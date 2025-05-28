@@ -17,6 +17,9 @@ class GameScene: SKScene {
     }
     var scorePopups: [SKNode] = []
     
+    // Reference to game controller for configuration
+    weak var gameController: GameController?
+    
     // Communication with SwiftUI
     var scoreUpdateHandler: ((Int) -> Void)?
     var shapeGalleryRequestHandler: (() -> Void)?
@@ -39,16 +42,20 @@ class GameScene: SKScene {
     var isGameOver = false
     
     override func didMove(to view: SKView) {
-        backgroundColor = SKColor(red: 0.1, green: 0.1, blue: 0.2, alpha: 1.0)
+        // Setup scene background using centralized colors
+        backgroundColor = GameBoardVisuals.Colors.sceneBackground
         
         // Get safe area insets
         let safeAreaInsets = getSafeAreaInsets(for: view)
         
-        // Setup game board - 10x10 grid
+        // Setup game board - 8x8 grid
         gameBoard = GameBoard()
-        gameBoard.boardNode.position = CGPoint(
-            x: frame.midX - (CGFloat(gameBoard.columns) * gameBoard.blockSize / 2),
-            y: frame.midY - (CGFloat(gameBoard.rows) * gameBoard.blockSize / 2) + 20 // Adjust position
+        gameBoard.boardNode.position = GameBoardVisuals.calculateBoardPosition(
+            sceneSize: frame.size,
+            columns: gameBoard.columns,
+            rows: gameBoard.rows,
+            blockSize: gameBoard.blockSize,
+            verticalOffset: 20
         )
         addChild(gameBoard.boardNode)
         

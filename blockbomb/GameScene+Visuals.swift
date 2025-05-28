@@ -36,15 +36,16 @@ extension GameScene {
     }
     
     func addBoardBorder() {
-        let boardWidth = CGFloat(gameBoard.columns) * gameBoard.blockSize
-        let boardHeight = CGFloat(gameBoard.rows) * gameBoard.blockSize
+        // Remove any existing border
+        childNode(withName: "boardBorder")?.removeFromParent()
         
-        let borderNode = SKShapeNode(rect: CGRect(x: gameBoard.boardNode.position.x - 2,
-                                                y: gameBoard.boardNode.position.y - 2,
-                                                width: boardWidth + 4,
-                                                height: boardHeight + 4))
-        borderNode.lineWidth = 2.0
-        borderNode.strokeColor = SKColor(white: 0.7, alpha: 0.5)
+        // Create border using centralized system
+        let borderNode = GameBoardVisuals.createBoardBorder(
+            boardPosition: gameBoard.boardNode.position,
+            columns: gameBoard.columns,
+            rows: gameBoard.rows,
+            blockSize: gameBoard.blockSize
+        )
         addChild(borderNode)
     }
     

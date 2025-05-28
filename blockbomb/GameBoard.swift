@@ -12,41 +12,27 @@ class GameBoard {
     // Ghost piece visualization
     private var ghostBlocks: [SKShapeNode] = []
     
+    // Storage for glow effects
+    private var glowNodes: [SKNode] = []
+    
+    // Storage for block color changes during glow preview
+    private var originalBlockColors: [GridCell: (fill: SKColor, stroke: SKColor)] = [:]
+    
+    // Line clearing state management
+    private var clearingInProgress: Bool = false
+    private var blocksPendingClear: Set<GridCell> = []
+    
     init() {
         // Initialize empty grid
         grid = Array(repeating: Array(repeating: nil, count: columns), count: rows)
         
-        // Draw background
-        let background = SKShapeNode(rectOf: CGSize(width: CGFloat(columns) * blockSize,
-                                                  height: CGFloat(rows) * blockSize))
-        background.fillColor = SKColor(white: 0.2, alpha: 0.8)
-        background.strokeColor = .clear
-        background.lineWidth = 0
-        background.position = CGPoint(x: CGFloat(columns) * blockSize / 2, y: CGFloat(rows) * blockSize / 2)
-        boardNode.addChild(background)
-        
-        // Draw grid lines
-        let gridLines = SKShapeNode()
-        let path = CGMutablePath()
-        
-        // Vertical lines
-        for i in 0...columns {
-            let x = CGFloat(i) * blockSize
-            path.move(to: CGPoint(x: x, y: 0))
-            path.addLine(to: CGPoint(x: x, y: CGFloat(rows) * blockSize))
-        }
-        
-        // Horizontal lines
-        for i in 0...rows {
-            let y = CGFloat(i) * blockSize
-            path.move(to: CGPoint(x: 0, y: y))
-            path.addLine(to: CGPoint(x: CGFloat(columns) * blockSize, y: y))
-        }
-        
-        gridLines.path = path
-        gridLines.strokeColor = SKColor(white: 0.0, alpha: 0.9)
-        gridLines.lineWidth = 1
-        boardNode.addChild(gridLines)
+        // Setup board visuals using centralized system
+        GameBoardVisuals.setupBoardVisuals(
+            columns: columns,
+            rows: rows,
+            blockSize: blockSize,
+            boardNode: boardNode
+        )
     }
     
     func reset() {
@@ -122,10 +108,8 @@ class GameBoard {
             let cellsToOccupy = piece.absoluteCells(at: origin)
             
             for cell in cellsToOccupy {
-                let ghost = createBlock(at: cell, color: piece.color.withAlphaComponent(0.3))
-                ghost.strokeColor = piece.color
-                ghost.fillColor = piece.color.withAlphaComponent(0.3)
-                ghost.lineWidth = 2
+                let position = GameBoardVisuals.positionForCell(cell, blockSize: blockSize)
+                let ghost = GameBoardVisuals.createBlock(at: position, blockSize: blockSize, color: piece.color, isGhost: true)
                 boardNode.addChild(ghost)
                 ghostBlocks.append(ghost)
             }
@@ -138,22 +122,23 @@ class GameBoard {
             ghost.removeFromParent()
         }
         ghostBlocks.removeAll()
+        
+        // Also clear glow effects when clearing ghost piece
+        clearCompletionGlow()
     }
     
     private func createBlock(at cell: GridCell, color: SKColor) -> SKShapeNode {
-        let block = SKShapeNode(rectOf: CGSize(width: blockSize - 2, height: blockSize - 2), cornerRadius: 3)
-        block.position = CGPoint(
-            x: CGFloat(cell.column) * blockSize + blockSize/2,
-            y: CGFloat(cell.row) * blockSize + blockSize/2
-        )
-        block.fillColor = color
-        block.strokeColor = SKColor(white: 0.3, alpha: 0.5)
-        block.lineWidth = 1
-        return block
+        let position = GameBoardVisuals.positionForCell(cell, blockSize: blockSize)
+        return GameBoardVisuals.createBlock(at: position, blockSize: blockSize, color: color)
     }
     
-    // Modified method to check and clear both rows and columns
+    // Modified method to check and clear both rows and columns with proper synchronization
     func clearCompletedLines() -> (rows: Int, columns: Int) {
+        // Prevent concurrent clearing operations
+        guard !clearingInProgress else {
+            return (rows: 0, columns: 0)
+        }
+        
         var rowsCleared = 0
         var columnsCleared = 0
         
@@ -161,11 +146,13 @@ class GameBoard {
         var rowsToClear = Set<Int>()
         var columnsToClear = Set<Int>()
         
-        // Check for completed rows
+        // Check for completed rows (considering blocks pending clear)
         for row in 0..<rows {
             var rowComplete = true
             for col in 0..<columns {
-                if grid[row][col] == nil {
+                let cell = GridCell(column: col, row: row)
+                // Consider cell empty if it's nil OR pending clear
+                if grid[row][col] == nil || blocksPendingClear.contains(cell) {
                     rowComplete = false
                     break
                 }
@@ -177,11 +164,13 @@ class GameBoard {
             }
         }
         
-        // Check for completed columns
+        // Check for completed columns (considering blocks pending clear)
         for col in 0..<columns {
             var columnComplete = true
             for row in 0..<rows {
-                if grid[row][col] == nil {
+                let cell = GridCell(column: col, row: row)
+                // Consider cell empty if it's nil OR pending clear
+                if grid[row][col] == nil || blocksPendingClear.contains(cell) {
                     columnComplete = false
                     break
                 }
@@ -193,21 +182,45 @@ class GameBoard {
             }
         }
         
-        // Clear completed rows and columns
+        // If no lines to clear, return early
+        if rowsToClear.isEmpty && columnsToClear.isEmpty {
+            return (rows: 0, columns: 0)
+        }
+        
+        // Mark clearing in progress
+        clearingInProgress = true
+        
+        // Collect all cells that need to be cleared
+        var cellsToClear = Set<GridCell>()
+        
         for row in rowsToClear {
-            clearRow(row)
+            for col in 0..<columns {
+                cellsToClear.insert(GridCell(column: col, row: row))
+            }
         }
         
         for col in columnsToClear {
-            clearColumn(col)
+            for row in 0..<rows {
+                cellsToClear.insert(GridCell(column: col, row: row))
+            }
         }
         
-        // Return the counts - no gravity/falling blocks
+        // Add to pending clear set
+        blocksPendingClear.formUnion(cellsToClear)
+        
+        // Start animations and clear cells after animation completes
+        clearCellsWithSynchronizedAnimation(cellsToClear)
+        
+        // Return the counts
         return (rowsCleared, columnsCleared)
     }
     
-    // Clear a single row with animation
+    // Legacy methods - kept for potential debugging but not used in main clearing system
+    // These are replaced by the synchronized clearing system above
+    
+    // Clear a single row with animation (deprecated - use synchronized system)
     private func clearRow(_ row: Int) {
+        print("Warning: Using deprecated clearRow method - should use synchronized clearing")
         for col in 0..<columns {
             if let block = grid[row][col] {
                 animateBlockClearing(block)
@@ -216,8 +229,9 @@ class GameBoard {
         }
     }
     
-    // Clear a single column with animation
+    // Clear a single column with animation (deprecated - use synchronized system)
     private func clearColumn(_ col: Int) {
+        print("Warning: Using deprecated clearColumn method - should use synchronized clearing")
         for row in 0..<rows {
             if let block = grid[row][col] {
                 animateBlockClearing(block)
@@ -226,24 +240,16 @@ class GameBoard {
         }
     }
     
-    // Common animation for clearing blocks
+    // Common animation for clearing blocks (deprecated - use synchronized system)
     private func animateBlockClearing(_ block: SKShapeNode) {
-        // Simple block clearing animation
-        block.run(SKAction.sequence([
-            SKAction.group([
-                SKAction.scale(to: 1.3, duration: 0.1),
-                SKAction.fadeOut(withDuration: 0.2)
-            ]),
-            SKAction.removeFromParent()
-        ]))
+        print("Warning: Using deprecated animateBlockClearing method - should use synchronized clearing")
+        // Use centralized animation
+        block.run(GameBoardVisuals.createBlockClearingAnimation())
     }
 
     func boardPositionForCell(_ cell: GridCell) -> CGPoint {
-        // Convert grid cell to position in board coordinates
-        return CGPoint(
-            x: CGFloat(cell.column) * blockSize + blockSize/2,
-            y: CGFloat(cell.row) * blockSize + blockSize/2
-        )
+        // Convert grid cell to position in board coordinates using centralized method
+        return GameBoardVisuals.positionForCell(cell, blockSize: blockSize)
     }
 
     // Improved resetBoard method
@@ -260,39 +266,13 @@ class GameBoard {
         
         clearGhostPiece()
         
-        // Redraw the game board
-        let background = SKShapeNode(rectOf: CGSize(width: CGFloat(columns) * blockSize,
-                                                  height: CGFloat(rows) * blockSize))
-        background.fillColor = SKColor(white: 0.2, alpha: 0.8)
-        background.strokeColor = .clear
-        background.lineWidth = 0
-        background.position = CGPoint(x: CGFloat(columns) * blockSize / 2, y: CGFloat(rows) * blockSize / 2)
-        background.name = "gridBackground"
-        boardNode.addChild(background)
-        
-        // Draw grid lines
-        let gridLines = SKShapeNode()
-        let path = CGMutablePath()
-        
-        // Vertical lines
-        for i in 0...columns {
-            let x = CGFloat(i) * blockSize
-            path.move(to: CGPoint(x: x, y: 0))
-            path.addLine(to: CGPoint(x: x, y: CGFloat(rows) * blockSize))
-        }
-        
-        // Horizontal lines
-        for i in 0...rows {
-            let y = CGFloat(i) * blockSize
-            path.move(to: CGPoint(x: 0, y: y))
-            path.addLine(to: CGPoint(x: CGFloat(columns) * blockSize, y: y))
-        }
-        
-        gridLines.path = path
-        gridLines.strokeColor = SKColor(white: 0.0, alpha: 0.9)
-        gridLines.lineWidth = 1
-        gridLines.name = "gridLines"
-        boardNode.addChild(gridLines)
+        // Refresh board visuals using centralized system
+        GameBoardVisuals.refreshBoardVisuals(
+            boardNode: boardNode,
+            columns: columns,
+            rows: rows,
+            blockSize: blockSize
+        )
     }
     
     // Modified method without rotations - simply check if the piece can be placed anywhere
@@ -312,5 +292,265 @@ class GameBoard {
             }
         }
         return false
+    }
+    
+    // Calculate board capacity as percentage of filled cells
+    func getBoardCapacity() -> Float {
+        var filledCells = 0
+        let totalCells = rows * columns
+        
+        for row in 0..<rows {
+            for col in 0..<columns {
+                if grid[row][col] != nil {
+                    filledCells += 1
+                }
+            }
+        }
+        
+        return Float(filledCells) / Float(totalCells)
+    }
+    
+    // Check if board is in "rescue mode" (80% or more filled)
+    func isInRescueMode() -> Bool {
+        return getBoardCapacity() >= 0.8
+    }
+}
+
+// MARK: - Completion Detection for Glow Preview
+
+extension GameBoard {
+    // Check which rows and columns would be completed if piece is placed at origin
+    func getCompletionPreview(for piece: GridPiece, at origin: GridCell) -> (rows: Set<Int>, columns: Set<Int>) {
+        guard canPlacePiece(piece, at: origin) else {
+            return (rows: Set<Int>(), columns: Set<Int>())
+        }
+        
+        let cellsToOccupy = piece.absoluteCells(at: origin)
+        var rowsToCheck = Set<Int>()
+        var columnsToCheck = Set<Int>()
+        
+        // Collect all rows and columns that would be affected by placing this piece
+        for cell in cellsToOccupy {
+            rowsToCheck.insert(cell.row)
+            columnsToCheck.insert(cell.column)
+        }
+        
+        var completedRows = Set<Int>()
+        var completedColumns = Set<Int>()
+        
+        // Check each affected row for completion
+        for row in rowsToCheck {
+            if wouldRowBeCompleted(row, withPieceCells: cellsToOccupy) {
+                completedRows.insert(row)
+            }
+        }
+        
+        // Check each affected column for completion
+        for column in columnsToCheck {
+            if wouldColumnBeCompleted(column, withPieceCells: cellsToOccupy) {
+                completedColumns.insert(column)
+            }
+        }
+        
+        return (rows: completedRows, columns: completedColumns)
+    }
+    
+    // Check if a row would be completed with the addition of piece cells
+    private func wouldRowBeCompleted(_ row: Int, withPieceCells pieceCells: [GridCell]) -> Bool {
+        for col in 0..<columns {
+            let cell = GridCell(column: col, row: row)
+            
+            // Cell is filled if it already has a block OR the piece would place a block there
+            let isAlreadyFilled = grid[row][col] != nil
+            let wouldBeFilled = pieceCells.contains(cell)
+            
+            if !isAlreadyFilled && !wouldBeFilled {
+                return false
+            }
+        }
+        return true
+    }
+    
+    // Check if a column would be completed with the addition of piece cells
+    private func wouldColumnBeCompleted(_ column: Int, withPieceCells pieceCells: [GridCell]) -> Bool {
+        for row in 0..<rows {
+            let cell = GridCell(column: column, row: row)
+            
+            // Cell is filled if it already has a block OR the piece would place a block there
+            let isAlreadyFilled = grid[row][column] != nil
+            let wouldBeFilled = pieceCells.contains(cell)
+            
+            if !isAlreadyFilled && !wouldBeFilled {
+                return false
+            }
+        }
+        return true
+    }
+}
+
+// MARK: - Glow Effect Management
+
+extension GameBoard {
+    // Show glow effects for rows and columns that would be completed
+    func showCompletionGlow(for piece: GridPiece, at origin: GridCell) {
+        clearCompletionGlow()
+        
+        let completion = getCompletionPreview(for: piece, at: origin)
+        
+        // Create glow effects for completed rows
+        for row in completion.rows {
+            let glowNode = GameBoardVisuals.createRowGlow(
+                row: row,
+                columns: columns,
+                blockSize: blockSize,
+                color: piece.color
+            )
+            boardNode.addChild(glowNode)
+            glowNodes.append(glowNode)
+            
+            // Start glow animation
+            glowNode.run(GameBoardVisuals.createGlowPulseAnimation())
+            
+            // Change colors of existing blocks in this row
+            changeBlockColorsInRow(row, to: piece.color)
+        }
+        
+        // Create glow effects for completed columns
+        for column in completion.columns {
+            let glowNode = GameBoardVisuals.createColumnGlow(
+                column: column,
+                rows: rows,
+                blockSize: blockSize,
+                color: piece.color
+            )
+            boardNode.addChild(glowNode)
+            glowNodes.append(glowNode)
+            
+            // Start glow animation
+            glowNode.run(GameBoardVisuals.createGlowPulseAnimation())
+            
+            // Change colors of existing blocks in this column
+            changeBlockColorsInColumn(column, to: piece.color)
+        }
+    }
+    
+    // Clear all glow effects
+    func clearCompletionGlow() {
+        for glowNode in glowNodes {
+            glowNode.removeFromParent()
+        }
+        glowNodes.removeAll()
+        
+        // Restore original block colors
+        restoreOriginalBlockColors()
+    }
+    
+    // MARK: - Block Color Management for Glow Effects
+    
+    /// Changes the colors of existing blocks in a specific row to match the glow
+    private func changeBlockColorsInRow(_ row: Int, to color: SKColor) {
+        for col in 0..<columns {
+            let cell = GridCell(column: col, row: row)
+            if let block = grid[row][col] {
+                // Store original colors if not already stored
+                if originalBlockColors[cell] == nil {
+                    originalBlockColors[cell] = (fill: block.fillColor, stroke: block.strokeColor)
+                }
+                
+                // Apply glow color to the block
+                block.fillColor = color.withAlphaComponent(0.8)
+                block.strokeColor = color
+                block.lineWidth = 2
+            }
+        }
+    }
+    
+    /// Changes the colors of existing blocks in a specific column to match the glow
+    private func changeBlockColorsInColumn(_ column: Int, to color: SKColor) {
+        for row in 0..<rows {
+            let cell = GridCell(column: column, row: row)
+            if let block = grid[row][column] {
+                // Store original colors if not already stored (avoid overwriting if row already changed it)
+                if originalBlockColors[cell] == nil {
+                    originalBlockColors[cell] = (fill: block.fillColor, stroke: block.strokeColor)
+                }
+                
+                // Apply glow color to the block
+                block.fillColor = color.withAlphaComponent(0.8)
+                block.strokeColor = color
+                block.lineWidth = 2
+            }
+        }
+    }
+    
+    /// Restores the original colors of all blocks that were changed for glow effects
+    private func restoreOriginalBlockColors() {
+        for (cell, colors) in originalBlockColors {
+            if let block = grid[cell.row][cell.column] {
+                block.fillColor = colors.fill
+                block.strokeColor = colors.stroke
+                block.lineWidth = 1 // Reset to default line width
+            }
+        }
+        originalBlockColors.removeAll()
+    }
+}
+
+// MARK: - Synchronized Clearing System
+
+extension GameBoard {
+    // Clear cells with synchronized animation to prevent race conditions
+    private func clearCellsWithSynchronizedAnimation(_ cellsToClear: Set<GridCell>) {
+        var blocksToAnimate: [SKShapeNode] = []
+        
+        // Collect all blocks that need animation
+        for cell in cellsToClear {
+            if let block = grid[cell.row][cell.column] {
+                blocksToAnimate.append(block)
+            }
+        }
+        
+        // If no blocks to animate, complete immediately
+        guard !blocksToAnimate.isEmpty else {
+            completeClearingOperation(cellsToClear)
+            return
+        }
+        
+        // Create animation group with completion handler
+        let animationGroup = SKAction.group(blocksToAnimate.map { _ in 
+            GameBoardVisuals.createBlockClearingAnimation() 
+        })
+        
+        // Run animation on a dummy node to track completion
+        let dummyNode = SKNode()
+        boardNode.addChild(dummyNode)
+        
+        // Start animations on all blocks
+        for block in blocksToAnimate {
+            block.run(GameBoardVisuals.createBlockClearingAnimation())
+        }
+        
+        // Track completion using dummy node
+        dummyNode.run(animationGroup) { [weak self] in
+            dummyNode.removeFromParent()
+            self?.completeClearingOperation(cellsToClear)
+        }
+    }
+    
+    // Complete the clearing operation after animations finish
+    private func completeClearingOperation(_ cellsToClear: Set<GridCell>) {
+        // Actually remove blocks from grid
+        for cell in cellsToClear {
+            if let block = grid[cell.row][cell.column] {
+                block.removeFromParent()
+                grid[cell.row][cell.column] = nil
+            }
+        }
+        
+        // Clear pending state
+        blocksPendingClear.subtract(cellsToClear)
+        
+        // Reset clearing flag
+        clearingInProgress = false
     }
 }
