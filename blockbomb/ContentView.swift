@@ -37,6 +37,7 @@ struct ContentView: View {
             if gameController.isGameOver {
                 GameOverView(
                     finalScore: gameController.finalScore,
+                    highScore: gameController.highScore,
                     onRestart: {
                         gameController.restartGame()
                     },
@@ -64,22 +65,23 @@ struct ScoreView: View {
                 Text("\(score)")
                     .font(.system(size: 60, weight: .bold))
                     .fontWeight(.bold)
-                    .foregroundColor(.white)
+                    .foregroundColor(BlockColors.cyan)  // Use a different color
             }
-            .padding(8)
+            
             /*.background(
                 RoundedRectangle(cornerRadius: 8)
                     .fill(Color.black.opacity(0.6))
             )*/
             HStack {
-                Text("Best")
+                Text("BEST")
                     .font(.body)
-                    .foregroundColor(.white.opacity(0.8))
+                    .fontWeight(.bold)
+                    .foregroundColor(BlockColors.purple)  // Use a different color
 
                 Text("\(highScore)")
                     .font(.body)
-                    .fontWeight(.semibold)
-                    .foregroundColor(BlockColors.cyan)  // Use a different color
+                    .fontWeight(.bold)
+                    .foregroundColor(BlockColors.purple)  // Use a different color
             }
         }
     }

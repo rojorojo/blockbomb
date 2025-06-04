@@ -59,8 +59,7 @@ class GameScene: SKScene {
         )
         addChild(gameBoard.boardNode)
         
-        // Setup score display - position below top safe area
-        setupScoreDisplay(safeAreaInsets: safeAreaInsets)
+        
         
         // Add border around game area
         addBoardBorder()
