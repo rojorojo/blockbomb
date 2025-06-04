@@ -4,6 +4,7 @@ import SwiftUI
 struct ContentView: View {
     // Use a single source of truth with @StateObject
     @StateObject private var gameController = GameController()
+    @State private var showSettings = false
 
     var body: some View {
         ZStack {
@@ -19,14 +20,32 @@ struct ContentView: View {
             // Score overlay
             
             VStack {
-                Spacer().frame(height: 50)
-                
-
+                HStack {
+                    
+                    // Settings button
+                    Button(action: {
+                        showSettings = true
+                    }) {
+                        Image(systemName: "gearshape.fill")
+                            .font(.title2)
+                            .foregroundColor(BlockColors.slate)
+                            .frame(width: 44, height: 44)
+                            
+                    }
+                    Spacer()
+                }
+                    
+                    
                     ScoreView(
                         score: gameController.score,
                         highScore: gameController.highScore
                     )
                     
+                    
+                    
+                    
+                
+                
                 
                 Spacer()
             }
@@ -50,6 +69,9 @@ struct ContentView: View {
                 .transition(.opacity)
                 .zIndex(100)
             }
+        }
+        .sheet(isPresented: $showSettings) {
+            SettingsView()
         }
     }
 }
@@ -86,4 +108,9 @@ struct ScoreView: View {
             }
         }
     }
+}
+
+#Preview {
+    ContentView()
+        
 }

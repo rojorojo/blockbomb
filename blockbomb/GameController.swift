@@ -48,6 +48,13 @@ class GameController: ObservableObject {
                 if isNewHighScore {
                     self?.highScore = finalScore
                     UserDefaults.standard.set(finalScore, forKey: "highScore")
+                    // Play new high score sound
+                    AudioManager.shared.playNewHighScoreSound()
+                    AudioManager.shared.triggerHapticFeedback(for: .newHighScore)
+                } else {
+                    // Play regular game over sound
+                    AudioManager.shared.playGameOverSound()
+                    AudioManager.shared.triggerHapticFeedback(for: .gameOver)
                 }
                 
                 self?.isGameOver = true

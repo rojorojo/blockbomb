@@ -50,83 +50,58 @@ extension GameScene {
     
     // MARK: - Visual Effects
     
+    // Helper method to calculate the center of the game board
+    private func calculateBoardCenter() -> CGPoint {
+        let boardWidth = CGFloat(gameBoard.columns) * gameBoard.blockSize
+        let boardHeight = CGFloat(gameBoard.rows) * gameBoard.blockSize
+        
+        return CGPoint(
+            x: gameBoard.boardNode.position.x + boardWidth / 2,
+            y: gameBoard.boardNode.position.y + boardHeight / 2
+        )
+    }
+    
     // Visual feedback for successful placement
-    func flashConfirmation(at position: CGPoint) {
-        // Create multiple expanding rings for depth
-        for i in 0..<3 {
-            let flash = SKShapeNode(circleOfRadius: 15)
-            flash.position = position
-            flash.fillColor = .clear
-            flash.strokeColor = SKColor.green.withAlphaComponent(0.8 - CGFloat(i) * 0.2)
-            flash.lineWidth = 3.0
-            flash.alpha = 0
-            flash.zPosition = 200 - CGFloat(i)
-            addChild(flash)
-            
-            let delay = Double(i) * 0.05
-            let expandSequence = SKAction.sequence([
-                SKAction.wait(forDuration: delay),
-                SKAction.group([
-                    SKAction.fadeIn(withDuration: 0.1),
-                    SKAction.scale(to: 2.5 + CGFloat(i) * 0.5, duration: 0.4)
-                ]),
-                SKAction.fadeOut(withDuration: 0.2),
-                SKAction.removeFromParent()
-            ])
-            flash.run(expandSequence)
-        }
-        
-        // Add a bright center flash
-        let centerFlash = SKShapeNode(circleOfRadius: 20)
-        centerFlash.position = position
-        centerFlash.fillColor = SKColor.green.withAlphaComponent(0.6)
-        centerFlash.strokeColor = .clear
-        centerFlash.zPosition = 205
-        addChild(centerFlash)
-        
-        let centerSequence = SKAction.sequence([
-            SKAction.scale(to: 0.1, duration: 0.0),
-            SKAction.group([
-                SKAction.scale(to: 1.2, duration: 0.15),
-                SKAction.fadeOut(withDuration: 0.15)
-            ]),
-            SKAction.removeFromParent()
-        ])
-        centerFlash.run(centerSequence)
+    func flashConfirmation() {
+        // Green ring effect removed per user request
+        // Method kept for compatibility but no visual effects are shown
     }
     
     // Visual feedback for clearing lines
-    func flashLinesClearedConfirmation(at position: CGPoint, rows: Int, columns: Int) {
+    func flashLinesClearedConfirmation(rows: Int, columns: Int) {
+        // Use board center instead of piece placement position
+        let boardCenter = calculateBoardCenter()
+        
         // Create spectacular explosion effect with multiple layers
-        createExplosionEffect(at: position, isCombo: rows > 0 && columns > 0)
+        createExplosionEffect(at: boardCenter, isCombo: rows > 0 && columns > 0)
         
         // Create the text label showing what was cleared
         let messageNode = SKNode()
-        messageNode.position = position
+        messageNode.position = boardCenter
         messageNode.zPosition = 220
         addChild(messageNode)
         
-        // Text showing what was cleared with enhanced styling
+        // Text showing what was cleared with enhanced styling using tetromino colors
         var message = ""
         var textColor = SKColor.cyan
         var fontSize: CGFloat = 28
         
         if (rows > 0 && columns > 0) {
-            message = "🎉 COMBO! 🎉\n\(rows) rows + \(columns) columns"
-            textColor = SKColor.orange
+            message = "COMBO!\n\(rows) rows + \(columns) columns"
+            textColor = SKColor(BlockColors.orange) // L-Shape color for combo excitement
             fontSize = 32
         } else if (rows > 0) {
             let rowText = rows == 1 ? "row" : "rows"
-            message = "💥 \(rows) \(rowText) cleared!"
-            textColor = SKColor.yellow
+            message = "\(rows) \(rowText) cleared!"
+            textColor = SKColor(BlockColors.lime) // Bright green for row clearing achievements
         } else if (columns > 0) {
             let colText = columns == 1 ? "column" : "columns"
-            message = "⚡ \(columns) \(colText) cleared!"
-            textColor = SKColor.cyan
+            message = "\(columns) \(colText) cleared!"
+            textColor = SKColor(BlockColors.teal) // Stick color for linear clearing
         }
         
         // Create main text label with shadow effect
-        let shadowLabel = SKLabelNode(text: message)
+        /*let shadowLabel = SKLabelNode(text: message)
         shadowLabel.fontName = "AvenirNext-Heavy"
         shadowLabel.fontSize = fontSize
         shadowLabel.fontColor = SKColor.black.withAlphaComponent(0.5)
@@ -134,7 +109,7 @@ extension GameScene {
         shadowLabel.horizontalAlignmentMode = .center
         shadowLabel.verticalAlignmentMode = .center
         shadowLabel.position = CGPoint(x: 2, y: -2) // Shadow offset
-        messageNode.addChild(shadowLabel)
+        messageNode.addChild(shadowLabel)*/
         
         let label = SKLabelNode(text: message)
         label.fontName = "AvenirNext-Heavy"
@@ -146,7 +121,7 @@ extension GameScene {
         messageNode.addChild(label)
         
         // Add glow effect to text
-        let glowLabel = SKLabelNode(text: message)
+        /*let glowLabel = SKLabelNode(text: message)
         glowLabel.fontName = "AvenirNext-Heavy"
         glowLabel.fontSize = fontSize + 2
         glowLabel.fontColor = textColor.withAlphaComponent(0.3)
@@ -154,7 +129,7 @@ extension GameScene {
         glowLabel.horizontalAlignmentMode = .center
         glowLabel.verticalAlignmentMode = .center
         glowLabel.zPosition = -1
-        messageNode.addChild(glowLabel)
+        messageNode.addChild(glowLabel)*/
         
         // Enhanced animations with bounce and sparkle effects
         messageNode.setScale(0.1) // Set initial scale
@@ -191,44 +166,18 @@ extension GameScene {
         
         // Add sparkle particles for combo
         if (rows > 0 && columns > 0) {
-            createSparkleEffect(at: position)
+            createSparkleEffect(at: boardCenter)
         }
     }
     
-    // Create explosion effect with radiating circles
+    // Create explosion effect with energy beams for combos
     private func createExplosionEffect(at position: CGPoint, isCombo: Bool) {
-        let ringCount = isCombo ? 6 : 4
-        let baseRadius: CGFloat = 40
-        let maxRadius: CGFloat = isCombo ? 150 : 100
-        
-        for i in 0..<ringCount {
-            let delay = Double(i) * 0.08
-            let ring = SKShapeNode(circleOfRadius: baseRadius)
-            ring.position = position
-            ring.fillColor = .clear
-            ring.strokeColor = isCombo ? SKColor.orange : SKColor.green
-            ring.lineWidth = isCombo ? 5.0 : 3.0
-            ring.alpha = 0
-            ring.zPosition = 210 - CGFloat(i)
-            addChild(ring)
-            
-            let ringAnimation = SKAction.sequence([
-                SKAction.wait(forDuration: delay),
-                SKAction.group([
-                    SKAction.fadeAlpha(to: 0.8, duration: 0.1),
-                    SKAction.scale(to: maxRadius / baseRadius, duration: 0.6)
-                ]),
-                SKAction.fadeOut(withDuration: 0.3),
-                SKAction.removeFromParent()
-            ])
-            ringAnimation.timingMode = .easeOut
-            ring.run(ringAnimation)
-        }
-        
-        // Add rotating energy beams for combo
+        // Add rotating energy beams for combo using harmonious colors
         if isCombo {
             for i in 0..<8 {
-                let beam = SKSpriteNode(color: SKColor.orange.withAlphaComponent(0.6), size: CGSize(width: 4, height: 80))
+                // Alternate between orange and amber for visual harmony
+                let beamColor = i % 2 == 0 ? BlockColors.orange : BlockColors.amber
+                let beam = SKSpriteNode(color: SKColor(beamColor).withAlphaComponent(0.6), size: CGSize(width: 4, height: 80))
                 beam.position = position
                 beam.zPosition = 205
                 beam.zRotation = CGFloat(i) * .pi / 4
@@ -249,9 +198,19 @@ extension GameScene {
     
     // Create sparkle particle effect
     private func createSparkleEffect(at position: CGPoint) {
+        // Use harmonious colors from tetromino palette for sparkles
+        let sparkleColors = [
+            BlockColors.yellow,    // Special pieces
+            BlockColors.amber,     // Warm highlight  
+            BlockColors.orange,    // L-shapes
+            BlockColors.lime,      // Bright accent
+            BlockColors.teal,      // Sticks
+            BlockColors.cyan       // Cool accent
+        ]
+        
         for i in 0..<15 {
             let sparkle = SKShapeNode(circleOfRadius: 3)
-            sparkle.fillColor = [SKColor.yellow, SKColor.orange, SKColor.white].randomElement()!
+            sparkle.fillColor = SKColor(sparkleColors.randomElement()!)
             sparkle.strokeColor = .clear
             sparkle.position = position
             sparkle.zPosition = 215

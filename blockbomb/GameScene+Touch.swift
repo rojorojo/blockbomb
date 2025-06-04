@@ -143,13 +143,29 @@ extension GameScene {
                 score += piecePoints + rowPoints + columnPoints + comboBonus
                 updateScoreLabel()
                 
+                // Play audio for different scenarios
+                if (linesCleared.rows > 0 && linesCleared.columns > 0) {
+                    // Combo - escalating combo sound based on total lines cleared
+                    let totalLines = linesCleared.rows + linesCleared.columns
+                    AudioManager.shared.playComboSound(comboLevel: totalLines)
+                    AudioManager.shared.triggerHapticFeedback(for: .combo)
+                } else if (linesCleared.rows > 0 || linesCleared.columns > 0) {
+                    // Line clear - escalating sound based on number of lines
+                    let totalLines = linesCleared.rows + linesCleared.columns
+                    AudioManager.shared.playLineClearSound(lineCount: totalLines)
+                    AudioManager.shared.triggerHapticFeedback(for: .lineClear)
+                } else {
+                    // Simple block placement
+                    AudioManager.shared.playBlockPlaceSound()
+                    AudioManager.shared.triggerHapticFeedback(for: .blockPlace)
+                }
+                
                 // Show more dramatic confirmation for line clears
                 if (linesCleared.rows > 0 || linesCleared.columns > 0) {
-                    flashLinesClearedConfirmation(at: selectedNode.position, 
-                                                  rows: linesCleared.rows, 
+                    flashLinesClearedConfirmation(rows: linesCleared.rows, 
                                                   columns: linesCleared.columns)
                 } else {
-                    flashConfirmation(at: selectedNode.position)
+                    flashConfirmation()
                 }
                 
                 // Remove the piece from the scene
@@ -179,6 +195,12 @@ extension GameScene {
         
         // If we couldn't place the piece, return it to its original container
         returnPieceToContainer()
+        
+        // Play invalid placement sound if the piece was dropped over the grid but couldn't be placed
+        if currentGridCell != nil {
+            AudioManager.shared.playInvalidPlacementSound()
+            AudioManager.shared.triggerHapticFeedback(for: .invalidPlacement)
+        }
         
         // Reset selection
         self.selectedNode = nil
