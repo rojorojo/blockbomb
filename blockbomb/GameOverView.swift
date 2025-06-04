@@ -4,6 +4,7 @@ import SpriteKit
 struct GameOverView: View {
     let finalScore: Int
     let highScore: Int
+    let isNewHighScore: Bool
     let onRestart: () -> Void
     let onMainMenu: () -> Void
     
@@ -19,34 +20,63 @@ struct GameOverView: View {
             // Game over content
             VStack(spacing: 30) {
                 
-                Spacer()
-                Image("BlockEmUpLogo")
-                    .resizable()
-                    .frame(width: 144, height: 104)
-                    
-                Spacer()
                 
-                Text("So close!")
-                    .font(.system(size: 40, weight: .bold))
-                    .foregroundColor(BlockColors.cyan)
-                    .opacity(isAnimating ? 1 : 0)
-                    .scaleEffect(isAnimating ? 1 : 0.5)
-                Spacer()
+                
+                // Display different image based on whether it's a new high score
+                if isNewHighScore {
+                    
+                    Image("BEMUP-high-score-trophy")
+                        .resizable()
+                        .frame(width: 339, height: 345)
+                } else {
+                    Spacer()
+                    Image("BlockEmUpLogo")
+                        .resizable()
+                        .frame(width: 144, height: 104)
+                    Spacer()
+                }
+                    
+                
+                
+                // Display different text based on whether it's a new high score
+                if isNewHighScore {
+                    Text("You did it!")
+                        .font(.system(size: 40, weight: .bold))
+                        .foregroundColor(BlockColors.cyan)
+                        .opacity(isAnimating ? 1 : 0)
+                        .scaleEffect(isAnimating ? 1 : 0.5)
+                } else {
+                    Text("So close!")
+                        .font(.system(size: 40, weight: .bold))
+                        .foregroundColor(BlockColors.cyan)
+                        .opacity(isAnimating ? 1 : 0)
+                        .scaleEffect(isAnimating ? 1 : 0.5)
+                    Spacer()
+                }
+                
                 VStack {
                     
                     Text("\(finalScore)")
                         .font(.system(size: 60, weight: .bold))
                         .foregroundColor(BlockColors.cyan)
-                    HStack {
-                        Text("BEST")
+                    if isNewHighScore {
+                        Text("YOUR NEW BEST")
                             .font(.body)
                             .fontWeight(.bold)
-                            .foregroundColor(BlockColors.purple)  // Use a different color
-
-                        Text("\(highScore)")
-                            .font(.body)
-                            .fontWeight(.bold)
-                            .foregroundColor(BlockColors.purple)  // Use a different color
+                            .foregroundColor(BlockColors.purple)
+                        
+                    } else {
+                        HStack {
+                            Text("BEST")
+                                .font(.body)
+                                .fontWeight(.bold)
+                                .foregroundColor(BlockColors.purple)  // Use a different color
+                            
+                            Text("\(highScore)")
+                                .font(.body)
+                                .fontWeight(.bold)
+                                .foregroundColor(BlockColors.purple)  // Use a different color
+                        }
                     }
                 }
                 
@@ -85,12 +115,26 @@ struct GameOverView: View {
 
 struct GameOverView_Previews: PreviewProvider {
     static var previews: some View {
-        GameOverView(
-            finalScore: 1250,
-            highScore: 2500,
-            onRestart: {},
-            onMainMenu: {}
+        Group {
+            // Regular game over preview
+            GameOverView(
+                finalScore: 1250,
+                highScore: 2500,
+                isNewHighScore: false,
+                onRestart: {},
+                onMainMenu: {}
+            )
+            .previewDisplayName("Regular Game Over")
             
-        )
+            // New high score preview
+            GameOverView(
+                finalScore: 2750,
+                highScore: 2750,
+                isNewHighScore: true,
+                onRestart: {},
+                onMainMenu: {}
+            )
+            .previewDisplayName("New High Score")
+        }
     }
 }

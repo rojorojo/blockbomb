@@ -38,6 +38,7 @@ struct ContentView: View {
                 GameOverView(
                     finalScore: gameController.finalScore,
                     highScore: gameController.highScore,
+                    isNewHighScore: gameController.isNewHighScore,
                     onRestart: {
                         gameController.restartGame()
                     },

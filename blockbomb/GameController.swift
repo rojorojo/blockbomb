@@ -8,6 +8,7 @@ class GameController: ObservableObject {
     @Published var isGameOver: Bool = false
     @Published var finalScore: Int = 0
     @Published var highScore: Int = 0
+    @Published var isNewHighScore: Bool = false
     
     // Rarity system configuration
     @Published var selectionMode: TetrominoShape.SelectionMode = .balancedWeighted
@@ -39,8 +40,12 @@ class GameController: ObservableObject {
             DispatchQueue.main.async {
                 self?.finalScore = finalScore
 
+                // Check if this is a new high score
+                let isNewHighScore = finalScore > (self?.highScore ?? 0)
+                self?.isNewHighScore = isNewHighScore
+                
                 // Update high score if needed before showing game over
-                if finalScore > self?.highScore ?? 0 {
+                if isNewHighScore {
                     self?.highScore = finalScore
                     UserDefaults.standard.set(finalScore, forKey: "highScore")
                 }
@@ -70,6 +75,7 @@ class GameController: ObservableObject {
     func restartGame() {
         withAnimation {
             isGameOver = false
+            isNewHighScore = false // Reset new high score flag
         }
         
         if let gameScene = gameScene {
