@@ -107,9 +107,9 @@ extension GameScene {
         
         if (rows > 0 && columns > 0) {
             // Combo colors - vibrant orange gradient
-            topColor = UIColor(red: 1.0, green: 0.8, blue: 0.4, alpha: 1.0) // Light orange
-            bottomColor = UIColor(red: 1.0, green: 0.4, blue: 0.0, alpha: 1.0) // Deep orange
-            strokeColor = SKColor(red: 0.8, green: 0.2, blue: 0.0, alpha: 1.0) // Dark orange stroke
+            topColor = UIColor(red: 1, green: 0.92, blue: 0.8, alpha: 1) // Light orange
+            bottomColor = UIColor(red: 0.56, green: 0.32, blue: 1, alpha: 1) // Deep orange
+            strokeColor = SKColor(red: 0.56, green: 0.32, blue: 1, alpha: 1) // Dark orange stroke
         } else if (rows > 0) {
             // Row clearing colors - vibrant green gradient
             topColor = UIColor(red: 0.8, green: 1.0, blue: 0.6, alpha: 1.0) // Light lime
