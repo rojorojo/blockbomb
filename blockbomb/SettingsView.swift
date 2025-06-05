@@ -18,7 +18,7 @@ struct SettingsView: View {
                     Text("Settings")
                     .font(.title)
                                         .fontWeight(.bold)
-                                        .foregroundColor(BlockColors.amber)
+                                        .foregroundColor(BlockColors.violet)
                                         .padding(.top, 40)
                
                 
@@ -35,7 +35,7 @@ struct SettingsView: View {
                             Spacer()
                             
                             Toggle("", isOn: $audioManager.isMuted)
-                                .toggleStyle(SwitchToggleStyle(tint: BlockColors.amber))
+                                .toggleStyle(SwitchToggleStyle(tint: BlockColors.violet))
                         }
                         
                     }
@@ -53,14 +53,14 @@ struct SettingsView: View {
                         
                         HStack {
                             Image(systemName: "speaker.fill")
-                                                            .foregroundColor(BlockColors.amber)
+                                                            .foregroundColor(BlockColors.violet)
                                                             .opacity(audioManager.isMuted ? 0.4 : 1)
                             Slider(value: $audioManager.masterVolume, in: 0...1)
-                                .accentColor(BlockColors.amber)
+                                .accentColor(BlockColors.violet)
                                 .disabled(audioManager.isMuted)
                             
                             Image(systemName: "speaker.wave.3.fill")
-                                                            .foregroundColor(BlockColors.amber)
+                                                            .foregroundColor(BlockColors.violet)
                                                             .opacity(audioManager.isMuted ? 0.4 : 1)
                         }
                         
@@ -80,14 +80,14 @@ struct SettingsView: View {
                         
                         HStack {
                             Image(systemName: "speaker.fill")
-                                                            .foregroundColor(BlockColors.amber)
+                                                            .foregroundColor(BlockColors.violet)
                                                             .opacity(audioManager.isMuted ? 0.4 : 1)
                             Slider(value: $audioManager.sfxVolume, in: 0...1)
-                                .accentColor(BlockColors.amber)
+                                .accentColor(BlockColors.violet)
                                 .disabled(audioManager.isMuted)
                             
                             Image(systemName: "speaker.wave.3.fill")
-                                                            .foregroundColor(BlockColors.amber)
+                                                            .foregroundColor(BlockColors.violet)
                                                             .opacity(audioManager.isMuted ? 0.4 : 1)
                         }
                         
@@ -104,7 +104,7 @@ struct SettingsView: View {
                         .font(.title2.bold())
                         .foregroundColor(Color(red: 0.13, green: 0.12, blue: 0.28))
                         .frame(width: 200, height: 50)
-                        .background(BlockColors.amber)
+                        .background(BlockColors.violet)
                         .clipShape(RoundedRectangle(cornerRadius: 12))
                 }
                 .padding(.bottom, 40)

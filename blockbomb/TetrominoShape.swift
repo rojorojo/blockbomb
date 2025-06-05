@@ -26,7 +26,7 @@ enum TetrominoShape: CaseIterable {
         var weight: Int {
             switch self {
             case .common: return 60
-            case .uncommon: return 25
+            case .uncommon: return 48
             case .rare: return 12
             case .epic: return 1
             }
@@ -62,23 +62,27 @@ enum TetrominoShape: CaseIterable {
             return .common
         case .cornerTopLeft, .cornerBottomLeft:
             return .common
-        case .sLeft, .sRight, .sTallLeft, .sTallRight:
+        case .sRight, .sTallLeft:
             return .common
-        case .elbowTopLeft, .elbowBottomLeft, .elbowTopRight, .elbowBottomRight:
-            return .common
-            
-        // Uncommon (25%) - Moderately useful, medium complexity
         case .rectWide, .rectTall, .stick4, .stick4Vert:
+            return .common
+        case .lShapeSitLeft, .lShapeStandLeft:
+            return .common
+
+
+        // Uncommon (48%) - Moderately useful, medium complexity
+        case .sLeft, .sTallRight:
             return .uncommon
-        case .lShapeSitRight, .lShapeReversed, .cornerTopRight, .cornerBottomRight, 
-             .lShapeSitLeft, .lShapeStandLeft:
+        case .stick5, .stick5Vert:
+            return .uncommon
+        case .lShapeSitRight, .lShapeReversed, .cornerTopRight, .cornerBottomRight:
             return .uncommon
         case .tShapeDown, .tShapeUp, .tShapeTallLeft, .tShapeTallRight:
             return .uncommon
-            
+          case .elbowTopLeft, .elbowBottomLeft, .elbowTopRight, .elbowBottomRight:
+            return .uncommon  
         // Rare (12%) - Powerful but bulky, high utility
-        case .stick5, .stick5Vert:
-            return .rare
+        
         case .lShapeLayingDown, .lShapeStandRight:
             return .rare
             
