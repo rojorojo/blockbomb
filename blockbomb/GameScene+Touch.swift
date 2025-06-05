@@ -162,8 +162,10 @@ extension GameScene {
                 
                 // Show more dramatic confirmation for line clears
                 if (linesCleared.rows > 0 || linesCleared.columns > 0) {
+                    let totalPoints = piecePoints + rowPoints + columnPoints + comboBonus
                     flashLinesClearedConfirmation(rows: linesCleared.rows, 
-                                                  columns: linesCleared.columns)
+                                                  columns: linesCleared.columns,
+                                                  totalPoints: totalPoints)
                 } else {
                     flashConfirmation()
                 }

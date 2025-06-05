@@ -68,7 +68,7 @@ extension GameScene {
     }
     
     // Visual feedback for clearing lines
-    func flashLinesClearedConfirmation(rows: Int, columns: Int) {
+    func flashLinesClearedConfirmation(rows: Int, columns: Int, totalPoints: Int) {
         // Use board center instead of piece placement position
         let boardCenter = calculateBoardCenter()
         
@@ -82,54 +82,80 @@ extension GameScene {
         addChild(messageNode)
         
         // Text showing what was cleared with enhanced styling using tetromino colors
-        var message = ""
-        var textColor = SKColor.cyan
-        var fontSize: CGFloat = 28
+        var mainMessage = ""
+        var mainFontSize: CGFloat = 36
         
         if (rows > 0 && columns > 0) {
-            message = "COMBO!\n\(rows) rows + \(columns) columns"
-            textColor = SKColor(BlockColors.orange) // L-Shape color for combo excitement
-            fontSize = 32
+            mainMessage = "COMBO!\n\(rows) rows + \(columns) columns"
+            mainFontSize = 32
         } else if (rows > 0) {
             let rowText = rows == 1 ? "row" : "rows"
-            message = "\(rows) \(rowText) cleared!"
-            textColor = SKColor(BlockColors.lime) // Bright green for row clearing achievements
+            mainMessage = "\(rows) \(rowText) cleared!"
         } else if (columns > 0) {
             let colText = columns == 1 ? "column" : "columns"
-            message = "\(columns) \(colText) cleared!"
-            textColor = SKColor(BlockColors.teal) // Stick color for linear clearing
+            mainMessage = "\(columns) \(colText) cleared!"
         }
         
-        // Create main text label with shadow effect
-        /*let shadowLabel = SKLabelNode(text: message)
-        shadowLabel.fontName = "AvenirNext-Heavy"
-        shadowLabel.fontSize = fontSize
-        shadowLabel.fontColor = SKColor.black.withAlphaComponent(0.5)
-        shadowLabel.numberOfLines = 3
-        shadowLabel.horizontalAlignmentMode = .center
-        shadowLabel.verticalAlignmentMode = .center
-        shadowLabel.position = CGPoint(x: 2, y: -2) // Shadow offset
-        messageNode.addChild(shadowLabel)*/
+        // Create main message label with gradient effect and stroke
+        let mainFontName = "AvenirNext-Heavy"
+        let mainPosition = CGPoint(x: 0, y: 15)
         
-        let label = SKLabelNode(text: message)
-        label.fontName = "AvenirNext-Heavy"
-        label.fontSize = fontSize
-        label.fontColor = textColor
-        label.numberOfLines = 3
-        label.horizontalAlignmentMode = .center
-        label.verticalAlignmentMode = .center
-        messageNode.addChild(label)
+        // Determine gradient colors based on message type
+        var topColor: UIColor
+        var bottomColor: UIColor
+        var strokeColor: SKColor
         
-        // Add glow effect to text
-        /*let glowLabel = SKLabelNode(text: message)
-        glowLabel.fontName = "AvenirNext-Heavy"
-        glowLabel.fontSize = fontSize + 2
-        glowLabel.fontColor = textColor.withAlphaComponent(0.3)
-        glowLabel.numberOfLines = 3
-        glowLabel.horizontalAlignmentMode = .center
-        glowLabel.verticalAlignmentMode = .center
-        glowLabel.zPosition = -1
-        messageNode.addChild(glowLabel)*/
+        if (rows > 0 && columns > 0) {
+            // Combo colors - vibrant orange gradient
+            topColor = UIColor(red: 1.0, green: 0.8, blue: 0.4, alpha: 1.0) // Light orange
+            bottomColor = UIColor(red: 1.0, green: 0.4, blue: 0.0, alpha: 1.0) // Deep orange
+            strokeColor = SKColor(red: 0.8, green: 0.2, blue: 0.0, alpha: 1.0) // Dark orange stroke
+        } else if (rows > 0) {
+            // Row clearing colors - vibrant green gradient
+            topColor = UIColor(red: 0.8, green: 1.0, blue: 0.6, alpha: 1.0) // Light lime
+            bottomColor = UIColor(red: 0.2, green: 0.8, blue: 0.0, alpha: 1.0) // Deep lime
+            strokeColor = SKColor(red: 0.1, green: 0.5, blue: 0.0, alpha: 1.0) // Dark green stroke
+        } else {
+            // Column clearing colors - vibrant teal gradient
+            topColor = UIColor(red: 0.6, green: 1.0, blue: 0.9, alpha: 1.0) // Light teal
+            bottomColor = UIColor(red: 0.0, green: 0.8, blue: 0.6, alpha: 1.0) // Deep teal
+            strokeColor = SKColor(red: 0.0, green: 0.4, blue: 0.3, alpha: 1.0) // Dark teal stroke
+        }
+        
+        // Create the styled message using the reusable function
+        let mainMessageNode = createStyledTextNode(
+            text: mainMessage,
+            fontName: mainFontName,
+            fontSize: mainFontSize,
+            position: mainPosition,
+            topColor: topColor,
+            bottomColor: bottomColor,
+            strokeColor: strokeColor
+        )
+        messageNode.addChild(mainMessageNode)
+        
+        // Create points label with gradient effect and stroke using reusable function
+        let pointsText = "+\(totalPoints)"
+        let pointsFontName = "AvenirNext-Heavy"
+        let pointsFontSize: CGFloat = mainFontSize + 8
+        let pointsPosition = CGPoint(x: 0, y: -25)
+        
+        // Points colors - cream to orange gradient
+        let pointsTopColor = UIColor(red: 1.0, green: 0.92, blue: 0.8, alpha: 1.0) // Light cream
+        let pointsBottomColor = UIColor(red: 0.99, green: 0.48, blue: 0.0, alpha: 1.0) // Darker orange
+        let pointsStrokeColor = SKColor(red: 1.0, green: 0.41, blue: 0.0, alpha: 1.0) // Orange stroke
+        
+        let pointsMessageNode = createStyledTextNode(
+            text: pointsText,
+            fontName: pointsFontName,
+            fontSize: pointsFontSize,
+            position: pointsPosition,
+            topColor: pointsTopColor,
+            bottomColor: pointsBottomColor,
+            strokeColor: pointsStrokeColor
+        )
+        messageNode.addChild(pointsMessageNode)
+     
         
         // Enhanced animations with bounce and sparkle effects
         messageNode.setScale(0.1) // Set initial scale
@@ -239,6 +265,87 @@ extension GameScene {
             sparkleAnimation.timingMode = .easeOut
             sparkle.run(sparkleAnimation)
         }
+    }
+    
+    // MARK: - Gradient Texture Creation
+    
+    /// Creates a reusable styled text node with gradient and stroke effects
+    private func createStyledTextNode(
+        text: String,
+        fontName: String,
+        fontSize: CGFloat,
+        position: CGPoint,
+        topColor: UIColor,
+        bottomColor: UIColor,
+        strokeColor: SKColor
+    ) -> SKNode {
+        let containerNode = SKNode()
+        
+        // Create base label for measurements and copying
+        let baseLabel = SKLabelNode(text: text)
+        baseLabel.fontName = fontName
+        baseLabel.fontSize = fontSize
+        baseLabel.verticalAlignmentMode = .center
+        baseLabel.horizontalAlignmentMode = .center
+        baseLabel.numberOfLines = 0 // Allow multi-line text
+        
+        // Stroke simulation with 8-offset copies
+        let strokeOffsets: [CGPoint] = [
+            CGPoint(x: -3, y: -3), CGPoint(x: 0, y: -3), CGPoint(x: 3, y: -3),
+            CGPoint(x: -3, y:  0),                       CGPoint(x: 3, y:  0),
+            CGPoint(x: -3, y:  3), CGPoint(x: 0, y:  3), CGPoint(x: 3, y:  3)
+        ]
+        
+        for offset in strokeOffsets {
+            let stroke = baseLabel.copy() as! SKLabelNode
+            stroke.fontColor = strokeColor
+            stroke.position = CGPoint(x: offset.x, y: offset.y)
+            stroke.zPosition = 0
+            containerNode.addChild(stroke)
+        }
+        
+        // Create gradient texture
+        let gradientTexture = makeGradientTexture(
+            size: CGSize(width: 400, height: 120),
+            topColor: topColor,
+            bottomColor: bottomColor
+        )
+        let gradientSprite = SKSpriteNode(texture: gradientTexture)
+        gradientSprite.position = .zero
+        
+        // Mask label for gradient
+        let maskLabel = baseLabel.copy() as! SKLabelNode
+        maskLabel.position = .zero
+        
+        // Crop node to apply gradient to text shape
+        let cropNode = SKCropNode()
+        cropNode.maskNode = maskLabel
+        cropNode.addChild(gradientSprite)
+        cropNode.position = .zero
+        cropNode.zPosition = 1
+        containerNode.addChild(cropNode)
+        
+        // Set the final position
+        containerNode.position = position
+        
+        return containerNode
+    }
+    
+    /// Creates a gradient texture with customizable colors
+    private func makeGradientTexture(size: CGSize, topColor: UIColor, bottomColor: UIColor) -> SKTexture {
+        let renderer = UIGraphicsImageRenderer(size: size)
+        let image = renderer.image { ctx in
+            let colors = [topColor.cgColor, bottomColor.cgColor]
+            let colorSpace = CGColorSpaceCreateDeviceRGB()
+            let gradient = CGGradient(colorsSpace: colorSpace, colors: colors as CFArray, locations: [0, 1])!
+            
+            // Draw gradient from top to bottom
+            ctx.cgContext.drawLinearGradient(gradient,
+                                             start: CGPoint(x: 0, y: size.height),
+                                             end: CGPoint(x: 0, y: 0),
+                                             options: [])
+        }
+        return SKTexture(image: image)
     }
     
     // MARK: - Game Over Visuals
