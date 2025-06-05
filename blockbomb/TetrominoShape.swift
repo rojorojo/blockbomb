@@ -8,12 +8,12 @@ enum TetrominoShape: CaseIterable {
     case rectWide, rectTall
     case stick3, stick4, stick5
     case stick3Vert, stick4Vert, stick5Vert
-    case lShapeSit, lShapeReversed, lShapeLayingDown, lShapeStand
+    case lShapeSitRight, lShapeSitLeft, lShapeReversed, lShapeLayingDown, lShapeStandRight, lShapeStandLeft
     case cornerTopLeft, cornerBottomLeft, cornerBottomRight, cornerTopRight
     case elbowTopLeft, elbowBottomLeft, elbowBottomRight, elbowTopRight
-    case tShapeDown, tShapeUp
+    case tShapeDown, tShapeUp, tShapeTallLeft, tShapeTallRight
     case cross, blockSingle
-    case sLeft, sRight
+    case sLeft, sRight, sTallLeft, sTallRight
     
     /// Rarity levels for pieces - rare pieces are more powerful
     enum Rarity: String, CaseIterable {
@@ -62,7 +62,7 @@ enum TetrominoShape: CaseIterable {
             return .common
         case .cornerTopLeft, .cornerBottomLeft:
             return .common
-        case .sLeft, .sRight:
+        case .sLeft, .sRight, .sTallLeft, .sTallRight:
             return .common
         case .elbowTopLeft, .elbowBottomLeft, .elbowTopRight, .elbowBottomRight:
             return .common
@@ -70,15 +70,16 @@ enum TetrominoShape: CaseIterable {
         // Uncommon (25%) - Moderately useful, medium complexity
         case .rectWide, .rectTall, .stick4, .stick4Vert:
             return .uncommon
-        case .lShapeSit, .lShapeReversed, .cornerTopRight, .cornerBottomRight:
+        case .lShapeSitRight, .lShapeReversed, .cornerTopRight, .cornerBottomRight, 
+             .lShapeSitLeft, .lShapeStandLeft:
             return .uncommon
-        case .tShapeDown, .tShapeUp:
+        case .tShapeDown, .tShapeUp, .tShapeTallLeft, .tShapeTallRight:
             return .uncommon
             
         // Rare (12%) - Powerful but bulky, high utility
         case .stick5, .stick5Vert:
             return .rare
-        case .lShapeLayingDown, .lShapeStand:
+        case .lShapeLayingDown, .lShapeStandRight:
             return .rare
             
         // Epic (3%) - Game-changing, very versatile
@@ -96,15 +97,15 @@ enum TetrominoShape: CaseIterable {
             return .rectangles
         case .stick3, .stick4, .stick5, .stick3Vert, .stick4Vert, .stick5Vert:
             return .sticks
-        case .lShapeSit, .lShapeReversed, .lShapeLayingDown, .lShapeStand:
+        case .lShapeSitRight, .lShapeReversed, .lShapeLayingDown, .lShapeStandRight, .lShapeSitLeft, .lShapeStandLeft:
             return .lShapes
         case .cornerTopLeft, .cornerBottomLeft, .cornerBottomRight, .cornerTopRight:
             return .corners
         case .elbowTopLeft, .elbowBottomLeft, .elbowBottomRight, .elbowTopRight:
             return .elbows 
-        case .tShapeDown, .tShapeUp:
+        case .tShapeDown, .tShapeUp, .tShapeTallLeft, .tShapeTallRight:
             return .tShapes
-        case .sLeft, .sRight:
+        case .sLeft, .sRight, .sTallLeft, .sTallRight:
             return .sShapes
         case .cross:
             return .special
@@ -125,16 +126,20 @@ enum TetrominoShape: CaseIterable {
         case .stick3Vert: return "3-Block Vertical Stick"
         case .stick4Vert: return "4-Block Vertical Stick"
         case .stick5Vert: return "5-Block Vertical Stick"
-        case .lShapeSit: return "L Shape"
+        case .lShapeSitRight: return "L Shape"
         case .lShapeReversed: return "Reversed L"
         case .lShapeLayingDown: return "Flat L"
-        case .lShapeStand: return "Standing L"
+        case .lShapeStandRight: return "Standing L"
+        case .lShapeSitLeft: return "L Shape Left"
+        case .lShapeStandLeft: return "Standing L Left"
         case .cornerTopLeft: return "Top-Left Corner"
         case .cornerBottomLeft: return "Bottom-Left Corner"
         case .cornerBottomRight: return "Bottom-Right Corner"
         case .cornerTopRight: return "Top-Right Corner"
         case .tShapeDown: return "T Shape Down"
         case .tShapeUp: return "T Shape Up"
+        case .tShapeTallLeft: return "T Shape Tall Left"
+        case .tShapeTallRight: return "T Shape Tall Right"
         case .cross: return "Cross"
         case .blockSingle: return "Single Block"
         case .elbowTopLeft: return "Elbow Top-Left Corner"
@@ -143,6 +148,8 @@ enum TetrominoShape: CaseIterable {
         case .elbowTopRight: return "Elbow Top-Right Corner"
         case .sLeft: return "S Shape Left"
         case .sRight: return "S Shape Right"
+        case .sTallLeft: return "S Shape Tall Left"
+        case .sTallRight: return "S Shape Tall Right"
         }
     }
     
@@ -380,6 +387,17 @@ enum TetrominoShape: CaseIterable {
                 GridCell(column: 1, row: 0), GridCell(column: 2, row: 0)
             ]
 
+        case .sTallLeft:  // Tall S shape left
+            return [
+                GridCell(column: 1, row: 0), GridCell(column: 0, row: 1),
+                GridCell(column: 1, row: 1), GridCell(column: 0, row: 2)
+            ]
+        case .sTallRight:  // Tall S shape right
+            return [
+                GridCell(column: 0, row: 0), GridCell(column: 0, row: 1),
+                GridCell(column: 1, row: 1), GridCell(column: 1, row: 2)
+            ]
+
         case .elbowTopLeft:  // Elbow top left corner
             return [
                 GridCell(column: 0, row: 0),
@@ -454,18 +472,30 @@ enum TetrominoShape: CaseIterable {
                 GridCell(column: 0, row: 2), GridCell(column: 1, row: 2)
             ]
         
-        case .lShapeSit:  // L shape
+        case .lShapeSitRight:  // L shape
             return [
                 GridCell(column: 0, row: 0), GridCell(column: 1, row: 0),
                 GridCell(column: 0, row: 1),
                 GridCell(column: 0, row: 2),
             ]
+        case .lShapeSitLeft:  // L shape left
+            return [
+                GridCell(column: 0, row: 0), GridCell(column: 1, row: 0),
+                GridCell(column: 1, row: 1),
+                GridCell(column: 1, row: 2),
+            ]
         
-        case .lShapeStand:  // Standing L shape
+        case .lShapeStandRight:  // Standing L shape
             return [
                 GridCell(column: 0, row: 0),
                 GridCell(column: 0, row: 1),
                 GridCell(column: 0, row: 2), GridCell(column: 1, row: 2)
+            ]
+        case .lShapeStandLeft:  // Standing L shape left
+            return [
+                GridCell(column: 1, row: 0),
+                GridCell(column: 1, row: 1),
+                GridCell(column: 1, row: 2), GridCell(column: 0, row: 2)
             ]
         
         case .squareSmall:  // 2x2 square
@@ -496,6 +526,18 @@ enum TetrominoShape: CaseIterable {
             return [
                 GridCell(column: 0, row: 0),GridCell(column: 1, row: 0),GridCell(column: 2, row: 0),
                 GridCell(column: 1, row: 1),
+            ]
+
+        case .tShapeTallLeft:  // T shape tall left
+            return [
+                GridCell(column: 1, row: 0), GridCell(column: 0, row: 1),
+                GridCell(column: 1, row: 2), GridCell(column: 1, row: 1)
+            ]
+
+        case .tShapeTallRight:  // T shape tall right
+            return [
+                GridCell(column: 0, row: 0), GridCell(column: 0, row: 1),
+                GridCell(column: 1, row: 1), GridCell(column: 0, row: 2)
             ]
             
         case .stick3:  // 3-block horizontal row
