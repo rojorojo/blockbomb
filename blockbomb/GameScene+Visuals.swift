@@ -14,6 +14,16 @@ extension GameScene {
         debugButton.position = CGPoint(x: frame.width - 80, y: gridBottom - 120)
         debugButton.name = "debugButton"
         addChild(debugButton)
+        
+        // Add debug button to reset heart count to 3
+        let resetHeartsButton = SKLabelNode(text: "Reset Hearts")
+        resetHeartsButton.fontName = "AvenirNext-Medium"
+        resetHeartsButton.fontSize = 16
+        resetHeartsButton.fontColor = .red
+        // Position it next to the "View All Shapes" button
+        resetHeartsButton.position = CGPoint(x: frame.width + 60, y: gridBottom - 120)
+        resetHeartsButton.name = "resetHeartsButton"
+        addChild(resetHeartsButton)
     }
     
     func addBoardBorder() {

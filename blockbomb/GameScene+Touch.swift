@@ -14,6 +14,23 @@ extension GameScene {
             return
         }
         
+        // Check if we touched the reset hearts debug button
+        if let touchedNode = nodes(at: location).first, touchedNode.name == "resetHeartsButton" {
+            // Reset heart count to 3 for testing purposes
+            #if DEBUG
+            ReviveHeartManager.shared.debugSetHearts(3)
+            print("Debug: Reset heart count to 3")
+            #endif
+            return
+        }
+        
+        // Check if we touched the reset hearts button
+        if let touchedNode = nodes(at: location).first, touchedNode.name == "resetHeartsButton" {
+            // Reset hearts to 3 for testing
+            ReviveHeartManager.shared.debugSetHearts(3)
+            return
+        }
+        
         // Look for a draggable node (either piece or container touch target)
         if let touchedNode = nodes(at: location).first(where: { $0.name == "draggable_piece" }) {
             
