@@ -18,17 +18,8 @@ class GameController: ObservableObject {
     // Internal reference to game scene
     private(set) var gameScene: GameScene?
     
-    // MARK: - Game State Preservation for Revive Hearts
-    private var savedGameState: SavedGameState?
-    
-    // MARK: - Saved Game State Structure
-    private struct SavedGameState {
-        let score: Int
-        let boardState: [[GridCell?]]  // Grid state before game over
-        let currentPieces: [TetrominoShape]  // Current pieces available
-        let selectionMode: TetrominoShape.SelectionMode
-        let timestamp: Date
-    }
+    // Game state manager for revive heart functionality
+    private var savedGameState: GameStateManager.GameState?
     
     // Init with default values
     init() {
@@ -99,6 +90,9 @@ class GameController: ObservableObject {
             isNewHighScore = false // Reset new high score flag
         }
         
+        // Clear any saved game state when starting fresh
+        clearSavedGameState()
+        
         if let gameScene = gameScene {
             gameScene.resetGame()
             score = 0 // Reset displayed score in SwiftUI
@@ -126,131 +120,96 @@ class GameController: ObservableObject {
             return
         }
         
-        // Capture current game state
-        savedGameState = SavedGameState(
-            score: score,
-            boardState: captureBoardState(from: gameScene),
-            currentPieces: getCurrentPieceShapes(from: gameScene),
-            selectionMode: selectionMode,
-            timestamp: Date()
-        )
+        // Use GameStateManager to capture current state
+        savedGameState = GameStateManager.captureGameState(from: self, gameScene: gameScene)
         
-        print("GameController: Game state saved for revive - Score: \(score)")
+        print("GameController: Game state saved for revive using GameStateManager - Score: \(score)")
     }
     
     /// Restore the previously saved game state
     /// Returns true if restoration was successful
     @discardableResult
     func restoreGameStateFromRevive() -> Bool {
-        guard let savedState = savedGameState,
-              let gameScene = gameScene else {
-            print("GameController: Cannot restore game state - no saved state or gameScene is nil")
+        guard let gameScene = gameScene,
+              let gameState = savedGameState else {
+            print("GameController: Cannot restore game state - gameScene is nil or no saved state")
             return false
         }
         
-        // Check if saved state is not too old (optional safety measure)
-        let timeElapsed = Date().timeIntervalSince(savedState.timestamp)
-        if timeElapsed > 300 { // 5 minutes max
-            print("GameController: Saved game state is too old, cannot restore")
-            savedGameState = nil
-            return false
-        }
+        // Use GameStateManager to restore the saved state
+        let success = GameStateManager.restoreGameState(gameState, to: self, gameScene: gameScene)
         
-        // Restore game state
-        withAnimation {
+        if success {
+            // Reset game over state
             isGameOver = false
-            isNewHighScore = false
+            
+            // Clear the saved state after successful restoration
+            savedGameState = nil
+            
+            print("GameController: Game state successfully restored using GameStateManager")
+        } else {
+            print("GameController: Failed to restore game state using GameStateManager")
         }
         
-        // Restore score
-        score = savedState.score
-        
-        // Restore board state
-        restoreBoardState(savedState.boardState, to: gameScene)
-        
-        // Restore pieces
-        restoreCurrentPieces(savedState.currentPieces, to: gameScene)
-        
-        // Restore selection mode
-        selectionMode = savedState.selectionMode
-        
-        print("GameController: Game state restored from revive - Score: \(score)")
-        
-        // Clear the saved state after successful restoration
-        savedGameState = nil
-        
-        return true
+        return success
     }
     
-    /// Check if there's a saved game state available for revival
+    /// Check if there's a saved game state available for revive
+    /// - Returns: True if a saved state exists and can be restored
     func hasSavedGameState() -> Bool {
-        return savedGameState != nil
+        return savedGameState != nil && savedGameState!.isValid
     }
     
-    /// Clear any saved game state (call when starting a new game normally)
+    /// Clear the saved game state (called after successful revive or when no longer needed)
     func clearSavedGameState() {
         savedGameState = nil
-        print("GameController: Saved game state cleared")
+        print("GameController: Cleared saved game state")
     }
     
-    // MARK: - Private Helper Methods for Game State Capture/Restore
+    // MARK: - Revive Heart Integration
     
-    private func captureBoardState(from gameScene: GameScene) -> [[GridCell?]] {
-        // Create a simplified representation of the game board
-        // This is a placeholder - we'll need to implement proper board state capture
-        // based on the actual GameBoard structure
-        var boardState: [[GridCell?]] = []
-        
-        // Initialize empty board state for now
-        // In a real implementation, we'd capture the actual filled cells from gameScene.gameBoard
-        for row in 0..<8 {
-            var rowState: [GridCell?] = []
-            for col in 0..<8 {
-                // TODO: Capture actual cell state from gameScene.gameBoard.grid[row][col]
-                // For now, storing nil (empty) - this needs to be connected to actual board state
-                rowState.append(nil)
-            }
-            boardState.append(rowState)
+    /// Attempt to revive the game by using a heart and restoring the saved game state
+    /// - Returns: True if revive was successful, false if no hearts available or restoration failed
+    func attemptRevive() -> Bool {
+        // Check if player has hearts available
+        guard ReviveHeartManager.shared.hasHearts() else {
+            print("GameController: Cannot revive - no hearts available")
+            return false
         }
         
-        print("GameController: Board state captured (placeholder implementation)")
-        return boardState
-    }
-    
-    private func getCurrentPieceShapes(from gameScene: GameScene) -> [TetrominoShape] {
-        // Capture the current pieces available to the player
-        var pieceShapes: [TetrominoShape] = []
-        
-        // Get shapes from current piece nodes
-        for pieceNode in gameScene.pieceNodes {
-            pieceShapes.append(pieceNode.gridPiece.shape)
+        // Check if we have a saved game state to restore
+        guard hasSavedGameState() else {
+            print("GameController: Cannot revive - no saved game state available")
+            return false
         }
         
-        print("GameController: Captured \(pieceShapes.count) piece shapes")
-        return pieceShapes
+        // Use a heart (this will decrement the count and save to UserDefaults)
+        guard ReviveHeartManager.shared.useHeart() else {
+            print("GameController: Failed to use heart for revive")
+            return false
+        }
+        
+        // Attempt to restore the game state
+        let restorationSuccess = restoreGameStateFromRevive()
+        
+        if restorationSuccess {
+            // Play revive success audio
+            AudioManager.shared.playNewHighScoreSound() // Using existing positive sound
+            AudioManager.shared.triggerHapticFeedback(for: .newHighScore)
+            
+            print("GameController: Revive successful! Hearts remaining: \(ReviveHeartManager.shared.getHeartCount())")
+            return true
+        } else {
+            // Restoration failed - we should give the heart back
+            ReviveHeartManager.shared.addHearts(count: 1)
+            print("GameController: Revive failed - game state restoration unsuccessful. Heart refunded.")
+            return false
+        }
     }
     
-    private func restoreBoardState(_ boardState: [[GridCell?]], to gameScene: GameScene) {
-        // Restore the board state to the game scene
-        // This is a placeholder - we'll need to implement proper board state restoration
-        
-        // Reset the board first
-        gameScene.gameBoard.resetBoard()
-        
-        // TODO: Restore actual filled cells to gameScene.gameBoard.grid
-        // This will require accessing the actual grid structure and placing blocks
-        
-        print("GameController: Board state restored (placeholder implementation)")
-    }
-    
-    private func restoreCurrentPieces(_ pieceShapes: [TetrominoShape], to gameScene: GameScene) {
-        // Restore the specific pieces that were available when game over occurred
-        // This requires modifying the piece setup to use specific shapes instead of random selection
-        
-        // For now, we'll use the normal piece setup
-        // TODO: Implement specific piece restoration in GameScene
-        gameScene.setupDraggablePieces()
-        
-        print("GameController: Pieces restored (placeholder implementation)")
+    /// Check if revive is possible (has hearts and saved state)
+    /// - Returns: True if revive can be attempted
+    func canRevive() -> Bool {
+        return ReviveHeartManager.shared.hasHearts() && hasSavedGameState()
     }
 }

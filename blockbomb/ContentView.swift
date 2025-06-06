@@ -33,6 +33,9 @@ struct ContentView: View {
                             
                     }
                     Spacer()
+                    
+                    // Hearts display
+                    HeartCountView()
                 }
                     
                     
@@ -64,6 +67,17 @@ struct ContentView: View {
                     onMainMenu: {
                         // For now, just restart
                         gameController.restartGame()
+                    },
+                    gameController: gameController,
+                    onRevive: {
+                        // Attempt to revive using hearts
+                        if gameController.attemptRevive() {
+                            // Revive successful - game continues
+                            print("Revive successful!")
+                        } else {
+                            // Revive failed - show error (could add alert here)
+                            print("Revive failed - insufficient hearts or no saved state")
+                        }
                     }
                 )
                 .transition(.opacity)
@@ -106,6 +120,37 @@ struct ScoreView: View {
                     .fontWeight(.bold)
                     .foregroundColor(BlockColors.purple)  // Use a different color
             }
+        }
+    }
+}
+
+// Heart count view component for revive hearts display
+struct HeartCountView: View {
+    @State private var heartCount: Int = ReviveHeartManager.shared.getHeartCount()
+    
+    var body: some View {
+        HStack(spacing: 4) {
+            Image(systemName: "heart.fill")
+                .foregroundColor(.red)
+                .font(.system(size: 16))
+            
+            Text("\(heartCount)")
+                .font(.system(size: 16, weight: .bold))
+                .foregroundColor(.white)
+        }
+        .padding(.horizontal, 8)
+        .padding(.vertical, 4)
+        .background(
+            RoundedRectangle(cornerRadius: 12)
+                .fill(Color.black.opacity(0.6))
+        )
+        .onReceive(NotificationCenter.default.publisher(for: .init("HeartCountChanged"))) { _ in
+            // Update heart count when it changes
+            heartCount = ReviveHeartManager.shared.getHeartCount()
+        }
+        .onAppear {
+            // Refresh heart count when view appears
+            heartCount = ReviveHeartManager.shared.getHeartCount()
         }
     }
 }

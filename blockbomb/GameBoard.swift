@@ -85,7 +85,7 @@ class GameBoard {
     let boardNode = SKNode()
     
     // Grid state
-    private var grid: [[SKShapeNode?]]
+    internal var grid: [[SKShapeNode?]]
     
     // Ghost piece visualization
     private var ghostBlocks: [SKShapeNode] = []

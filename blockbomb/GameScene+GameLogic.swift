@@ -58,6 +58,9 @@ extension GameScene {
     func handleGameOver() {
         isGameOver = true
         
+        // CRITICAL: Save game state BEFORE triggering game over for revive functionality
+        gameController?.saveGameStateForRevive()
+        
         // Stop all piece animations
         pieceNodes.forEach { $0.removeAllActions() }
         

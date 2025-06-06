@@ -7,9 +7,10 @@ struct GameOverView: View {
     let isNewHighScore: Bool
     let onRestart: () -> Void
     let onMainMenu: () -> Void
+    let gameController: GameController? // Add game controller for revive functionality
+    let onRevive: (() -> Void)? // Add revive callback
     
     @State private var isAnimating = false
-    @StateObject private var gameController = GameController()
     
     var body: some View {
         ZStack {
@@ -82,6 +83,33 @@ struct GameOverView: View {
                 
                 Spacer()
                 VStack(spacing: 15) {
+                    // Revive button - only show if hearts available and revive callback exists
+                    if let gameController = gameController,
+                       let onRevive = onRevive,
+                       gameController.canRevive() {
+                        Button(action: onRevive) {
+                            HStack {
+                                Image(systemName: "heart.fill")
+                                    .foregroundColor(.red)
+                                Text("REVIVE")
+                                    .font(.title2.bold())
+                                    .foregroundColor(.white)
+                                Text("(\(ReviveHeartManager.shared.getHeartCount()))")
+                                    .font(.title3)
+                                    .foregroundColor(.white.opacity(0.8))
+                            }
+                            .frame(width: 220, height: 50)
+                            .background(
+                                LinearGradient(
+                                    gradient: Gradient(colors: [Color.red, Color.red.opacity(0.8)]),
+                                    startPoint: .leading,
+                                    endPoint: .trailing
+                                )
+                            )
+                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                        }
+                    }
+                    
                     Button(action: onRestart) {
                         Text("Play Again")
                             .font(.title2.bold())
@@ -122,7 +150,9 @@ struct GameOverView_Previews: PreviewProvider {
                 highScore: 2500,
                 isNewHighScore: false,
                 onRestart: {},
-                onMainMenu: {}
+                onMainMenu: {},
+                gameController: nil,
+                onRevive: nil
             )
             .previewDisplayName("Regular Game Over")
             
@@ -132,7 +162,9 @@ struct GameOverView_Previews: PreviewProvider {
                 highScore: 2750,
                 isNewHighScore: true,
                 onRestart: {},
-                onMainMenu: {}
+                onMainMenu: {},
+                gameController: nil,
+                onRevive: nil
             )
             .previewDisplayName("New High Score")
         }
