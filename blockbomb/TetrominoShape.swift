@@ -15,20 +15,20 @@ enum TetrominoShape: CaseIterable {
     case cross, blockSingle
     case sLeft, sRight, sTallLeft, sTallRight
     
-    /// Rarity levels for pieces - rare pieces are more powerful
+    /// Rarity levels for pieces - reflects strategic value and versatility
     enum Rarity: String, CaseIterable {
-        case common = "Common"        // 60% - Basic building blocks
-        case uncommon = "Uncommon"    // 25% - Moderately useful
-        case rare = "Rare"           // 12% - Powerful but bulky
-        case epic = "Epic"           // 1% - Game-changing
+        case common = "Common"        // 50% - Basic building blocks, frequent use
+        case useful = "Useful"        // 30% - Solid utility pieces
+        case valuable = "Valuable"    // 15% - High strategic value
+        case premium = "Premium"      // 5% - Maximum versatility and game-changing potential
         
-        /// Weight for weighted random selection
+        /// Weight for weighted random selection - rebalanced for utility
         var weight: Int {
             switch self {
-            case .common: return 60
-            case .uncommon: return 48
-            case .rare: return 12
-            case .epic: return 1
+            case .common: return 50
+            case .useful: return 30
+            case .valuable: return 15
+            case .premium: return 5
             }
         }
     }
@@ -39,6 +39,17 @@ enum TetrominoShape: CaseIterable {
         case weightedRandom    // Pure weighted random selection
         case balancedWeighted  // Rarity-weighted selection (respects 1% Epic frequency)
         case categoryBalanced  // True category-balanced with weighted selection within categories
+        case adaptiveBalanced  // Adjusts selection based on board state and capacity
+        case strategicWeighted // Considers piece utility relative to current board layout
+    }
+    
+    /// Utility classification for strategic selection
+    enum Utility: String, CaseIterable {
+        case filler = "Filler"           // Small pieces for tight spaces
+        case lineMaker = "Line Maker"    // Good for completing rows/columns
+        case spaceFiller = "Space Filler" // Medium pieces for general use
+        case bulky = "Bulky"            // Large pieces, harder to place when board is full
+        case versatile = "Versatile"     // Single blocks and very flexible pieces
     }
     
     /// Categories for organizing shapes
@@ -54,41 +65,38 @@ enum TetrominoShape: CaseIterable {
         case special = "Special"
     }
     
-    /// Get the rarity of this shape based on power/utility
+    /// Get the rarity of this shape based on strategic value and versatility
     var rarity: Rarity {
         switch self {
-        // Common (60%) - Basic building blocks, small and simple
-        case  .squareSmall, .stick3, .stick3Vert, .squareBig:
+        // Common (50%) - Basic building blocks with frequent utility
+        case .squareSmall, .stick3, .stick3Vert:
             return .common
-        case .cornerTopLeft, .cornerBottomLeft:
+        case .cornerTopLeft, .cornerBottomLeft, .cornerTopRight, .cornerBottomRight:
             return .common
-        case .sRight, .sTallLeft:
+        case .rectWide, .rectTall:
             return .common
-        case .rectWide, .rectTall, .stick4, .stick4Vert:
-            return .common
-        case .lShapeSitLeft, .lShapeStandLeft:
+        case .sRight, .sLeft, .sTallLeft, .sTallRight:
             return .common
 
-
-        // Uncommon (48%) - Moderately useful, medium complexity
-        case .sLeft, .sTallRight:
-            return .uncommon
-        case .stick5, .stick5Vert:
-            return .uncommon
-        case .lShapeSitRight, .lShapeReversed, .cornerTopRight, .cornerBottomRight:
-            return .uncommon
+        // Useful (30%) - Solid strategic value, good utility
+        case .stick4, .stick4Vert, .squareBig:
+            return .useful
+        case .lShapeSitLeft, .lShapeSitRight, .lShapeStandLeft:
+            return .useful
         case .tShapeDown, .tShapeUp, .tShapeTallLeft, .tShapeTallRight:
-            return .uncommon
-          case .elbowTopLeft, .elbowBottomLeft, .elbowTopRight, .elbowBottomRight:
-            return .uncommon  
-        // Rare (12%) - Powerful but bulky, high utility
+            return .useful
+        case .elbowTopLeft, .elbowBottomLeft, .elbowTopRight, .elbowBottomRight:
+            return .useful
         
-        case .lShapeLayingDown, .lShapeStandRight:
-            return .rare
+        // Valuable (15%) - High strategic value, line-making potential
+        case .stick5, .stick5Vert:
+            return .valuable
+        case .lShapeReversed, .lShapeLayingDown, .lShapeStandRight:
+            return .valuable
             
-        // Epic (3%) - Game-changing, very versatile
+        // Premium (5%) - Maximum versatility and game-changing potential
         case .blockSingle, .cross:
-            return .epic
+            return .premium
         }
     }
     
@@ -199,6 +207,11 @@ enum TetrominoShape: CaseIterable {
     /// Get all shapes of a specific rarity
     static func shapes(with rarity: Rarity) -> [TetrominoShape] {
         return TetrominoShape.allCases.filter { $0.rarity == rarity }
+    }
+    
+    /// Get all shapes of a specific utility type
+    static func shapes(with utility: Utility) -> [TetrominoShape] {
+        return TetrominoShape.allCases.filter { $0.utility == utility }
     }
     
     /// Get a weighted random shape based on rarity
@@ -345,6 +358,10 @@ enum TetrominoShape: CaseIterable {
             return balancedWeightedSelection(count: count)
         case .categoryBalanced:
             return categoryBalancedSelection(count: count)
+        case .adaptiveBalanced:
+            return adaptiveBalancedSelection(count: count, gameBoard: gameBoard!)
+        case .strategicWeighted:
+            return strategicWeightedSelection(count: count, gameBoard: gameBoard!)
         }
     }
 
@@ -607,7 +624,7 @@ enum TetrominoShape: CaseIterable {
         }
     }
     
-    /// Get shapes sorted by size (smallest first) for rescue mode, preferring common pieces
+    /// Get shapes sorted by size (smaller first) for rescue mode, preferring common pieces
     static func shapesBySize() -> [TetrominoShape] {
         return allCases.sorted { shape1, shape2 in
             // First priority: size (smaller pieces first)
@@ -719,5 +736,319 @@ enum TetrominoShape: CaseIterable {
     /// Reset selection statistics
     static func resetSelectionStats() {
         selectionStats.removeAll()
+    }
+    
+    /// Get the utility classification for strategic selection
+    var utility: Utility {
+        switch self {
+        // Versatile - Single blocks and highly flexible pieces
+        case .blockSingle:
+            return .versatile
+        case .cross:
+            return .versatile
+            
+        // Filler - Small pieces for tight spaces
+        case .squareSmall, .stick3, .stick3Vert:
+            return .filler
+        case .cornerTopLeft, .cornerBottomLeft, .cornerTopRight, .cornerBottomRight:
+            return .filler
+            
+        // Line Maker - Good for completing rows/columns
+        case .stick4, .stick5, .stick4Vert, .stick5Vert:
+            return .lineMaker
+        case .rectWide, .rectTall:
+            return .lineMaker
+            
+        // Space Filler - Medium pieces for general use
+        case .lShapeSitRight, .lShapeSitLeft, .lShapeStandLeft:
+            return .spaceFiller
+        case .tShapeDown, .tShapeUp, .tShapeTallLeft, .tShapeTallRight:
+            return .spaceFiller
+        case .sLeft, .sRight, .sTallLeft, .sTallRight:
+            return .spaceFiller
+        case .elbowTopLeft, .elbowBottomLeft, .elbowTopRight, .elbowBottomRight:
+            return .spaceFiller
+            
+        // Bulky - Large pieces, harder to place when board is full
+        case .squareBig:
+            return .bulky
+        case .lShapeReversed, .lShapeLayingDown, .lShapeStandRight:
+            return .bulky
+        }
+    }
+    
+    // MARK: - Adaptive and Strategic Selection Methods
+    
+    /// Adaptive balanced selection that adjusts based on board state
+    static func adaptiveBalancedSelection(count: Int = 3, gameBoard: GameBoard) -> [TetrominoShape] {
+        let difficultyLevel = gameBoard.getDifficultyLevel()
+        let lineAnalysis = gameBoard.getLineCompletionOpportunities()
+        let spaceAnalysis = gameBoard.getSpacePatternAnalysis()
+        
+        var selectedShapes: [TetrominoShape] = []
+        
+        // Adjust selection strategy based on difficulty level
+        switch difficultyLevel {
+        case .comfortable:
+            // Normal category balanced selection with slight bias toward line makers
+            return categoryBalancedWithBias(count: count, preferredUtility: .lineMaker, biasStrength: 0.2)
+            
+        case .moderate:
+            // Start favoring smaller pieces and line makers
+            return utilityBiasedSelection(count: count, utilities: [.filler: 0.5, .lineMaker: 0.3, .spaceFiller: 0.2])
+            
+        case .challenging:
+            // Use weighted hybrid approach that considers both clearing and fragmentation
+            return hybridWeightedSelection(count: count, lineAnalysis: lineAnalysis, spaceAnalysis: spaceAnalysis, gameBoard: gameBoard)
+            
+        case .difficult:
+            // Heavy bias toward small, versatile pieces
+            return utilityBiasedSelection(count: count, utilities: [.filler: 0.5, .versatile: 0.4, .lineMaker: 0.1])
+            
+        case .critical:
+            // Emergency mode - guarantee at least one very small piece
+            var selection = utilityBiasedSelection(count: count - 1, utilities: [.filler: 0.6, .versatile: 0.4])
+            // Always include a single block or smallest piece available
+            let emergencyPieces = shapes(with: .premium).filter { $0.cells.count == 1 }
+            if let singleBlock = emergencyPieces.first, !selection.contains(singleBlock) {
+                selection.append(singleBlock)
+            } else {
+                // Fallback to smallest available piece
+                let smallestPieces = shapesBySize().prefix(3)
+                for piece in smallestPieces {
+                    if !selection.contains(piece) {
+                        selection.append(piece)
+                        break
+                    }
+                }
+            }
+            return selection
+        }
+    }
+    
+    /// Strategic weighted selection that considers board layout and clearing opportunities
+    static func strategicWeightedSelection(count: Int = 3, gameBoard: GameBoard) -> [TetrominoShape] {
+        let lineAnalysis = gameBoard.getLineCompletionOpportunities()
+        let spaceAnalysis = gameBoard.getSpacePatternAnalysis()
+        
+        // Use weighted hybrid approach for all strategic selections
+        return hybridWeightedSelection(count: count, lineAnalysis: lineAnalysis, spaceAnalysis: spaceAnalysis, gameBoard: gameBoard)
+    }
+    
+    // MARK: - Helper Selection Methods
+    
+    /// Select pieces based on utility distribution
+    static func utilityBiasedSelection(count: Int = 3, utilities: [Utility: Float]) -> [TetrominoShape] {
+        var selectedShapes: [TetrominoShape] = []
+        var attempts = 0
+        let maxAttempts = count * 15
+        
+        while selectedShapes.count < count && attempts < maxAttempts {
+            // Select utility based on distribution
+            let randomValue = Float.random(in: 0...1)
+            var cumulativeWeight: Float = 0
+            var selectedUtility: Utility = .spaceFiller
+            
+            for (utility, weight) in utilities {
+                cumulativeWeight += weight
+                if randomValue <= cumulativeWeight {
+                    selectedUtility = utility
+                    break
+                }
+            }
+            
+            // Get shapes with the selected utility
+            let shapesWithUtility = allCases.filter { $0.utility == selectedUtility }
+            if let shape = weightedRandomShapeFromArray(shapesWithUtility), !selectedShapes.contains(shape) {
+                selectedShapes.append(shape)
+            }
+            
+            attempts += 1
+        }
+        
+        // Fill remaining slots with any available shapes
+        if selectedShapes.count < count {
+            let remainingShapes = allCases.filter { !selectedShapes.contains($0) }.shuffled()
+            selectedShapes.append(contentsOf: remainingShapes.prefix(count - selectedShapes.count))
+        }
+        
+        return selectedShapes
+    }
+    
+    /// Category balanced selection with utility bias
+    static func categoryBalancedWithBias(count: Int = 3, preferredUtility: Utility, biasStrength: Float) -> [TetrominoShape] {
+        var selectedShapes: [TetrominoShape] = []
+        
+        for category in Category.allCases.shuffled() {
+            if selectedShapes.count >= count { break }
+            
+            let shapesInCategory = shapes(in: category)
+            let preferredShapes = shapesInCategory.filter { $0.utility == preferredUtility }
+            
+            // Apply bias toward preferred utility
+            let usePreferred = Float.random(in: 0...1) < biasStrength && !preferredShapes.isEmpty
+            let candidateShapes = usePreferred ? preferredShapes : shapesInCategory
+            
+            if let shape = weightedRandomShapeFromArray(candidateShapes), !selectedShapes.contains(shape) {
+                selectedShapes.append(shape)
+            }
+        }
+        
+        // Fill remaining slots
+        if selectedShapes.count < count {
+            let remainingShapes = allCases.filter { !selectedShapes.contains($0) }
+            let preferredRemaining = remainingShapes.filter { $0.utility == preferredUtility }
+            let candidates = !preferredRemaining.isEmpty ? preferredRemaining : remainingShapes
+            
+            selectedShapes.append(contentsOf: candidates.shuffled().prefix(count - selectedShapes.count))
+        }
+        
+        return selectedShapes
+    }
+    
+    /// Selection optimized for triggering line clearing opportunities
+    static func clearingOpportunitySelection(count: Int = 3, lineAnalysis: LineCompletionAnalysis, gameBoard: GameBoard) -> [TetrominoShape] {
+        var selectedShapes: [TetrominoShape] = []
+        
+        // Prioritize single blocks for single-gap rows/columns
+        if lineAnalysis.singleGapRows + lineAnalysis.singleGapColumns > 0 {
+            let singleBlocks = shapes(with: .premium).filter { $0.cells.count == 1 }
+            if let singleBlock = singleBlocks.first {
+                selectedShapes.append(singleBlock)
+            }
+        }
+        
+        // Add line-making pieces for near-completion opportunities
+        if lineAnalysis.totalNearCompletionLines >= 2 {
+            let lineMakers = allCases.filter { $0.utility == .lineMaker && !selectedShapes.contains($0) }
+            if let lineMaker = weightedRandomShapeFromArray(lineMakers) {
+                selectedShapes.append(lineMaker)
+            }
+        }
+        
+        // Fill remaining slots with strategic pieces
+        while selectedShapes.count < count {
+            let remainingShapes = allCases.filter { !selectedShapes.contains($0) }
+            let strategicShapes = remainingShapes.filter { shape in
+                shape.utility == .filler || shape.utility == .versatile || shape.utility == .lineMaker
+            }
+            
+            let candidates = !strategicShapes.isEmpty ? strategicShapes : remainingShapes
+            if let shape = weightedRandomShapeFromArray(candidates) {
+                selectedShapes.append(shape)
+            } else {
+                break
+            }
+        }
+        
+        return selectedShapes
+    }
+    
+    /// Hybrid weighted selection that handles both clearing opportunities and fragmentation
+    static func hybridWeightedSelection(count: Int = 3, lineAnalysis: LineCompletionAnalysis, spaceAnalysis: SpacePatternAnalysis, gameBoard: GameBoard) -> [TetrominoShape] {
+        var selectedShapes: [TetrominoShape] = []
+        
+        // Get strategic placement analysis for 4+ cell gaps
+        let strategicAnalysis = gameBoard.getStrategicPlacementAnalysis()
+        
+        // Calculate clearing opportunity weight (0.0 to 1.0)
+        let clearingWeight = calculateClearingWeight(from: lineAnalysis)
+        
+        // Calculate fragmentation weight (0.0 to 1.0) 
+        let fragmentationWeight = calculateFragmentationWeight(from: spaceAnalysis)
+        
+        // Calculate strategic placement weight (0.0 to 1.0)
+        let strategicWeight = calculateStrategicPlacementWeight(from: strategicAnalysis)
+        
+        // Determine selection strategy based on combined weights (adjusted to include strategic weight)
+        let clearingBias = clearingWeight * 0.5  // Clearing gets 50% influence
+        let fragmentationBias = fragmentationWeight * 0.3  // Fragmentation gets 30% influence
+        let strategicBias = strategicWeight * 0.2  // Strategic placement gets 20% influence
+        
+        // Create utility distribution based on board state
+        var utilityWeights: [Utility: Float] = [:]
+        
+        if clearingBias > 0.5 {
+            // Strong clearing opportunities - prioritize line makers and versatile pieces
+            utilityWeights = [
+                .lineMaker: 0.4 + clearingBias * 0.2,
+                .versatile: 0.3 + clearingBias * 0.1,
+                .filler: 0.2,
+                .spaceFiller: 0.1,
+                .bulky: 0.0
+            ]
+        } else if fragmentationBias > 0.5 {
+            // High fragmentation - prioritize small, flexible pieces
+            utilityWeights = [
+                .filler: 0.4 + fragmentationBias * 0.2,
+                .versatile: 0.3 + fragmentationBias * 0.1,
+                .spaceFiller: 0.2,
+                .lineMaker: 0.1,
+                .bulky: 0.0
+            ]
+        } else if strategicBias > 0.3 {
+            // Strong strategic opportunities - prioritize space fillers and versatile pieces
+            utilityWeights = [
+                .spaceFiller: 0.4 + strategicBias * 0.2,
+                .versatile: 0.25 + strategicBias * 0.1,
+                .lineMaker: 0.2,
+                .filler: 0.15,
+                .bulky: 0.0
+            ]
+        } else {
+            // Balanced approach - moderate weights for mixed situations
+            utilityWeights = [
+                .spaceFiller: 0.3,
+                .filler: 0.25,
+                .lineMaker: 0.25,
+                .versatile: 0.15,
+                .bulky: 0.05
+            ]
+        }
+        
+        // Normalize weights to ensure they sum to 1.0
+        let totalWeight = utilityWeights.values.reduce(0, +)
+        for utility in utilityWeights.keys {
+            utilityWeights[utility]! /= totalWeight
+        }
+        
+        // Select pieces based on calculated utility distribution
+        return utilityBiasedSelection(count: count, utilities: utilityWeights)
+    }
+    
+    /// Calculate clearing opportunity weight based on line analysis
+    private static func calculateClearingWeight(from lineAnalysis: LineCompletionAnalysis) -> Float {
+        let maxPossibleOpportunities: Float = 20.0 // Reasonable maximum for normalization
+        
+        let singleGapWeight = Float(lineAnalysis.singleGapRows + lineAnalysis.singleGapColumns) * 0.4
+        let nearCompletionWeight = Float(lineAnalysis.totalNearCompletionLines) * 0.3
+        let potentialClearWeight = Float(lineAnalysis.potentialMultiLineClear) * 0.3
+        
+        let totalWeight = singleGapWeight + nearCompletionWeight + potentialClearWeight
+        return min(totalWeight / maxPossibleOpportunities, 1.0)
+    }
+    
+    /// Calculate fragmentation weight based on space analysis
+    private static func calculateFragmentationWeight(from spaceAnalysis: SpacePatternAnalysis) -> Float {
+        let maxFragmentation: Float = 100.0 // Reasonable maximum for normalization
+        
+        let isolatedSpacesWeight = Float(spaceAnalysis.isolatedSpaces) * 0.4
+        let smallClustersWeight = Float(spaceAnalysis.smallClusters) * 0.3
+        let fragmentationScoreWeight = spaceAnalysis.fragmentationScore * 0.3
+        
+        let totalWeight = isolatedSpacesWeight + smallClustersWeight + fragmentationScoreWeight
+        return min(totalWeight / maxFragmentation, 1.0)
+    }
+    
+    /// Calculate strategic placement weight based on strategic analysis
+    private static func calculateStrategicPlacementWeight(from strategicAnalysis: StrategicPlacementAnalysis) -> Float {
+        let maxStrategicOpportunities: Float = 15.0 // Reasonable maximum for normalization
+        
+        let largeGapsWeight = Float(strategicAnalysis.totalLargeGaps) * 0.4
+        let placementOpportunitiesWeight = Float(strategicAnalysis.optimalPlacements.count) * 0.4
+        let averageGapSizeWeight = strategicAnalysis.averageGapSize * 0.2
+        
+        let totalWeight = largeGapsWeight + placementOpportunitiesWeight + averageGapSizeWeight
+        return min(totalWeight / maxStrategicOpportunities, 1.0)
     }
 }

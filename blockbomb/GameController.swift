@@ -11,7 +11,7 @@ class GameController: ObservableObject {
     @Published var isNewHighScore: Bool = false
     
     // Rarity system configuration
-    @Published var selectionMode: TetrominoShape.SelectionMode = .categoryBalanced
+    @Published var selectionMode: TetrominoShape.SelectionMode = .adaptiveBalanced
 
     // Internal reference to game scene
     private(set) var gameScene: GameScene?
