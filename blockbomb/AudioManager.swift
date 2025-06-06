@@ -264,6 +264,10 @@ class AudioManager: ObservableObject {
         playSound("invalid_placement", volume: 0.5)
     }
     
+    func playReviveSound() {
+        playSound("revive-heart", volume: 0.8)
+    }
+    
     // MARK: - Accessibility Support
     func triggerHapticFeedback(for event: GameAudioEvent) {
         guard UIDevice.current.userInterfaceIdiom == .phone else { return }
@@ -287,6 +291,9 @@ class AudioManager: ObservableObject {
         case .invalidPlacement:
             let impact = UIImpactFeedbackGenerator(style: .light)
             impact.impactOccurred(intensity: 0.5)
+        case .revive:
+            let notification = UINotificationFeedbackGenerator()
+            notification.notificationOccurred(.success)
         }
     }
 }
@@ -299,4 +306,5 @@ enum GameAudioEvent {
     case gameOver
     case newHighScore
     case invalidPlacement
+    case revive
 }

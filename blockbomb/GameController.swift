@@ -194,8 +194,8 @@ class GameController: ObservableObject {
         
         if restorationSuccess {
             // Play revive success audio
-            AudioManager.shared.playNewHighScoreSound() // Using existing positive sound
-            AudioManager.shared.triggerHapticFeedback(for: .newHighScore)
+            AudioManager.shared.playReviveSound()
+            AudioManager.shared.triggerHapticFeedback(for: .revive)
             
             print("GameController: Revive successful! Hearts remaining: \(ReviveHeartManager.shared.getHeartCount())")
             return true
