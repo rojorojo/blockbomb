@@ -11,6 +11,7 @@ struct GameOverView: View {
     let onRevive: (() -> Void)? // Add revive callback
     
     @State private var isAnimating = false
+    @ObservedObject private var reviveHeartManager = ReviveHeartManager.shared
     
     var body: some View {
         ZStack {
@@ -94,7 +95,7 @@ struct GameOverView: View {
                                 Text("REVIVE")
                                     .font(.title2.bold())
                                     .foregroundColor(.white)
-                                Text("(\(ReviveHeartManager.shared.getHeartCount()))")
+                                Text("(\(reviveHeartManager.heartCount))")
                                     .font(.title3)
                                     .foregroundColor(.white.opacity(0.8))
                             }

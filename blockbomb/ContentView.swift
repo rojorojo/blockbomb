@@ -143,7 +143,7 @@ struct ScoreView: View {
 
 // Heart count view component for revive hearts display
 struct HeartCountView: View {
-    @State private var heartCount: Int = ReviveHeartManager.shared.getHeartCount()
+    @ObservedObject private var reviveHeartManager = ReviveHeartManager.shared
     
     var body: some View {
         HStack(spacing: 4) {
@@ -151,7 +151,7 @@ struct HeartCountView: View {
                 .foregroundColor(.red)
                 .font(.system(size: 16))
             
-            Text("\(heartCount)")
+            Text("\(reviveHeartManager.heartCount)")
                 .font(.system(size: 16, weight: .bold))
                 .foregroundColor(.white)
         }
@@ -161,14 +161,6 @@ struct HeartCountView: View {
             RoundedRectangle(cornerRadius: 12)
                 .fill(Color.black.opacity(0.6))
         )
-        .onReceive(NotificationCenter.default.publisher(for: .init("HeartCountChanged"))) { _ in
-            // Update heart count when it changes
-            heartCount = ReviveHeartManager.shared.getHeartCount()
-        }
-        .onAppear {
-            // Refresh heart count when view appears
-            heartCount = ReviveHeartManager.shared.getHeartCount()
-        }
     }
 }
 

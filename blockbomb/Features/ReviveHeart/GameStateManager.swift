@@ -100,10 +100,11 @@ class GameStateManager {
         // Restore board state
         restoreBoardState(gameState.boardState, to: gameScene.gameBoard)
         
-        // Restore pieces
-        restorePieceShapes(gameState.currentPieces, to: gameScene)
+        // Instead of restoring old pieces, generate 3 NEW pieces for the player
+        // This gives the player fresh options to continue the game
+        gameScene.setupDraggablePieces()
         
-        print("GameStateManager: Successfully restored game state - Score: \(gameState.score)")
+        print("GameStateManager: Successfully restored game state - Score: \(gameState.score), Generated 3 new pieces")
         return true
     }
     

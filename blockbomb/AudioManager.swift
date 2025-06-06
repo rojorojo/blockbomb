@@ -81,7 +81,8 @@ class AudioManager: ObservableObject {
             "combo_large",
             "game_over",
             "new_high_score",
-            "invalid_placement"
+            "invalid_placement",
+            "revive-heart"
         ]
         
         for soundFile in soundFiles {
