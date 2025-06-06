@@ -5,6 +5,7 @@ struct ContentView: View {
     // Use a single source of truth with @StateObject
     @StateObject private var gameController = GameController()
     @State private var showSettings = false
+    @State private var showReviveAnimation = false
 
     var body: some View {
         ZStack {
@@ -70,18 +71,34 @@ struct ContentView: View {
                     },
                     gameController: gameController,
                     onRevive: {
-                        // Attempt to revive using hearts
-                        if gameController.attemptRevive() {
-                            // Revive successful - game continues
-                            print("Revive successful!")
-                        } else {
-                            // Revive failed - show error (could add alert here)
-                            print("Revive failed - insufficient hearts or no saved state")
+                        // Show revive animation first
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            showReviveAnimation = true
                         }
                     }
                 )
                 .transition(.opacity)
                 .zIndex(100)
+            }
+            
+            // Revive animation overlay
+            if showReviveAnimation {
+                ReviveAnimationView {
+                    // Animation completed, now attempt the actual revive
+                    let reviveSuccess = gameController.attemptRevive()
+                    
+                    // Hide animation
+                    withAnimation(.easeOut(duration: 0.3)) {
+                        showReviveAnimation = false
+                    }
+                    
+                    if !reviveSuccess {
+                        // Revive failed - could show error alert here
+                        print("Revive failed - insufficient hearts or restoration failed")
+                    }
+                }
+                .transition(.opacity)
+                .zIndex(200) // Above game over view
             }
         }
         .sheet(isPresented: $showSettings) {
