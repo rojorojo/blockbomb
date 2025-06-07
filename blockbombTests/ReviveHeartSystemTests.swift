@@ -383,8 +383,9 @@ struct ReviveHeartSystemTests {
         // Test the full integration with GameController
         let gameController = GameController()
         
-        // Simulate using a revive
-        gameController.postReviveRoundsRemaining = 4
+        // Initially should not be in post-revive mode
+        #expect(gameController.isInPostReviveMode() == false)
+        #expect(gameController.getPostRevivePiecesRemaining() == 0)
         
         // Generate pieces during post-revive period
         let gameBoard = GameBoard()

@@ -22,8 +22,8 @@ class GameController: ObservableObject, PostReviveTracker {
     private var savedGameState: GameStateManager.GameState?
     
     // Post-revive block prioritization tracking
-    private var postReviveRoundsRemaining: Int = 0
-    private let postRevivePriorityRounds: Int = 4
+    private var postRevivePiecesRemaining: Int = 0
+    private let postRevivePriorityPieces: Int = 18
     
     // Init with default values
     init() {
@@ -178,22 +178,24 @@ class GameController: ObservableObject, PostReviveTracker {
     /// Check if we're currently in post-revive priority mode
     /// - Returns: True if we should prioritize placeable blocks
     func isInPostReviveMode() -> Bool {
-        return postReviveRoundsRemaining > 0
+        return postRevivePiecesRemaining > 0
     }
     
-    /// Get the number of priority rounds remaining after revive
-    /// - Returns: Number of rounds remaining with prioritized blocks
-    func getPostReviveRoundsRemaining() -> Int {
-        return postReviveRoundsRemaining
+    /// Get the number of priority pieces remaining after revive
+    /// - Returns: Number of pieces remaining with prioritized blocks
+    func getPostRevivePiecesRemaining() -> Int {
+        return postRevivePiecesRemaining
     }
     
     /// Called when a new set of pieces is generated to decrement post-revive counter
     func onPiecesGenerated() {
-        if postReviveRoundsRemaining > 0 {
-            postReviveRoundsRemaining -= 1
-            print("GameController: Post-revive round completed. Rounds remaining: \(postReviveRoundsRemaining)")
+        if postRevivePiecesRemaining > 0 {
+            // Decrement by 3 since we just generated 3 pieces
+            let piecesToDecrement = min(3, postRevivePiecesRemaining)
+            postRevivePiecesRemaining -= piecesToDecrement
+            print("GameController: Post-revive pieces generated. \(piecesToDecrement) pieces counted. Pieces remaining: \(postRevivePiecesRemaining)")
             
-            if postReviveRoundsRemaining == 0 {
+            if postRevivePiecesRemaining == 0 {
                 print("GameController: Post-revive priority mode ended")
             }
         }
@@ -201,13 +203,13 @@ class GameController: ObservableObject, PostReviveTracker {
     
     /// Start post-revive priority mode (called after successful revive)
     private func startPostRevivePriorityMode() {
-        postReviveRoundsRemaining = postRevivePriorityRounds
-        print("GameController: Started post-revive priority mode for \(postRevivePriorityRounds) rounds")
+        postRevivePiecesRemaining = postRevivePriorityPieces
+        print("GameController: Started post-revive priority mode for \(postRevivePriorityPieces) pieces")
     }
     
     /// Reset post-revive tracking (called on new game)
     func resetPostReviveTracking() {
-        postReviveRoundsRemaining = 0
+        postRevivePiecesRemaining = 0
         print("GameController: Reset post-revive tracking")
     }
     

@@ -5,7 +5,7 @@ import SwiftUI
 // Protocol to avoid circular imports with GameController
 protocol PostReviveTracker {
     func isInPostReviveMode() -> Bool
-    func getPostReviveRoundsRemaining() -> Int
+    func getPostRevivePiecesRemaining() -> Int
     func onPiecesGenerated()
 }
 
@@ -352,7 +352,7 @@ enum TetrominoShape: CaseIterable {
     static func selection(count: Int = 3, mode: SelectionMode, gameBoard: GameBoard? = nil, gameController: PostReviveTracker? = nil) -> [TetrominoShape] {
         // Check if we should use post-revive priority mode
         if let controller = gameController, controller.isInPostReviveMode(), let board = gameBoard {
-            print("TetrominoShape: Using post-revive priority selection (rounds remaining: \(controller.getPostReviveRoundsRemaining()))")
+            print("TetrominoShape: Using post-revive priority selection (pieces remaining: \(controller.getPostRevivePiecesRemaining()))")
             return postRevivePrioritySelection(count: count, gameBoard: board)
         }
         
