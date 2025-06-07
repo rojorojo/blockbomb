@@ -2,6 +2,13 @@ import Foundation
 import SpriteKit
 import SwiftUI
 
+// Protocol to avoid circular imports with GameController
+protocol PostReviveTracker {
+    func isInPostReviveMode() -> Bool
+    func getPostReviveRoundsRemaining() -> Int
+    func onPiecesGenerated()
+}
+
 // Update the enum definition to add needed conformance
 enum TetrominoShape: CaseIterable {
     case squareSmall, squareBig
@@ -342,7 +349,13 @@ enum TetrominoShape: CaseIterable {
     }
     
     /// Get a selection of shapes based on the specified mode and board state
-    static func selection(count: Int = 3, mode: SelectionMode, gameBoard: GameBoard? = nil) -> [TetrominoShape] {
+    static func selection(count: Int = 3, mode: SelectionMode, gameBoard: GameBoard? = nil, gameController: PostReviveTracker? = nil) -> [TetrominoShape] {
+        // Check if we should use post-revive priority mode
+        if let controller = gameController, controller.isInPostReviveMode(), let board = gameBoard {
+            print("TetrominoShape: Using post-revive priority selection (rounds remaining: \(controller.getPostReviveRoundsRemaining()))")
+            return postRevivePrioritySelection(count: count, gameBoard: board)
+        }
+        
         // Check if we should use rescue mode
         if let board = gameBoard, board.isInRescueMode() {
             return rescueModeSelection(count: count, gameBoard: board)
@@ -694,6 +707,115 @@ enum TetrominoShape: CaseIterable {
         }
         
         return rescueSelection
+    }
+    
+    /// Get a post-revive priority selection that ensures ALL pieces are placeable
+    /// This method guarantees players get 3 fully placeable pieces in the 4 rounds after revival
+    static func postRevivePrioritySelection(count: Int = 3, gameBoard: GameBoard) -> [TetrominoShape] {
+        print("TetrominoShape: Generating post-revive priority selection (all \(count) pieces must be placeable)")
+        
+        var prioritySelection: [TetrominoShape] = []
+        var attempts = 0
+        let maxAttempts = 50
+        
+        // Define priority order: most placeable pieces first
+        let candidatePieces = [
+            // Premium versatile pieces (almost always placeable)
+            shapes(with: .premium).filter { $0.utility == .versatile },
+            // Common filler pieces (small and flexible)
+            shapes(with: .common).filter { $0.utility == .filler },
+            // Useful line makers (medium priority)
+            shapes(with: .useful).filter { $0.utility == .lineMaker },
+            // Other useful pieces
+            shapes(with: .useful).filter { $0.utility == .spaceFiller },
+            // Fallback to any common pieces
+            shapes(with: .common)
+        ].flatMap { $0 }
+        
+        // Sort candidates by size (smaller pieces first for better placement odds)
+        let sortedCandidates = candidatePieces.sorted { shape1, shape2 in
+            if shape1.cells.count != shape2.cells.count {
+                return shape1.cells.count < shape2.cells.count
+            }
+            // If same size, prefer versatile > filler > lineMaker > spaceFiller > bulky
+            let utilityOrder: [Utility] = [.versatile, .filler, .lineMaker, .spaceFiller, .bulky]
+            let index1 = utilityOrder.firstIndex(of: shape1.utility) ?? utilityOrder.count
+            let index2 = utilityOrder.firstIndex(of: shape2.utility) ?? utilityOrder.count
+            return index1 < index2
+        }
+        
+        // Aggressively search for 3 guaranteed placeable pieces
+        while prioritySelection.count < count && attempts < maxAttempts {
+            attempts += 1
+            
+            for candidate in sortedCandidates {
+                if prioritySelection.contains(candidate) {
+                    continue
+                }
+                
+                let gridPiece = GridPiece(shape: candidate, color: candidate.color)
+                if gameBoard.canPlacePieceAnywhere(gridPiece) {
+                    prioritySelection.append(candidate)
+                    print("TetrominoShape: Post-revive added placeable piece \(prioritySelection.count)/\(count): \(candidate.displayName) (\(candidate.cells.count) cells, \(candidate.utility.rawValue))")
+                    
+                    if prioritySelection.count >= count {
+                        break
+                    }
+                }
+            }
+            
+            // If we still don't have enough pieces, this means the board is extremely constrained
+            if prioritySelection.count < count {
+                print("TetrominoShape: Post-revive attempt \(attempts): Only found \(prioritySelection.count)/\(count) placeable pieces")
+                
+                // Try adding from rescue mode as last resort, but verify placeability
+                let rescueShapes = rescueModeSelection(count: count - prioritySelection.count, gameBoard: gameBoard)
+                for rescueShape in rescueShapes {
+                    if prioritySelection.contains(rescueShape) {
+                        continue
+                    }
+                    
+                    let gridPiece = GridPiece(shape: rescueShape, color: rescueShape.color)
+                    if gameBoard.canPlacePieceAnywhere(gridPiece) {
+                        prioritySelection.append(rescueShape)
+                        print("TetrominoShape: Post-revive added rescue piece \(prioritySelection.count)/\(count): \(rescueShape.displayName)")
+                        
+                        if prioritySelection.count >= count {
+                            break
+                        }
+                    }
+                }
+            }
+        }
+        
+        // Final validation: ensure all selected pieces are actually placeable
+        let finalSelection = prioritySelection.filter { shape in
+            let gridPiece = GridPiece(shape: shape, color: shape.color)
+            return gameBoard.canPlacePieceAnywhere(gridPiece)
+        }
+        
+        if finalSelection.count < count {
+            print("TetrominoShape: WARNING - Post-revive could only guarantee \(finalSelection.count)/\(count) placeable pieces after \(attempts) attempts")
+            print("TetrominoShape: This indicates an extremely constrained board state")
+            
+            // If we still can't get enough placeable pieces, pad with smallest available pieces
+            let allShapes = TetrominoShape.allCases.sorted { $0.cells.count < $1.cells.count }
+            var paddedSelection = finalSelection
+            
+            for shape in allShapes {
+                if paddedSelection.count >= count {
+                    break
+                }
+                if !paddedSelection.contains(shape) {
+                    paddedSelection.append(shape)
+                }
+            }
+            
+            return Array(paddedSelection.prefix(count))
+        }
+        
+        print("TetrominoShape: Post-revive SUCCESS - All \(finalSelection.count) pieces guaranteed placeable: \(finalSelection.map { $0.displayName })")
+        return Array(finalSelection.prefix(count))
     }
     
     // MARK: - Debug and Statistics

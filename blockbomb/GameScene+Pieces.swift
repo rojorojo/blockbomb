@@ -15,7 +15,10 @@ extension GameScene {
         // Get selection using the new weighted rarity system
         // Default to balancedWeighted if gameController is not available
         let selectionMode = gameController?.selectionMode ?? .balancedWeighted
-        let selectedShapes = TetrominoShape.selection(count: 3, mode: selectionMode, gameBoard: gameBoard)
+        let selectedShapes = TetrominoShape.selection(count: 3, mode: selectionMode, gameBoard: gameBoard, gameController: gameController)
+        
+        // Notify game controller that pieces were generated (for post-revive tracking)
+        gameController?.onPiecesGenerated()
         
         // Log selection for debugging (only in debug builds)
         #if DEBUG

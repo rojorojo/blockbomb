@@ -24,6 +24,8 @@ struct BlockColors {
     static let fuchsia = Color(red: 0.851, green: 0.275, blue: 0.937)
     static let pink = Color(red: 0.925, green: 0.282, blue: 0.600)
     static let rose = Color(red: 0.957, green: 0.247, blue: 0.369)
+    
+    static let bg = Color(red: 0.02, green: 0, blue: 0.22)
 
 static func randomBlockColor() -> Color {
         let blockColors: [Color] = [

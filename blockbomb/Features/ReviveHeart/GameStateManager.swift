@@ -104,7 +104,17 @@ class GameStateManager {
         // This gives the player fresh options to continue the game
         gameScene.setupDraggablePieces()
         
-        print("GameStateManager: Successfully restored game state - Score: \(gameState.score), Generated 3 new pieces")
+        // CRITICAL: Reset the game over flag so the game can continue
+        gameScene.isGameOver = false
+        
+        // CRITICAL: Check for game over immediately after revive restoration
+        // This ensures that if the board is still in an impossible state (even with new pieces),
+        // game over will be triggered correctly
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            gameScene.checkForGameOver()
+        }
+        
+        print("GameStateManager: Successfully restored game state - Score: \(gameState.score), Generated 3 new pieces, reset game over flag, queued game over check")
         return true
     }
     
@@ -269,7 +279,7 @@ extension GameScene {
         
         // Use the provided shapes instead of random selection
         let selectedShapes = shapes.isEmpty ? 
-            TetrominoShape.selection(count: 3, mode: gameController?.selectionMode ?? .balancedWeighted, gameBoard: gameBoard) :
+            TetrominoShape.selection(count: 3, mode: gameController?.selectionMode ?? .balancedWeighted, gameBoard: gameBoard, gameController: gameController) :
             Array(shapes.prefix(3)) // Take up to 3 shapes
         
         // Calculate position below the grid

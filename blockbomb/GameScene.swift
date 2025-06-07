@@ -55,7 +55,7 @@ class GameScene: SKScene {
             columns: gameBoard.columns,
             rows: gameBoard.rows,
             blockSize: gameBoard.blockSize,
-            verticalOffset: 20
+            verticalOffset: 0
         )
         addChild(gameBoard.boardNode)
         

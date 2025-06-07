@@ -5,25 +5,8 @@ extension GameScene {
     // MARK: - UI Setup
     
     func addDebugButton(safeAreaInsets: UIEdgeInsets) {
-        let debugButton = SKLabelNode(text: "View All Shapes")
-        debugButton.fontName = "AvenirNext-Medium"
-        debugButton.fontSize = 16
-        debugButton.fontColor = .white
-        // Position the button below the pieces
-        let gridBottom = gameBoard.boardNode.position.y - (CGFloat(gameBoard.rows) * gameBoard.blockSize / 2)
-        debugButton.position = CGPoint(x: frame.width - 80, y: gridBottom - 120)
-        debugButton.name = "debugButton"
-        addChild(debugButton)
-        
-        // Add debug button to reset heart count to 3
-        let resetHeartsButton = SKLabelNode(text: "Reset Hearts")
-        resetHeartsButton.fontName = "AvenirNext-Medium"
-        resetHeartsButton.fontSize = 16
-        resetHeartsButton.fontColor = .red
-        // Position it next to the "View All Shapes" button
-        resetHeartsButton.position = CGPoint(x: frame.width + 60, y: gridBottom - 120)
-        resetHeartsButton.name = "resetHeartsButton"
-        addChild(resetHeartsButton)
+        // Debug buttons removed - now using SwiftUI DebugPanelView
+        // This method kept for compatibility but no longer adds any buttons
     }
     
     func addBoardBorder() {

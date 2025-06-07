@@ -90,34 +90,31 @@ struct GameOverView: View {
                        gameController.canRevive() {
                         Button(action: onRevive) {
                             HStack {
+                                
+                                
                                 Image(systemName: "heart.fill")
-                                    .foregroundColor(.red)
-                                Text("REVIVE")
-                                    .font(.title2.bold())
-                                    .foregroundColor(.white)
-                                Text("(\(reviveHeartManager.heartCount))")
+                                    .foregroundColor(BlockColors.red)
+                                Image(systemName: "xmark")
+                                    .foregroundColor(BlockColors.red)
+                                Text("\(reviveHeartManager.heartCount)")
                                     .font(.title3)
-                                    .foregroundColor(.white.opacity(0.8))
+                                    .foregroundColor(BlockColors.red)
                             }
                             .frame(width: 220, height: 50)
-                            .background(
-                                LinearGradient(
-                                    gradient: Gradient(colors: [Color.red, Color.red.opacity(0.8)]),
-                                    startPoint: .leading,
-                                    endPoint: .trailing
-                                )
+                            .overlay(
+                                RoundedRectangle(cornerRadius: 8)
+                                    .stroke(BlockColors.purple, lineWidth: 3)
                             )
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
                         }
                     }
                     
                     Button(action: onRestart) {
                         Text("Play Again")
                             .font(.title2.bold())
-                            .foregroundColor(.white)
+                            .foregroundColor(BlockColors.bg)
                             .frame(width: 220, height: 50)
-                            .background(Color.blue)
-                            .clipShape(RoundedRectangle(cornerRadius: 10))
+                            .background(BlockColors.purple)
+                            .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
                     Spacer()
                     /*Button(action: onMainMenu) {

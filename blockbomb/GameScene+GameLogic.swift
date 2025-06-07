@@ -17,26 +17,57 @@ extension GameScene {
     
     /// Check if any of the current pieces can be placed on the board
     func checkForGameOver() {
-        guard !isGameOver && !pieceNodes.isEmpty else { return }
+        guard !isGameOver && !pieceNodes.isEmpty else { 
+            if isGameOver {
+                print("DEBUG: Skipping game over check - already game over")
+            } else if pieceNodes.isEmpty {
+                print("DEBUG: Skipping game over check - no pieces available")
+            }
+            return 
+        }
         
-        // Debug logging
-        print("Checking for game over with \(pieceNodes.count) pieces")
+        // Debug logging - add indicator if this is happening after revive
+        let gameController = self.gameController
+        let isAfterRevive = gameController?.score ?? 0 > 0 && gameBoard.getBoardCapacity() > 0.7
+        let reviveIndicator = isAfterRevive ? " [POST-REVIVE CHECK]" : ""
+        
+        print("DEBUG: Starting game over check with \(pieceNodes.count) pieces\(reviveIndicator)")
+        print("DEBUG: Current board capacity: \(String(format: "%.1f", gameBoard.getBoardCapacity() * 100))%")
+        
+        // Print visual board state
+        gameBoard.debugPrintBoardState()
+        
+        // Log the current piece shapes
+        let pieceShapeNames = pieceNodes.map { $0.gridPiece.shape.displayName }
+        print("DEBUG: Current pieces: \(pieceShapeNames)")
         
         var canPlaceAnyPiece = false
+        var detailedResults: [String] = []
+        
         // Check if any piece can be placed anywhere (no rotations allowed)
-        for piece in pieceNodes {
-            if gameBoard.canPlacePieceAnywhere(piece.gridPiece) {
+        for (index, piece) in pieceNodes.enumerated() {
+            let canPlace = gameBoard.canPlacePieceAnywhere(piece.gridPiece)
+            detailedResults.append("\(piece.gridPiece.shape.displayName): \(canPlace ? "CAN" : "CANNOT") place")
+            
+            if canPlace {
                 canPlaceAnyPiece = true
-                print("Piece \(piece.gridPiece.shape) can be placed")
-                break // At least one piece can be placed, game continues
-            } else {
-                print("Piece \(piece.gridPiece.shape) cannot be placed anywhere")
+                // Don't break immediately - let's see all results for debugging
             }
         }
         
+        print("DEBUG: Piece placement results:")
+        detailedResults.forEach { print("  - \($0)") }
+        
         if !canPlaceAnyPiece {
-            print("GAME OVER: No pieces can be placed")
+            print("DEBUG: GAME OVER TRIGGERED: No pieces can be placed")
+            
+            // Additional debug: check if board is actually full or nearly full
+            let filledCells = Int(gameBoard.getBoardCapacity() * 64) // 8x8 = 64 cells
+            print("DEBUG: Board has \(filledCells)/64 cells filled")
+            
             handleGameOver()
+        } else {
+            print("DEBUG: Game continues - at least one piece can be placed")
         }
     }
     

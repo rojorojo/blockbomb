@@ -14,20 +14,10 @@ extension GameScene {
             return
         }
         
-        // Check if we touched the reset hearts debug button
-        if let touchedNode = nodes(at: location).first, touchedNode.name == "resetHeartsButton" {
-            // Reset heart count to 3 for testing purposes
-            #if DEBUG
-            ReviveHeartManager.shared.debugSetHearts(3)
-            print("Debug: Reset heart count to 3")
-            #endif
-            return
-        }
-        
-        // Check if we touched the reset hearts button
-        if let touchedNode = nodes(at: location).first, touchedNode.name == "resetHeartsButton" {
-            // Reset hearts to 3 for testing
-            ReviveHeartManager.shared.debugSetHearts(3)
+        // Debug button touch handling removed - now using SwiftUI DebugPanelView
+        // Only keep essential shape gallery handler for compatibility
+        if let touchedNode = nodes(at: location).first, touchedNode.name == "debugButton" {
+            presentSwiftUIShapeGallery()
             return
         }
         
