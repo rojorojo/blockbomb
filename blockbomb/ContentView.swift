@@ -51,6 +51,9 @@ struct ContentView: View {
                     
                     Spacer()
                     
+                    // Currency display positioned opposite the settings button
+                    CurrencyCountView()
+                    
                 }
                 .padding(.top, -10) // Reduce padding if needed
                     .padding(.horizontal)
@@ -230,6 +233,61 @@ struct ContentView: View {
                     // Simulate real-time high score crossing
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         gameController.debugSimulateHighScoreCrossing()
+                    }
+                },
+                onResetPoints: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Reset currency points to 0 for testing
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        PowerupCurrencyManager.shared.debugSetPoints(0)
+                    }
+                },
+                onAddTestPoints: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Add 100 test points for purchase testing
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        PowerupCurrencyManager.shared.debugAddPoints(100)
+                    }
+                },
+                onSimulateAds: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Simulate watching 5 ads (50 points total)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        PowerupCurrencyManager.shared.debugSimulateAds(5)
+                    }
+                },
+                onTestReviveHeartPurchase: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Test purchasing a revive heart
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        let result = PowerupShopManager.shared.purchasePowerup(.reviveHeart)
+                        print("Debug purchase result: \(result)")
+                    }
+                },
+                onMakeAllPowerupsAvailable: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Make all powerups available for testing
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        PowerupShopManager.shared.debugMakeAllAvailable()
+                    }
+                },
+                onResetShopPrices: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Reset all shop prices to defaults
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        PowerupShopManager.shared.debugResetPrices()
                     }
                 }
             )
