@@ -1,0 +1,22 @@
+{
+  "activityEntities" : [
+
+  ],
+  "createdDate" : "2025-06-10T03:16:29Z",
+  "dataPathRelativeToProjectURL" : "../Repaired_ML_Dataset_Preview.csv/",
+  "dataResult" : {
+    "createdDate" : "2025-06-10T03:16:29Z",
+    "dataSourceID" : "337D3C67-07DF-432C-89EA-4FE01BDB9788",
+    "dataURL" : "file:///Users/robertjohnson/CodeAppsIOS/blockbomb/Repaired_ML_Dataset_Preview.csv"
+  },
+  "dataURL" : "file:///Users/robertjohnson/CodeAppsIOS/blockbomb/Repaired_ML_Dataset_Preview.csv",
+  "experimentIDs" : [
+    "8DF83B41-D5B1-4CAB-8B9D-1240E242B5C7"
+  ],
+  "id" : "337D3C67-07DF-432C-89EA-4FE01BDB9788",
+  "modifiedDate" : "2025-06-10T03:16:29Z",
+  "pathType" : 0,
+  "preferredFilename" : "Repaired_ML_Dataset_Preview.csv",
+  "title" : "Repaired_ML_Dataset_Preview.csv",
+  "version" : "1.0"
+}

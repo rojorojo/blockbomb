@@ -1,0 +1,630 @@
+board_capacity,pieces,chosen_piece,score_delta,line_cleared
+6.2,"[""T Shape Tall Left"", ""Wide Rectangle""]",T Shape Tall Left,30.0,False
+15.6,"[""T Shape Tall Left""]",T Shape Tall Left,20.0,False
+21.9,"[""Cross"", ""S Shape Tall Left"", ""Standing L Left""]",Cross,125.0,True
+17.2,"[""S Shape Tall Left"", ""Standing L Left""]",S Shape Tall Left,20.0,False
+23.4,"[""S Shape Tall Left""]",S Shape Tall Left,20.0,False
+29.7,"[""Top-Left Corner"", ""S Shape Tall Right"", ""4-Block Stick""]",Top-Left Corner,115.0,True
+21.9,"[""S Shape Tall Right"", ""4-Block Stick""]",S Shape Tall Right,20.0,False
+28.1,"[""4-Block Stick""]",4-Block Stick,20.0,False
+34.4,"[""Reversed L"", ""Tall Rectangle"", ""Cross""]",Reversed L,130.0,True
+31.2,"[""Reversed L"", ""Cross""]",Reversed L,120.0,True
+25.0,"[""Cross""]",Cross,25.0,False
+32.8,"[""Tall Rectangle"", ""Small Square"", ""4-Block Vertical Stick""]",Tall Rectangle,20.0,False
+39.1,"[""Tall Rectangle"", ""4-Block Vertical Stick""]",Tall Rectangle,20.0,False
+45.3,"[""Tall Rectangle""]",Tall Rectangle,130.0,True
+42.2,"[""Elbow Top-Left Corner"", ""Top-Left Corner"", ""Single Block""]",Elbow Top-Left Corner,105.0,True
+31.2,"[""Elbow Top-Left Corner"", ""Top-Left Corner""]",Elbow Top-Left Corner,15.0,False
+35.9,"[""Elbow Top-Left Corner""]",Elbow Top-Left Corner,25.0,False
+43.8,"[""S Shape Right"", ""Bottom-Right Corner"", ""Elbow Top-Right Corner""]",S Shape Right,115.0,True
+35.9,"[""S Shape Right"", ""Elbow Top-Right Corner""]",S Shape Right,20.0,False
+42.2,"[""Elbow Top-Right Corner""]",Elbow Top-Right Corner,25.0,False
+50.0,"[""Small Square"", ""Bottom-Right Corner"", ""Elbow Bottom-Right Corner""]",Small Square,20.0,False
+56.2,"[""Bottom-Right Corner"", ""Elbow Bottom-Right Corner""]",Bottom-Right Corner,15.0,False
+60.9,"[""Elbow Bottom-Right Corner""]",,0.0,False
+0.0,"[""T Shape Up"", ""Elbow Bottom-Right Corner"", ""Large Square""]",T Shape Up,45.0,False
+14.1,"[""T Shape Up"", ""Elbow Bottom-Right Corner""]",T Shape Up,25.0,False
+21.9,"[""T Shape Up""]",T Shape Up,20.0,False
+28.1,"[""T Shape Tall Right"", ""Small Square"", ""Elbow Top-Left Corner""]",T Shape Tall Right,20.0,False
+34.4,"[""T Shape Tall Right"", ""Elbow Top-Left Corner""]",T Shape Tall Right,25.0,False
+42.2,"[""T Shape Tall Right""]",T Shape Tall Right,20.0,False
+48.4,"[""Top-Right Corner"", ""Tall Rectangle"", ""3-Block Stick""]",Top-Right Corner,15.0,False
+53.1,"[""Tall Rectangle"", ""3-Block Stick""]",Tall Rectangle,30.0,False
+62.5,"[""3-Block Stick""]",3-Block Stick,315.0,True
+42.2,"[""Standing L"", ""Flat L"", ""S Shape Right""]",Standing L,20.0,False
+48.4,"[""Flat L"", ""S Shape Right""]",Flat L,120.0,True
+42.2,"[""Flat L""]",Flat L,20.0,False
+48.4,"[""4-Block Vertical Stick"", ""Wide Rectangle"", ""5-Block Vertical Stick""]",4-Block Vertical Stick,330.0,True
+32.8,"[""4-Block Vertical Stick"", ""5-Block Vertical Stick""]",4-Block Vertical Stick,25.0,False
+40.6,"[""4-Block Vertical Stick""]",4-Block Vertical Stick,20.0,False
+46.9,"[""Top-Right Corner"", ""Tall Rectangle"", ""Small Square""]",Top-Right Corner,30.0,False
+56.2,"[""Top-Right Corner"", ""Small Square""]",Top-Right Corner,115.0,True
+48.4,"[""Small Square""]",Small Square,320.0,True
+29.7,"[""Small Square"", ""Wide Rectangle"", ""T Shape Down""]",Small Square,20.0,False
+35.9,"[""Small Square"", ""Wide Rectangle""]",Small Square,30.0,False
+45.3,"[""Small Square""]",Small Square,20.0,False
+51.6,"[""4-Block Stick"", ""Bottom-Right Corner"", ""S Shape Tall Right""]",4-Block Stick,20.0,False
+57.8,"[""4-Block Stick"", ""Bottom-Right Corner""]",4-Block Stick,15.0,False
+62.5,"[""4-Block Stick""]",4-Block Stick,320.0,True
+43.8,"[""Elbow Bottom-Left Corner"", ""Elbow Top-Left Corner"", ""S Shape Tall Right""]",Elbow Bottom-Left Corner,125.0,True
+39.1,"[""Elbow Bottom-Left Corner"", ""S Shape Tall Right""]",Elbow Bottom-Left Corner,20.0,False
+45.3,"[""Elbow Bottom-Left Corner""]",Elbow Bottom-Left Corner,25.0,False
+53.1,"[""S Shape Right"", ""Elbow Bottom-Left Corner"", ""Tall Rectangle""]",S Shape Right,125.0,True
+48.4,"[""S Shape Right"", ""Tall Rectangle""]",S Shape Right,120.0,True
+42.2,"[""Tall Rectangle""]",Tall Rectangle,30.0,False
+51.6,"[""Tall Rectangle"", ""Standing L"", ""Cross""]",Standing L,20.0,False
+57.8,"[""Tall Rectangle"", ""Cross""]",,0.0,False
+0.0,"[""4-Block Stick"", ""Small Square"", ""Bottom-Left Corner""]",4-Block Stick,20.0,False
+6.2,"[""Small Square"", ""Bottom-Left Corner""]",Small Square,20.0,False
+12.5,"[""Bottom-Left Corner""]",Bottom-Left Corner,15.0,False
+17.2,"[""T Shape Down"", ""Small Square"", ""Reversed L""]",T Shape Down,20.0,False
+23.4,"[""Small Square"", ""Reversed L""]",Small Square,20.0,False
+29.7,"[""Reversed L""]",Reversed L,20.0,False
+35.9,"[""T Shape Tall Left"", ""S Shape Right"", ""Elbow Top-Left Corner""]",T Shape Tall Left,20.0,False
+42.2,"[""T Shape Tall Left"", ""Elbow Top-Left Corner""]",T Shape Tall Left,120.0,True
+35.9,"[""Elbow Top-Left Corner""]",Elbow Top-Left Corner,25.0,False
+43.8,"[""3-Block Stick"", ""Elbow Top-Right Corner"", ""Bottom-Right Corner""]",3-Block Stick,125.0,True
+39.1,"[""3-Block Stick"", ""Bottom-Right Corner""]",3-Block Stick,315.0,True
+18.8,"[""3-Block Stick""]",3-Block Stick,15.0,False
+23.4,"[""Elbow Top-Left Corner"", ""Top-Right Corner"", ""4-Block Vertical Stick""]",Elbow Top-Left Corner,125.0,True
+18.8,"[""Top-Right Corner"", ""4-Block Vertical Stick""]",Top-Right Corner,15.0,False
+23.4,"[""4-Block Vertical Stick""]",4-Block Vertical Stick,20.0,False
+29.7,"[""Tall Rectangle"", ""4-Block Stick"", ""T Shape Down""]",Tall Rectangle,120.0,True
+23.4,"[""Tall Rectangle"", ""4-Block Stick""]",Tall Rectangle,30.0,False
+32.8,"[""4-Block Stick""]",4-Block Stick,20.0,False
+39.1,"[""Reversed L"", ""Cross"", ""Wide Rectangle""]",Reversed L,30.0,False
+48.4,"[""Reversed L"", ""Cross""]",Reversed L,125.0,True
+43.8,"[""Reversed L""]",Reversed L,20.0,False
+50.0,"[""Single Block"", ""3-Block Stick"", ""3-Block Vertical Stick""]",Single Block,105.0,True
+39.1,"[""3-Block Stick"", ""3-Block Vertical Stick""]",3-Block Stick,315.0,True
+18.8,"[""3-Block Stick""]",3-Block Stick,15.0,False
+23.4,"[""Elbow Bottom-Left Corner"", ""Small Square"", ""Wide Rectangle""]",Elbow Bottom-Left Corner,25.0,False
+31.2,"[""Small Square"", ""Wide Rectangle""]",Small Square,20.0,False
+37.5,"[""Wide Rectangle""]",Wide Rectangle,30.0,False
+46.9,"[""Top-Left Corner"", ""S Shape Tall Right"", ""Bottom-Right Corner""]",Top-Left Corner,15.0,False
+51.6,"[""Top-Left Corner"", ""S Shape Tall Right""]",Top-Left Corner,15.0,False
+56.2,"[""S Shape Tall Right""]",S Shape Tall Right,20.0,False
+62.5,"[""S Shape Tall Right"", ""Flat L"", ""S Shape Left""]",S Shape Tall Right,120.0,True
+56.2,"[""Flat L"", ""S Shape Left""]",Flat L,120.0,True
+50.0,"[""Flat L""]",Flat L,520.0,True
+18.8,"[""S Shape Right"", ""L Shape Left"", ""S Shape Left""]",S Shape Right,20.0,False
+25.0,"[""L Shape Left"", ""S Shape Left""]",L Shape Left,20.0,False
+31.2,"[""S Shape Left""]",S Shape Left,20.0,False
+37.5,"[""Elbow Bottom-Left Corner"", ""Small Square"", ""T Shape Down""]",Elbow Bottom-Left Corner,120.0,True
+31.2,"[""Elbow Bottom-Left Corner"", ""T Shape Down""]",Elbow Bottom-Left Corner,20.0,False
+37.5,"[""Elbow Bottom-Left Corner""]",Elbow Bottom-Left Corner,125.0,True
+32.8,"[""Top-Right Corner"", ""T Shape Down"", ""Small Square""]",Top-Right Corner,20.0,False
+39.1,"[""Top-Right Corner"", ""Small Square""]",Top-Right Corner,20.0,False
+45.3,"[""Top-Right Corner""]",Top-Right Corner,15.0,False
+50.0,"[""Tall Rectangle"", ""S Shape Left"", ""L Shape""]",Tall Rectangle,120.0,True
+43.8,"[""Tall Rectangle"", ""L Shape""]",Tall Rectangle,20.0,False
+50.0,"[""Tall Rectangle""]",Tall Rectangle,130.0,True
+46.9,"[""Single Block"", ""3-Block Stick"", ""3-Block Vertical Stick""]",Single Block,15.0,False
+51.6,"[""Single Block"", ""3-Block Stick""]",Single Block,5.0,False
+53.1,"[""3-Block Stick""]",3-Block Stick,115.0,True
+45.3,"[""Flat L"", ""Bottom-Right Corner"", ""T Shape Down""]",Flat L,15.0,False
+50.0,"[""Flat L"", ""T Shape Down""]",Flat L,20.0,False
+56.2,"[""T Shape Down""]",T Shape Down,20.0,False
+62.5,"[""T Shape Down"", ""T Shape Tall Right"", ""S Shape Tall Right""]",T Shape Down,120.0,True
+56.2,"[""T Shape Tall Right"", ""S Shape Tall Right""]",T Shape Tall Right,120.0,True
+50.0,"[""S Shape Tall Right""]",S Shape Tall Right,20.0,False
+56.2,"[""Top-Right Corner"", ""L Shape Left"", ""S Shape Right""]",Top-Right Corner,120.0,True
+50.0,"[""Top-Right Corner"", ""S Shape Right""]",Top-Right Corner,20.0,False
+56.2,"[""Top-Right Corner""]",Top-Right Corner,115.0,True
+48.4,"[""Large Square"", ""3-Block Vertical Stick"", ""Top-Left Corner""]",Large Square,15.0,False
+53.1,"[""Large Square"", ""3-Block Vertical Stick""]",Large Square,315.0,True
+32.8,"[""Large Square""]",Large Square,45.0,False
+46.9,"[""Top-Left Corner"", ""S Shape Left"", ""S Shape Tall Left""]",Top-Left Corner,120.0,True
+40.6,"[""Top-Left Corner"", ""S Shape Left""]",Top-Left Corner,120.0,True
+34.4,"[""Top-Left Corner""]",Top-Left Corner,15.0,False
+39.1,"[""5-Block Stick"", ""T Shape Down"", ""Reversed L""]",5-Block Stick,120.0,True
+32.8,"[""5-Block Stick"", ""T Shape Down""]",5-Block Stick,120.0,True
+26.6,"[""5-Block Stick""]",5-Block Stick,25.0,False
+34.4,"[""Bottom-Left Corner"", ""Standing L Left"", ""Elbow Bottom-Right Corner""]",Bottom-Left Corner,15.0,False
+39.1,"[""Standing L Left"", ""Elbow Bottom-Right Corner""]",Standing L Left,20.0,False
+45.3,"[""Elbow Bottom-Right Corner""]",Elbow Bottom-Right Corner,25.0,False
+53.1,"[""3-Block Vertical Stick"", ""Wide Rectangle"", ""Large Square""]",3-Block Vertical Stick,45.0,False
+67.2,"[""3-Block Vertical Stick"", ""Wide Rectangle""]",3-Block Vertical Stick,515.0,True
+34.4,"[""Wide Rectangle""]",Wide Rectangle,30.0,False
+43.8,"[""Tall Rectangle"", ""Top-Left Corner"", ""Top-Right Corner""]",Tall Rectangle,15.0,False
+48.4,"[""Tall Rectangle"", ""Top-Left Corner""]",Tall Rectangle,315.0,True
+28.1,"[""Tall Rectangle""]",Tall Rectangle,130.0,True
+25.0,"[""Small Square"", ""Wide Rectangle"", ""T Shape Tall Right""]",Small Square,130.0,True
+21.9,"[""Small Square"", ""T Shape Tall Right""]",Small Square,20.0,False
+28.1,"[""T Shape Tall Right""]",T Shape Tall Right,20.0,False
+34.4,"[""T Shape Tall Left"", ""Cross"", ""Reversed L""]",T Shape Tall Left,25.0,False
+42.2,"[""T Shape Tall Left"", ""Reversed L""]",T Shape Tall Left,20.0,False
+48.4,"[""Reversed L""]",Reversed L,20.0,False
+54.7,"[""4-Block Vertical Stick"", ""5-Block Stick"", ""Tall Rectangle""]",4-Block Vertical Stick,30.0,False
+64.1,"[""4-Block Vertical Stick"", ""5-Block Stick""]",4-Block Vertical Stick,120.0,True
+57.8,"[""5-Block Stick""]",5-Block Stick,25.0,False
+65.6,"[""Reversed L"", ""3-Block Stick"", ""Elbow Top-Left Corner""]",Reversed L,125.0,True
+60.9,"[""Reversed L"", ""3-Block Stick""]",Reversed L,120.0,True
+54.7,"[""3-Block Stick""]",3-Block Stick,15.0,False
+59.4,"[""Reversed L"", ""4-Block Vertical Stick"", ""3-Block Stick""]",Reversed L,720.0,False
+42.2,"[""Reversed L"", ""3-Block Stick""]",Reversed L,20.0,False
+48.4,"[""3-Block Stick""]",3-Block Stick,315.0,True
+28.1,"[""5-Block Stick"", ""Tall Rectangle"", ""Small Square""]",5-Block Stick,130.0,True
+25.0,"[""5-Block Stick"", ""Small Square""]",5-Block Stick,120.0,True
+18.8,"[""5-Block Stick""]",5-Block Stick,25.0,False
+26.6,"[""3-Block Vertical Stick"", ""S Shape Left"", ""L Shape Left""]",3-Block Vertical Stick,120.0,True
+20.3,"[""3-Block Vertical Stick"", ""L Shape Left""]",3-Block Vertical Stick,115.0,True
+12.5,"[""L Shape Left""]",L Shape Left,20.0,False
+18.8,"[""S Shape Tall Right"", ""Large Square"", ""Wide Rectangle""]",S Shape Tall Right,20.0,False
+25.0,"[""Large Square"", ""Wide Rectangle""]",Large Square,45.0,False
+39.1,"[""Wide Rectangle""]",Wide Rectangle,30.0,False
+48.4,"[""Top-Right Corner"", ""S Shape Left"", ""Bottom-Left Corner""]",Top-Right Corner,315.0,True
+28.1,"[""Top-Right Corner"", ""S Shape Left""]",Top-Right Corner,15.0,False
+32.8,"[""S Shape Left""]",S Shape Left,20.0,False
+39.1,"[""Wide Rectangle"", ""S Shape Tall Right"", ""4-Block Stick""]",Wide Rectangle,20.0,False
+45.3,"[""Wide Rectangle"", ""4-Block Stick""]",Wide Rectangle,130.0,True
+42.2,"[""4-Block Stick""]",4-Block Stick,20.0,False
+48.4,"[""5-Block Stick"", ""Small Square"", ""Bottom-Right Corner""]",5-Block Stick,25.0,False
+56.2,"[""Small Square"", ""Bottom-Right Corner""]",Small Square,20.0,False
+62.5,"[""Bottom-Right Corner""]",Bottom-Right Corner,115.0,True
+54.7,"[""3-Block Vertical Stick"", ""5-Block Vertical Stick"", ""T Shape Tall Right""]",3-Block Vertical Stick,15.0,False
+59.4,"[""5-Block Vertical Stick"", ""T Shape Tall Right""]",5-Block Vertical Stick,125.0,True
+54.7,"[""T Shape Tall Right""]",T Shape Tall Right,120.0,True
+48.4,"[""L Shape"", ""S Shape Right"", ""Cross""]",L Shape,20.0,False
+54.7,"[""S Shape Right"", ""Cross""]",S Shape Right,20.0,False
+60.9,"[""Cross""]",,0.0,False
+0.0,"[""5-Block Stick"", ""T Shape Tall Right"", ""Cross""]",5-Block Stick,25.0,False
+7.8,"[""T Shape Tall Right"", ""Cross""]",T Shape Tall Right,25.0,False
+15.6,"[""T Shape Tall Right""]",T Shape Tall Right,20.0,False
+21.9,"[""Reversed L"", ""Elbow Bottom-Left Corner"", ""3-Block Stick""]",Reversed L,25.0,False
+29.7,"[""Reversed L"", ""3-Block Stick""]",Reversed L,15.0,False
+34.4,"[""Reversed L""]",Reversed L,20.0,False
+40.6,"[""Top-Left Corner"", ""T Shape Up"", ""Top-Right Corner""]",Top-Left Corner,20.0,False
+46.9,"[""Top-Left Corner"", ""Top-Right Corner""]",Top-Left Corner,115.0,True
+39.1,"[""Top-Right Corner""]",Top-Right Corner,15.0,False
+43.8,"[""S Shape Left"", ""Tall Rectangle"", ""Small Square""]",S Shape Left,120.0,True
+37.5,"[""S Shape Left"", ""Tall Rectangle""]",S Shape Left,30.0,False
+46.9,"[""S Shape Left""]",S Shape Left,720.0,False
+29.7,"[""T Shape Tall Left"", ""Wide Rectangle"", ""Top-Right Corner""]",T Shape Tall Left,115.0,True
+21.9,"[""T Shape Tall Left"", ""Wide Rectangle""]",T Shape Tall Left,20.0,False
+28.1,"[""Wide Rectangle""]",Wide Rectangle,130.0,True
+25.0,"[""Elbow Bottom-Right Corner"", ""S Shape Left"", ""4-Block Vertical Stick""]",Elbow Bottom-Right Corner,20.0,False
+31.2,"[""Elbow Bottom-Right Corner"", ""4-Block Vertical Stick""]",Elbow Bottom-Right Corner,325.0,True
+14.1,"[""4-Block Vertical Stick""]",4-Block Vertical Stick,20.0,False
+20.3,"[""Large Square"", ""Cross"", ""T Shape Down""]",Large Square,25.0,False
+28.1,"[""Large Square"", ""T Shape Down""]",Large Square,20.0,False
+34.4,"[""Large Square""]",Large Square,145.0,True
+35.9,"[""Top-Left Corner"", ""Bottom-Left Corner"", ""S Shape Tall Right""]",Top-Left Corner,20.0,False
+42.2,"[""Top-Left Corner"", ""Bottom-Left Corner""]",Top-Left Corner,15.0,False
+46.9,"[""Bottom-Left Corner""]",Bottom-Left Corner,115.0,True
+39.1,"[""5-Block Vertical Stick"", ""4-Block Stick"", ""5-Block Stick""]",5-Block Vertical Stick,125.0,True
+34.4,"[""5-Block Vertical Stick"", ""4-Block Stick""]",5-Block Vertical Stick,325.0,True
+17.2,"[""4-Block Stick""]",4-Block Stick,20.0,False
+23.4,"[""4-Block Stick"", ""T Shape Tall Right"", ""L Shape Left""]",4-Block Stick,20.0,False
+29.7,"[""4-Block Stick"", ""L Shape Left""]",4-Block Stick,20.0,False
+35.9,"[""L Shape Left""]",L Shape Left,20.0,False
+42.2,"[""Tall Rectangle"", ""5-Block Vertical Stick"", ""Wide Rectangle""]",Tall Rectangle,325.0,True
+25.0,"[""Tall Rectangle"", ""Wide Rectangle""]",Tall Rectangle,130.0,True
+21.9,"[""Tall Rectangle""]",Tall Rectangle,30.0,False
+31.2,"[""4-Block Vertical Stick"", ""T Shape Up"", ""Cross""]",4-Block Vertical Stick,120.0,True
+25.0,"[""4-Block Vertical Stick"", ""Cross""]",4-Block Vertical Stick,25.0,False
+32.8,"[""4-Block Vertical Stick""]",4-Block Vertical Stick,20.0,False
+39.1,"[""Tall Rectangle"", ""Standing L Left"", ""5-Block Stick""]",Tall Rectangle,20.0,False
+45.3,"[""Tall Rectangle"", ""5-Block Stick""]",Tall Rectangle,25.0,False
+53.1,"[""Tall Rectangle""]",Tall Rectangle,30.0,False
+62.5,"[""S Shape Left"", ""Cross"", ""3-Block Stick""]",S Shape Left,125.0,True
+57.8,"[""S Shape Left"", ""3-Block Stick""]",S Shape Left,120.0,True
+51.6,"[""3-Block Stick""]",3-Block Stick,15.0,False
+56.2,"[""Reversed L"", ""Top-Left Corner"", ""4-Block Stick""]",Reversed L,20.0,False
+62.5,"[""Reversed L"", ""Top-Left Corner""]",Reversed L,15.0,False
+67.2,"[""Reversed L""]",Reversed L,20.0,False
+73.4,"[""Top-Right Corner"", ""Elbow Top-Right Corner"", ""Bottom-Right Corner""]",Top-Right Corner,115.0,True
+65.6,"[""Elbow Top-Right Corner"", ""Bottom-Right Corner""]",Bottom-Right Corner,115.0,True
+57.8,"[""Elbow Top-Right Corner""]",,0.0,False
+0.0,"[""S Shape Right"", ""Elbow Bottom-Left Corner"", ""4-Block Stick""]",S Shape Right,25.0,False
+7.8,"[""S Shape Right"", ""4-Block Stick""]",S Shape Right,20.0,False
+14.1,"[""4-Block Stick""]",4-Block Stick,20.0,False
+20.3,"[""S Shape Left"", ""Reversed L"", ""Small Square""]",S Shape Left,20.0,False
+26.6,"[""S Shape Left"", ""Small Square""]",S Shape Left,20.0,False
+32.8,"[""S Shape Left""]",S Shape Left,20.0,False
+39.1,"[""Standing L Left"", ""4-Block Stick"", ""Cross""]",Standing L Left,25.0,False
+46.9,"[""Standing L Left"", ""4-Block Stick""]",Standing L Left,20.0,False
+53.1,"[""Standing L Left""]",Standing L Left,520.0,True
+21.9,"[""S Shape Tall Left"", ""Large Square"", ""Elbow Bottom-Right Corner""]",S Shape Tall Left,120.0,True
+15.6,"[""Large Square"", ""Elbow Bottom-Right Corner""]",Large Square,25.0,False
+23.4,"[""Large Square""]",Large Square,45.0,False
+37.5,"[""T Shape Down"", ""S Shape Tall Right"", ""Bottom-Left Corner""]",T Shape Down,115.0,True
+29.7,"[""T Shape Down"", ""S Shape Tall Right""]",T Shape Down,20.0,False
+35.9,"[""S Shape Tall Right""]",S Shape Tall Right,20.0,False
+42.2,"[""Wide Rectangle"", ""4-Block Stick"", ""Bottom-Right Corner""]",Wide Rectangle,20.0,False
+48.4,"[""Wide Rectangle"", ""Bottom-Right Corner""]",Wide Rectangle,30.0,False
+57.8,"[""Bottom-Right Corner""]",Bottom-Right Corner,15.0,False
+62.5,"[""Single Block"", ""3-Block Stick"", ""3-Block Vertical Stick""]",Single Block,5.0,False
+64.1,"[""3-Block Stick"", ""3-Block Vertical Stick""]",3-Block Stick,15.0,False
+68.8,"[""3-Block Vertical Stick""]",3-Block Vertical Stick,315.0,True
+48.4,"[""Elbow Bottom-Left Corner"", ""Top-Left Corner"", ""Single Block""]",Elbow Bottom-Left Corner,115.0,True
+40.6,"[""Elbow Bottom-Left Corner"", ""Single Block""]",Elbow Bottom-Left Corner,105.0,True
+29.7,"[""Elbow Bottom-Left Corner""]",Elbow Bottom-Left Corner,25.0,False
+37.5,"[""T Shape Down"", ""Top-Right Corner"", ""Wide Rectangle""]",T Shape Down,115.0,True
+29.7,"[""T Shape Down"", ""Wide Rectangle""]",T Shape Down,30.0,False
+39.1,"[""T Shape Down""]",T Shape Down,120.0,True
+32.8,"[""Bottom-Right Corner"", ""3-Block Stick"", ""4-Block Stick""]",Bottom-Right Corner,120.0,True
+26.6,"[""Bottom-Right Corner"", ""3-Block Stick""]",Bottom-Right Corner,115.0,True
+18.8,"[""3-Block Stick""]",3-Block Stick,15.0,False
+23.4,"[""L Shape"", ""Large Square"", ""Cross""]",L Shape,45.0,False
+37.5,"[""L Shape"", ""Cross""]",L Shape,20.0,False
+43.8,"[""Cross""]",Cross,25.0,False
+51.6,"[""Cross"", ""3-Block Stick"", ""S Shape Right""]",Cross,125.0,True
+46.9,"[""3-Block Stick"", ""S Shape Right""]",3-Block Stick,20.0,False
+53.1,"[""3-Block Stick""]",3-Block Stick,15.0,False
+57.8,"[""4-Block Stick"", ""Cross"", ""L Shape Left""]",4-Block Stick,520.0,True
+26.6,"[""4-Block Stick"", ""Cross""]",4-Block Stick,25.0,False
+34.4,"[""4-Block Stick""]",4-Block Stick,20.0,False
+40.6,"[""Top-Right Corner"", ""Small Square"", ""Bottom-Right Corner""]",Top-Right Corner,115.0,True
+32.8,"[""Top-Right Corner"", ""Small Square""]",Top-Right Corner,15.0,False
+37.5,"[""Small Square""]",Small Square,20.0,False
+43.8,"[""Elbow Bottom-Left Corner"", ""T Shape Tall Left"", ""Bottom-Left Corner""]",Elbow Bottom-Left Corner,15.0,False
+48.4,"[""Elbow Bottom-Left Corner"", ""T Shape Tall Left""]",Elbow Bottom-Left Corner,120.0,True
+42.2,"[""Elbow Bottom-Left Corner""]",Elbow Bottom-Left Corner,25.0,False
+50.0,"[""Top-Right Corner"", ""Bottom-Left Corner"", ""Elbow Top-Right Corner""]",Top-Right Corner,125.0,True
+45.3,"[""Top-Right Corner"", ""Bottom-Left Corner""]",Top-Right Corner,115.0,True
+37.5,"[""Bottom-Left Corner""]",Bottom-Left Corner,15.0,False
+42.2,"[""S Shape Left"", ""3-Block Vertical Stick"", ""Top-Left Corner""]",S Shape Left,115.0,True
+34.4,"[""S Shape Left"", ""Top-Left Corner""]",S Shape Left,20.0,False
+40.6,"[""Top-Left Corner""]",Top-Left Corner,115.0,True
+32.8,"[""Bottom-Right Corner"", ""Top-Left Corner"", ""Tall Rectangle""]",Bottom-Right Corner,15.0,False
+37.5,"[""Top-Left Corner"", ""Tall Rectangle""]",Top-Left Corner,130.0,True
+34.4,"[""Top-Left Corner""]",Top-Left Corner,115.0,True
+26.6,"[""3-Block Vertical Stick"", ""Tall Rectangle"", ""Reversed L""]",3-Block Vertical Stick,20.0,False
+32.8,"[""3-Block Vertical Stick"", ""Tall Rectangle""]",3-Block Vertical Stick,30.0,False
+42.2,"[""3-Block Vertical Stick""]",3-Block Vertical Stick,115.0,True
+34.4,"[""Small Square"", ""Top-Right Corner"", ""Top-Left Corner""]",Small Square,15.0,False
+39.1,"[""Small Square"", ""Top-Right Corner""]",Small Square,15.0,False
+43.8,"[""Small Square""]",Small Square,20.0,False
+50.0,"[""Elbow Bottom-Right Corner"", ""Top-Left Corner"", ""Wide Rectangle""]",Top-Left Corner,315.0,True
+29.7,"[""Elbow Bottom-Right Corner"", ""Wide Rectangle""]",Elbow Bottom-Right Corner,25.0,False
+37.5,"[""Wide Rectangle""]",Wide Rectangle,30.0,False
+46.9,"[""Top-Right Corner"", ""L Shape"", ""3-Block Stick""]",Top-Right Corner,20.0,False
+53.1,"[""Top-Right Corner"", ""3-Block Stick""]",Top-Right Corner,115.0,True
+45.3,"[""Top-Right Corner""]",Top-Right Corner,15.0,False
+50.0,"[""Tall Rectangle"", ""Elbow Bottom-Left Corner"", ""5-Block Stick""]",Tall Rectangle,325.0,True
+32.8,"[""Tall Rectangle"", ""Elbow Bottom-Left Corner""]",Tall Rectangle,30.0,False
+42.2,"[""Elbow Bottom-Left Corner""]",Elbow Bottom-Left Corner,25.0,False
+50.0,"[""Flat L"", ""5-Block Stick"", ""Top-Right Corner""]",Flat L,325.0,True
+32.8,"[""Flat L"", ""Top-Right Corner""]",Flat L,115.0,True
+25.0,"[""Flat L""]",Flat L,20.0,False
+31.2,"[""Tall Rectangle"", ""3-Block Stick"", ""T Shape Tall Right""]",Tall Rectangle,30.0,False
+40.6,"[""3-Block Stick"", ""T Shape Tall Right""]",3-Block Stick,120.0,True
+34.4,"[""3-Block Stick""]",3-Block Stick,115.0,True
+26.6,"[""5-Block Stick"", ""Bottom-Left Corner"", ""L Shape""]",5-Block Stick,20.0,False
+32.8,"[""5-Block Stick"", ""Bottom-Left Corner""]",Bottom-Left Corner,15.0,False
+37.5,"[""5-Block Stick""]",,0.0,False
+0.0,"[""Small Square"", ""Elbow Bottom-Right Corner"", ""Wide Rectangle""]",Small Square,25.0,False
+7.8,"[""Small Square"", ""Wide Rectangle""]",Small Square,20.0,False
+14.1,"[""Wide Rectangle""]",Wide Rectangle,30.0,False
+23.4,"[""Reversed L"", ""Cross"", ""T Shape Down""]",Reversed L,20.0,False
+29.7,"[""Cross"", ""T Shape Down""]",Cross,25.0,False
+37.5,"[""T Shape Down""]",T Shape Down,20.0,False
+43.8,"[""S Shape Tall Right"", ""S Shape Left"", ""Bottom-Left Corner""]",S Shape Tall Right,315.0,True
+23.4,"[""S Shape Tall Right"", ""S Shape Left""]",S Shape Tall Right,120.0,True
+17.2,"[""S Shape Left""]",S Shape Left,20.0,False
+23.4,"[""Bottom-Right Corner"", ""Elbow Top-Right Corner"", ""S Shape Tall Left""]",Bottom-Right Corner,15.0,False
+28.1,"[""Elbow Top-Right Corner"", ""S Shape Tall Left""]",Elbow Top-Right Corner,20.0,False
+34.4,"[""Elbow Top-Right Corner""]",Elbow Top-Right Corner,25.0,False
+42.2,"[""Wide Rectangle"", ""Top-Left Corner"", ""Small Square""]",Wide Rectangle,130.0,True
+39.1,"[""Top-Left Corner"", ""Small Square""]",Top-Left Corner,115.0,True
+31.2,"[""Small Square""]",Small Square,20.0,False
+37.5,"[""Flat L"", ""5-Block Vertical Stick"", ""Bottom-Left Corner""]",Flat L,20.0,False
+43.8,"[""5-Block Vertical Stick"", ""Bottom-Left Corner""]",Bottom-Left Corner,115.0,True
+35.9,"[""5-Block Vertical Stick""]",5-Block Vertical Stick,25.0,False
+43.8,"[""S Shape Tall Right"", ""Top-Left Corner"", ""Elbow Top-Right Corner""]",S Shape Tall Right,120.0,True
+37.5,"[""Top-Left Corner"", ""Elbow Top-Right Corner""]",Top-Left Corner,15.0,False
+42.2,"[""Elbow Top-Right Corner""]",Elbow Top-Right Corner,125.0,True
+37.5,"[""L Shape Left"", ""T Shape Up"", ""3-Block Vertical Stick""]",L Shape Left,20.0,False
+43.8,"[""T Shape Up"", ""3-Block Vertical Stick""]",T Shape Up,115.0,True
+35.9,"[""T Shape Up""]",T Shape Up,20.0,False
+42.2,"[""3-Block Vertical Stick"", ""Elbow Top-Right Corner"", ""3-Block Stick""]",3-Block Vertical Stick,125.0,True
+37.5,"[""3-Block Vertical Stick"", ""3-Block Stick""]",3-Block Vertical Stick,15.0,False
+42.2,"[""3-Block Vertical Stick""]",3-Block Vertical Stick,15.0,False
+46.9,"[""4-Block Stick"", ""Small Square"", ""3-Block Vertical Stick""]",4-Block Stick,20.0,False
+53.1,"[""Small Square"", ""3-Block Vertical Stick""]",Small Square,115.0,True
+45.3,"[""Small Square""]",Small Square,20.0,False
+51.6,"[""3-Block Vertical Stick"", ""T Shape Down"", ""Wide Rectangle""]",3-Block Vertical Stick,115.0,True
+43.8,"[""T Shape Down"", ""Wide Rectangle""]",T Shape Down,30.0,False
+53.1,"[""T Shape Down""]",T Shape Down,120.0,True
+46.9,"[""4-Block Stick"", ""S Shape Left"", ""Standing L""]",4-Block Stick,20.0,False
+53.1,"[""4-Block Stick"", ""Standing L""]",4-Block Stick,20.0,False
+59.4,"[""Standing L""]",Standing L,20.0,False
+65.6,"[""Bottom-Left Corner"", ""Elbow Bottom-Right Corner"", ""T Shape Down""]",Bottom-Left Corner,120.0,True
+59.4,"[""Bottom-Left Corner"", ""Elbow Bottom-Right Corner""]",Bottom-Left Corner,115.0,True
+51.6,"[""Elbow Bottom-Right Corner""]",Elbow Bottom-Right Corner,125.0,True
+46.9,"[""Single Block"", ""Standing L"", ""Bottom-Right Corner""]",Single Block,105.0,True
+35.9,"[""Standing L"", ""Bottom-Right Corner""]",Standing L,15.0,False
+40.6,"[""Standing L""]",Standing L,120.0,True
+34.4,"[""Top-Left Corner"", ""Bottom-Right Corner"", ""5-Block Vertical Stick""]",Top-Left Corner,15.0,False
+39.1,"[""Bottom-Right Corner"", ""5-Block Vertical Stick""]",Bottom-Right Corner,15.0,False
+43.8,"[""5-Block Vertical Stick""]",5-Block Vertical Stick,125.0,True
+39.1,"[""Bottom-Left Corner"", ""Large Square"", ""Top-Right Corner""]",Bottom-Left Corner,15.0,False
+43.8,"[""Large Square"", ""Top-Right Corner""]",Large Square,15.0,False
+48.4,"[""Large Square""]",Large Square,45.0,False
+62.5,"[""Standing L"", ""4-Block Stick"", ""Small Square""]",Standing L,320.0,True
+43.8,"[""Standing L"", ""4-Block Stick""]",Standing L,120.0,True
+37.5,"[""4-Block Stick""]",4-Block Stick,20.0,False
+43.8,"[""Top-Right Corner"", ""Wide Rectangle"", ""Bottom-Right Corner""]",Top-Right Corner,115.0,True
+35.9,"[""Top-Right Corner"", ""Wide Rectangle""]",Top-Right Corner,115.0,True
+28.1,"[""Wide Rectangle""]",Wide Rectangle,30.0,False
+37.5,"[""T Shape Down"", ""4-Block Stick"", ""Elbow Bottom-Right Corner""]",T Shape Down,120.0,True
+31.2,"[""4-Block Stick"", ""Elbow Bottom-Right Corner""]",4-Block Stick,20.0,False
+37.5,"[""Elbow Bottom-Right Corner""]",Elbow Bottom-Right Corner,25.0,False
+45.3,"[""Top-Right Corner"", ""Small Square"", ""4-Block Stick""]",Top-Right Corner,115.0,True
+37.5,"[""Small Square"", ""4-Block Stick""]",Small Square,20.0,False
+43.8,"[""4-Block Stick""]",4-Block Stick,20.0,False
+50.0,"[""Small Square"", ""Top-Right Corner"", ""Bottom-Left Corner""]",Small Square,315.0,True
+29.7,"[""Small Square"", ""Top-Right Corner""]",Small Square,20.0,False
+35.9,"[""Top-Right Corner""]",Top-Right Corner,15.0,False
+40.6,"[""Top-Left Corner"", ""S Shape Tall Left"", ""4-Block Vertical Stick""]",Top-Left Corner,20.0,False
+46.9,"[""Top-Left Corner"", ""4-Block Vertical Stick""]",Top-Left Corner,115.0,True
+39.1,"[""4-Block Vertical Stick""]",4-Block Vertical Stick,120.0,True
+32.8,"[""3-Block Vertical Stick"", ""S Shape Tall Right"", ""Small Square""]",3-Block Vertical Stick,20.0,False
+39.1,"[""3-Block Vertical Stick"", ""S Shape Tall Right""]",3-Block Vertical Stick,20.0,False
+45.3,"[""3-Block Vertical Stick""]",3-Block Vertical Stick,315.0,True
+25.0,"[""Reversed L"", ""Small Square"", ""4-Block Stick""]",Reversed L,120.0,True
+18.8,"[""Small Square"", ""4-Block Stick""]",Small Square,120.0,True
+12.5,"[""4-Block Stick""]",4-Block Stick,20.0,False
+18.8,"[""Small Square"", ""Bottom-Right Corner"", ""5-Block Vertical Stick""]",Small Square,115.0,True
+10.9,"[""Small Square"", ""5-Block Vertical Stick""]",Small Square,25.0,False
+18.8,"[""Small Square""]",Small Square,20.0,False
+25.0,"[""T Shape Up"", ""Large Square"", ""Tall Rectangle""]",T Shape Up,20.0,False
+31.2,"[""Large Square"", ""Tall Rectangle""]",Large Square,45.0,False
+45.3,"[""Tall Rectangle""]",Tall Rectangle,30.0,False
+54.7,"[""Bottom-Right Corner"", ""S Shape Tall Right"", ""Top-Left Corner""]",Bottom-Right Corner,115.0,True
+46.9,"[""S Shape Tall Right"", ""Top-Left Corner""]",S Shape Tall Right,20.0,False
+53.1,"[""Top-Left Corner""]",Top-Left Corner,115.0,True
+45.3,"[""Elbow Bottom-Left Corner"", ""Bottom-Right Corner"", ""5-Block Stick""]",Elbow Bottom-Left Corner,115.0,True
+37.5,"[""Elbow Bottom-Left Corner"", ""5-Block Stick""]",Elbow Bottom-Left Corner,25.0,False
+45.3,"[""5-Block Stick""]",5-Block Stick,125.0,True
+40.6,"[""Wide Rectangle"", ""Flat L"", ""S Shape Left""]",Wide Rectangle,20.0,False
+46.9,"[""Wide Rectangle"", ""Flat L""]",Wide Rectangle,120.0,True
+40.6,"[""Wide Rectangle""]",Wide Rectangle,30.0,False
+50.0,"[""Top-Left Corner"", ""Elbow Bottom-Left Corner"", ""4-Block Stick""]",Top-Left Corner,20.0,False
+56.2,"[""Top-Left Corner"", ""Elbow Bottom-Left Corner""]",Top-Left Corner,115.0,True
+48.4,"[""Elbow Bottom-Left Corner""]",Elbow Bottom-Left Corner,125.0,True
+43.8,"[""4-Block Vertical Stick"", ""S Shape Tall Left"", ""Single Block""]",4-Block Vertical Stick,20.0,False
+50.0,"[""4-Block Vertical Stick"", ""Single Block""]",4-Block Vertical Stick,105.0,True
+39.1,"[""4-Block Vertical Stick""]",4-Block Vertical Stick,20.0,False
+45.3,"[""Bottom-Left Corner"", ""Top-Left Corner"", ""4-Block Vertical Stick""]",Bottom-Left Corner,115.0,True
+37.5,"[""Top-Left Corner"", ""4-Block Vertical Stick""]",Top-Left Corner,20.0,False
+43.8,"[""Top-Left Corner""]",Top-Left Corner,115.0,True
+35.9,"[""Tall Rectangle"", ""Standing L Left"", ""Small Square""]",Tall Rectangle,120.0,True
+29.7,"[""Tall Rectangle"", ""Standing L Left""]",Tall Rectangle,30.0,False
+39.1,"[""Standing L Left""]",Standing L Left,20.0,False
+45.3,"[""4-Block Vertical Stick"", ""Tall Rectangle"", ""3-Block Stick""]",4-Block Vertical Stick,20.0,False
+51.6,"[""Tall Rectangle"", ""3-Block Stick""]",3-Block Stick,15.0,False
+56.2,"[""Tall Rectangle""]",,0.0,False
+0.0,"[""T Shape Tall Left"", ""Bottom-Right Corner"", ""L Shape""]",T Shape Tall Left,20.0,False
+6.2,"[""T Shape Tall Left"", ""Bottom-Right Corner""]",T Shape Tall Left,20.0,False
+12.5,"[""Bottom-Right Corner""]",Bottom-Right Corner,15.0,False
+17.2,"[""S Shape Left"", ""Bottom-Left Corner"", ""Small Square""]",S Shape Left,15.0,False
+21.9,"[""S Shape Left"", ""Small Square""]",S Shape Left,20.0,False
+28.1,"[""S Shape Left""]",S Shape Left,20.0,False
+34.4,"[""Standing L"", ""5-Block Vertical Stick"", ""Top-Right Corner""]",Standing L,320.0,True
+15.6,"[""5-Block Vertical Stick"", ""Top-Right Corner""]",5-Block Vertical Stick,25.0,False
+23.4,"[""Top-Right Corner""]",Top-Right Corner,15.0,False
+28.1,"[""Top-Right Corner"", ""Wide Rectangle"", ""Cross""]",Top-Right Corner,15.0,False
+32.8,"[""Wide Rectangle"", ""Cross""]",Wide Rectangle,130.0,True
+29.7,"[""Cross""]",Cross,25.0,False
+37.5,"[""Cross"", ""5-Block Vertical Stick"", ""T Shape Up""]",Cross,25.0,False
+45.3,"[""5-Block Vertical Stick"", ""T Shape Up""]",5-Block Vertical Stick,25.0,False
+53.1,"[""T Shape Up""]",T Shape Up,120.0,True
+46.9,"[""S Shape Left"", ""S Shape Right"", ""S Shape Tall Left""]",S Shape Left,20.0,False
+53.1,"[""S Shape Left"", ""S Shape Tall Left""]",S Shape Left,20.0,False
+59.4,"[""S Shape Tall Left""]",S Shape Tall Left,20.0,False
+65.6,"[""Small Square"", ""Cross"", ""Tall Rectangle""]",Small Square,330.0,True
+50.0,"[""Small Square"", ""Cross""]",Small Square,125.0,True
+45.3,"[""Small Square""]",Small Square,20.0,False
+51.6,"[""3-Block Stick"", ""Elbow Top-Right Corner"", ""S Shape Tall Right""]",3-Block Stick,325.0,True
+34.4,"[""3-Block Stick"", ""S Shape Tall Right""]",3-Block Stick,20.0,False
+40.6,"[""3-Block Stick""]",3-Block Stick,115.0,True
+32.8,"[""L Shape"", ""Elbow Top-Left Corner"", ""4-Block Stick""]",L Shape,25.0,False
+40.6,"[""L Shape"", ""4-Block Stick""]",L Shape,20.0,False
+46.9,"[""4-Block Stick""]",,0.0,False
+0.0,"[""4-Block Stick"", ""Tall Rectangle"", ""Bottom-Right Corner""]",4-Block Stick,20.0,False
+6.2,"[""Tall Rectangle"", ""Bottom-Right Corner""]",Tall Rectangle,30.0,False
+15.6,"[""Bottom-Right Corner""]",Bottom-Right Corner,15.0,False
+20.3,"[""T Shape Down"", ""Elbow Top-Left Corner"", ""Bottom-Left Corner""]",T Shape Down,25.0,False
+28.1,"[""T Shape Down"", ""Bottom-Left Corner""]",T Shape Down,15.0,False
+32.8,"[""T Shape Down""]",T Shape Down,20.0,False
+39.1,"[""3-Block Vertical Stick"", ""Cross"", ""S Shape Right""]",3-Block Vertical Stick,25.0,False
+46.9,"[""3-Block Vertical Stick"", ""S Shape Right""]",3-Block Vertical Stick,20.0,False
+53.1,"[""3-Block Vertical Stick""]",3-Block Vertical Stick,115.0,True
+45.3,"[""S Shape Right"", ""Bottom-Right Corner"", ""T Shape Tall Right""]",S Shape Right,115.0,True
+37.5,"[""S Shape Right"", ""T Shape Tall Right""]",S Shape Right,120.0,True
+31.2,"[""S Shape Right""]",S Shape Right,20.0,False
+37.5,"[""Top-Left Corner"", ""5-Block Vertical Stick"", ""Elbow Bottom-Right Corner""]",Top-Left Corner,115.0,True
+29.7,"[""5-Block Vertical Stick"", ""Elbow Bottom-Right Corner""]",5-Block Vertical Stick,325.0,True
+12.5,"[""5-Block Vertical Stick""]",5-Block Vertical Stick,25.0,False
+20.3,"[""L Shape"", ""T Shape Tall Left"", ""Cross""]",L Shape,20.0,False
+26.6,"[""L Shape"", ""Cross""]",L Shape,25.0,False
+34.4,"[""L Shape""]",L Shape,20.0,False
+40.6,"[""Small Square"", ""Tall Rectangle"", ""Bottom-Left Corner""]",Small Square,130.0,True
+37.5,"[""Small Square"", ""Bottom-Left Corner""]",Small Square,115.0,True
+29.7,"[""Small Square""]",Small Square,20.0,False
+35.9,"[""T Shape Tall Right"", ""Cross"", ""S Shape Tall Right""]",T Shape Tall Right,25.0,False
+43.8,"[""T Shape Tall Right"", ""S Shape Tall Right""]",T Shape Tall Right,120.0,True
+37.5,"[""T Shape Tall Right""]",T Shape Tall Right,20.0,False
+43.8,"[""3-Block Vertical Stick"", ""Tall Rectangle"", ""S Shape Tall Left""]",3-Block Vertical Stick,120.0,True
+37.5,"[""3-Block Vertical Stick"", ""Tall Rectangle""]",3-Block Vertical Stick,30.0,False
+46.9,"[""3-Block Vertical Stick""]",3-Block Vertical Stick,15.0,False
+51.6,"[""Top-Right Corner"", ""3-Block Vertical Stick"", ""S Shape Tall Left""]",Top-Right Corner,120.0,True
+45.3,"[""Top-Right Corner"", ""3-Block Vertical Stick""]",Top-Right Corner,15.0,False
+50.0,"[""Top-Right Corner""]",Top-Right Corner,15.0,False
+54.7,"[""Wide Rectangle"", ""Large Square"", ""Standing L""]",Standing L,320.0,True
+35.9,"[""Wide Rectangle"", ""Large Square""]",Wide Rectangle,145.0,True
+37.5,"[""Wide Rectangle""]",Wide Rectangle,730.0,False
+23.4,"[""Wide Rectangle"", ""3-Block Stick"", ""4-Block Vertical Stick""]",Wide Rectangle,30.0,False
+32.8,"[""3-Block Stick"", ""4-Block Vertical Stick""]",3-Block Stick,20.0,False
+39.1,"[""3-Block Stick""]",3-Block Stick,15.0,False
+43.8,"[""4-Block Stick"", ""Bottom-Right Corner"", ""Elbow Top-Left Corner""]",4-Block Stick,125.0,True
+39.1,"[""4-Block Stick"", ""Bottom-Right Corner""]",4-Block Stick,115.0,True
+31.2,"[""4-Block Stick""]",4-Block Stick,20.0,False
+37.5,"[""Bottom-Left Corner"", ""S Shape Left"", ""Cross""]",Bottom-Left Corner,25.0,False
+45.3,"[""Bottom-Left Corner"", ""S Shape Left""]",Bottom-Left Corner,120.0,True
+39.1,"[""Bottom-Left Corner""]",Bottom-Left Corner,15.0,False
+43.8,"[""3-Block Vertical Stick"", ""Tall Rectangle"", ""Bottom-Right Corner""]",3-Block Vertical Stick,30.0,False
+53.1,"[""3-Block Vertical Stick"", ""Bottom-Right Corner""]",3-Block Vertical Stick,315.0,True
+32.8,"[""Bottom-Right Corner""]",Bottom-Right Corner,15.0,False
+37.5,"[""Elbow Bottom-Right Corner"", ""Single Block"", ""L Shape""]",Elbow Bottom-Right Corner,105.0,True
+26.6,"[""Elbow Bottom-Right Corner"", ""L Shape""]",Elbow Bottom-Right Corner,25.0,False
+34.4,"[""L Shape""]",L Shape,20.0,False
+40.6,"[""Top-Left Corner"", ""S Shape Left"", ""L Shape""]",Top-Left Corner,15.0,False
+45.3,"[""S Shape Left"", ""L Shape""]",S Shape Left,20.0,False
+51.6,"[""L Shape""]",L Shape,20.0,False
+57.8,"[""4-Block Vertical Stick"", ""Top-Right Corner"", ""Bottom-Left Corner""]",Top-Right Corner,115.0,True
+50.0,"[""4-Block Vertical Stick"", ""Top-Right Corner""]",4-Block Vertical Stick,15.0,False
+54.7,"[""4-Block Vertical Stick""]",4-Block Vertical Stick,20.0,False
+60.9,"[""Bottom-Left Corner"", ""5-Block Vertical Stick"", ""Elbow Top-Right Corner""]",Bottom-Left Corner,325.0,True
+43.8,"[""Bottom-Left Corner"", ""5-Block Vertical Stick""]",Bottom-Left Corner,15.0,False
+48.4,"[""5-Block Vertical Stick""]",,0.0,False
+0.0,"[""T Shape Tall Left"", ""Flat L"", ""Small Square""]",T Shape Tall Left,20.0,False
+6.2,"[""T Shape Tall Left"", ""Small Square""]",T Shape Tall Left,20.0,False
+12.5,"[""T Shape Tall Left""]",T Shape Tall Left,20.0,False
+18.8,"[""Wide Rectangle"", ""T Shape Down"", ""S Shape Right""]",Wide Rectangle,20.0,False
+25.0,"[""Wide Rectangle"", ""S Shape Right""]",Wide Rectangle,130.0,True
+21.9,"[""S Shape Right""]",S Shape Right,20.0,False
+28.1,"[""Cross"", ""Standing L"", ""Small Square""]",Cross,20.0,False
+34.4,"[""Cross"", ""Small Square""]",Cross,125.0,True
+29.7,"[""Small Square""]",Small Square,20.0,False
+35.9,"[""Top-Left Corner"", ""S Shape Left"", ""Cross""]",Top-Left Corner,125.0,True
+31.2,"[""Top-Left Corner"", ""S Shape Left""]",Top-Left Corner,20.0,False
+37.5,"[""Top-Left Corner""]",Top-Left Corner,15.0,False
+42.2,"[""5-Block Stick"", ""4-Block Vertical Stick"", ""Wide Rectangle""]",5-Block Stick,130.0,True
+39.1,"[""5-Block Stick"", ""4-Block Vertical Stick""]",5-Block Stick,25.0,False
+46.9,"[""4-Block Vertical Stick""]",4-Block Vertical Stick,120.0,True
+40.6,"[""T Shape Tall Right"", ""L Shape"", ""Cross""]",T Shape Tall Right,120.0,True
+34.4,"[""L Shape"", ""Cross""]",L Shape,25.0,False
+42.2,"[""L Shape""]",L Shape,20.0,False
+48.4,"[""T Shape Tall Right"", ""Top-Left Corner"", ""Bottom-Right Corner""]",T Shape Tall Right,15.0,False
+53.1,"[""T Shape Tall Right"", ""Bottom-Right Corner""]",T Shape Tall Right,15.0,False
+57.8,"[""T Shape Tall Right""]",T Shape Tall Right,20.0,False
+64.1,"[""Elbow Top-Left Corner"", ""S Shape Tall Left"", ""4-Block Vertical Stick""]",4-Block Vertical Stick,320.0,True
+45.3,"[""Elbow Top-Left Corner"", ""S Shape Tall Left""]",Elbow Top-Left Corner,125.0,True
+40.6,"[""S Shape Tall Left""]",S Shape Tall Left,120.0,True
+34.4,"[""Tall Rectangle"", ""Bottom-Left Corner"", ""3-Block Stick""]",Tall Rectangle,15.0,False
+39.1,"[""Tall Rectangle"", ""3-Block Stick""]",Tall Rectangle,30.0,False
+48.4,"[""3-Block Stick""]",3-Block Stick,15.0,False
+53.1,"[""3-Block Stick"", ""3-Block Vertical Stick"", ""S Shape Right""]",3-Block Stick,15.0,False
+57.8,"[""3-Block Vertical Stick"", ""S Shape Right""]",3-Block Vertical Stick,315.0,True
+37.5,"[""S Shape Right""]",S Shape Right,120.0,True
+31.2,"[""Tall Rectangle"", ""Bottom-Left Corner"", ""Wide Rectangle""]",Tall Rectangle,15.0,False
+35.9,"[""Tall Rectangle"", ""Wide Rectangle""]",Tall Rectangle,30.0,False
+45.3,"[""Wide Rectangle""]",Wide Rectangle,30.0,False
+54.7,"[""Top-Right Corner"", ""T Shape Tall Right"", ""Elbow Top-Left Corner""]",Top-Right Corner,120.0,True
+48.4,"[""Top-Right Corner"", ""Elbow Top-Left Corner""]",Top-Right Corner,15.0,False
+53.1,"[""Elbow Top-Left Corner""]",Elbow Top-Left Corner,25.0,False
+60.9,"[""5-Block Vertical Stick"", ""3-Block Stick"", ""Single Block""]",5-Block Vertical Stick,5.0,False
+62.5,"[""5-Block Vertical Stick"", ""3-Block Stick""]",5-Block Vertical Stick,515.0,True
+29.7,"[""5-Block Vertical Stick""]",5-Block Vertical Stick,25.0,False
+37.5,"[""Reversed L"", ""Wide Rectangle"", ""T Shape Tall Left""]",Reversed L,120.0,True
+31.2,"[""Reversed L"", ""Wide Rectangle""]",Reversed L,20.0,False
+37.5,"[""Wide Rectangle""]",Wide Rectangle,30.0,False
+46.9,"[""4-Block Vertical Stick"", ""3-Block Stick"", ""T Shape Tall Left""]",4-Block Vertical Stick,15.0,False
+51.6,"[""4-Block Vertical Stick"", ""T Shape Tall Left""]",4-Block Vertical Stick,20.0,False
+57.8,"[""4-Block Vertical Stick""]",4-Block Vertical Stick,520.0,True
+26.6,"[""L Shape"", ""4-Block Vertical Stick"", ""S Shape Tall Left""]",L Shape,20.0,False
+32.8,"[""4-Block Vertical Stick"", ""S Shape Tall Left""]",4-Block Vertical Stick,120.0,True
+26.6,"[""4-Block Vertical Stick""]",4-Block Vertical Stick,120.0,True
+20.3,"[""T Shape Up"", ""4-Block Vertical Stick"", ""Elbow Top-Left Corner""]",T Shape Up,120.0,True
+14.1,"[""4-Block Vertical Stick"", ""Elbow Top-Left Corner""]",4-Block Vertical Stick,20.0,False
+20.3,"[""Elbow Top-Left Corner""]",Elbow Top-Left Corner,25.0,False
+28.1,"[""Top-Right Corner"", ""4-Block Vertical Stick"", ""Elbow Top-Right Corner""]",Top-Right Corner,125.0,True
+23.4,"[""Top-Right Corner"", ""4-Block Vertical Stick""]",Top-Right Corner,20.0,False
+29.7,"[""Top-Right Corner""]",Top-Right Corner,115.0,True
+21.9,"[""Cross"", ""Wide Rectangle"", ""T Shape Tall Left""]",Cross,20.0,False
+28.1,"[""Cross"", ""Wide Rectangle""]",Cross,25.0,False
+35.9,"[""Wide Rectangle""]",Wide Rectangle,130.0,True
+32.8,"[""Small Square"", ""4-Block Vertical Stick"", ""S Shape Tall Left""]",Small Square,120.0,True
+26.6,"[""4-Block Vertical Stick"", ""S Shape Tall Left""]",4-Block Vertical Stick,20.0,False
+32.8,"[""4-Block Vertical Stick""]",4-Block Vertical Stick,20.0,False
+39.1,"[""Cross"", ""Small Square"", ""Standing L""]",Cross,120.0,True
+32.8,"[""Cross"", ""Small Square""]",Cross,20.0,False
+39.1,"[""Cross""]",Cross,125.0,True
+34.4,"[""Wide Rectangle"", ""Top-Left Corner"", ""Standing L Left""]",Wide Rectangle,115.0,True
+26.6,"[""Wide Rectangle"", ""Standing L Left""]",Wide Rectangle,20.0,False
+32.8,"[""Wide Rectangle""]",Wide Rectangle,30.0,False
+42.2,"[""Tall Rectangle"", ""S Shape Left"", ""Top-Left Corner""]",Tall Rectangle,20.0,False
+48.4,"[""Tall Rectangle"", ""Top-Left Corner""]",Tall Rectangle,30.0,False
+57.8,"[""Top-Left Corner""]",Top-Left Corner,115.0,True
+50.0,"[""Bottom-Left Corner"", ""Small Square"", ""Standing L Left""]",Bottom-Left Corner,120.0,True
+43.8,"[""Bottom-Left Corner"", ""Standing L Left""]",Bottom-Left Corner,15.0,False
+48.4,"[""Standing L Left""]",Standing L Left,20.0,False
+54.7,"[""Top-Left Corner"", ""Standing L Left"", ""3-Block Stick""]",Top-Left Corner,115.0,True
+46.9,"[""Standing L Left"", ""3-Block Stick""]",Standing L Left,20.0,False
+53.1,"[""3-Block Stick""]",3-Block Stick,15.0,False
+57.8,"[""Top-Left Corner"", ""T Shape Tall Left"", ""Tall Rectangle""]",Top-Left Corner,20.0,False
+64.1,"[""Top-Left Corner"", ""Tall Rectangle""]",Top-Left Corner,15.0,False
+68.8,"[""Tall Rectangle""]",Tall Rectangle,130.0,True
+65.6,"[""Single Block"", ""3-Block Stick"", ""3-Block Vertical Stick""]",Single Block,715.0,False
+46.9,"[""Single Block"", ""3-Block Stick""]",Single Block,5.0,False
+48.4,"[""3-Block Stick""]",3-Block Stick,15.0,False
+53.1,"[""L Shape"", ""Elbow Bottom-Left Corner"", ""T Shape Tall Right""]",L Shape,320.0,True
+34.4,"[""L Shape"", ""Elbow Bottom-Left Corner""]",L Shape,25.0,False
+42.2,"[""L Shape""]",L Shape,120.0,True
+35.9,"[""Bottom-Left Corner"", ""Top-Right Corner"", ""T Shape Up""]",Bottom-Left Corner,115.0,True
+28.1,"[""Bottom-Left Corner"", ""T Shape Up""]",Bottom-Left Corner,120.0,True
+21.9,"[""Bottom-Left Corner""]",Bottom-Left Corner,15.0,False
+26.6,"[""Tall Rectangle"", ""Bottom-Right Corner"", ""Large Square""]",Tall Rectangle,45.0,False
+40.6,"[""Tall Rectangle"", ""Bottom-Right Corner""]",Tall Rectangle,15.0,False
+45.3,"[""Tall Rectangle""]",Tall Rectangle,130.0,True
+42.2,"[""T Shape Tall Right"", ""5-Block Stick"", ""S Shape Tall Left""]",T Shape Tall Right,120.0,True
+35.9,"[""5-Block Stick"", ""S Shape Tall Left""]",5-Block Stick,125.0,True
+31.2,"[""S Shape Tall Left""]",S Shape Tall Left,20.0,False
+37.5,"[""Top-Left Corner"", ""Tall Rectangle"", ""5-Block Stick""]",Top-Left Corner,15.0,False
+42.2,"[""Tall Rectangle"", ""5-Block Stick""]",Tall Rectangle,30.0,False
+51.6,"[""5-Block Stick""]",5-Block Stick,125.0,True
+46.9,"[""Elbow Top-Right Corner"", ""Reversed L"", ""Bottom-Left Corner""]",Elbow Top-Right Corner,25.0,False
+54.7,"[""Reversed L"", ""Bottom-Left Corner""]",Reversed L,15.0,False
+59.4,"[""Reversed L""]",Reversed L,20.0,False
+65.6,"[""Single Block"", ""3-Block Stick"", ""3-Block Vertical Stick""]",Single Block,715.0,False
+46.9,"[""Single Block"", ""3-Block Vertical Stick""]",Single Block,5.0,False
+48.4,"[""3-Block Vertical Stick""]",3-Block Vertical Stick,15.0,False
+53.1,"[""Standing L"", ""Bottom-Right Corner"", ""Top-Left Corner""]",Standing L,115.0,True
+45.3,"[""Standing L"", ""Bottom-Right Corner""]",Standing L,20.0,False
+51.6,"[""Bottom-Right Corner""]",Bottom-Right Corner,15.0,False
+56.2,"[""S Shape Tall Right"", ""5-Block Vertical Stick"", ""Standing L""]",S Shape Tall Right,25.0,False
+64.1,"[""S Shape Tall Right"", ""Standing L""]",Standing L,120.0,True
+57.8,"[""S Shape Tall Right""]",S Shape Tall Right,20.0,False
+64.1,"[""Bottom-Left Corner"", ""4-Block Vertical Stick"", ""Wide Rectangle""]",Bottom-Left Corner,120.0,True
+57.8,"[""Bottom-Left Corner"", ""Wide Rectangle""]",Bottom-Left Corner,115.0,True
+50.0,"[""Wide Rectangle""]",Wide Rectangle,30.0,False
+59.4,"[""S Shape Left"", ""Top-Left Corner"", ""Elbow Bottom-Left Corner""]",S Shape Left,125.0,True
+54.7,"[""S Shape Left"", ""Top-Left Corner""]",S Shape Left,115.0,True
+46.9,"[""S Shape Left""]",S Shape Left,20.0,False
+53.1,"[""S Shape Left"", ""Cross"", ""T Shape Tall Right""]",S Shape Left,20.0,False
+59.4,"[""S Shape Left"", ""Cross""]",,0.0,False
+0.0,"[""T Shape Tall Left"", ""4-Block Vertical Stick"", ""S Shape Tall Left""]",T Shape Tall Left,20.0,False
+6.2,"[""T Shape Tall Left"", ""4-Block Vertical Stick""]",T Shape Tall Left,20.0,False
+12.5,"[""4-Block Vertical Stick""]",4-Block Vertical Stick,20.0,False
+18.8,"[""Standing L Left"", ""3-Block Stick"", ""Bottom-Right Corner""]",Standing L Left,120.0,True
+12.5,"[""3-Block Stick"", ""Bottom-Right Corner""]",3-Block Stick,15.0,False
+17.2,"[""3-Block Stick""]",3-Block Stick,15.0,False
+21.9,"[""Cross"", ""Elbow Bottom-Left Corner"", ""Top-Left Corner""]",Cross,125.0,True
+17.2,"[""Cross"", ""Top-Left Corner""]",Cross,115.0,True
+9.4,"[""Cross""]",Cross,25.0,False
+17.2,"[""Cross"", ""S Shape Tall Left"", ""Tall Rectangle""]",Cross,20.0,False
+23.4,"[""Cross"", ""Tall Rectangle""]",Cross,130.0,True
+20.3,"[""Cross""]",Cross,25.0,False
+28.1,"[""4-Block Stick"", ""Elbow Bottom-Left Corner"", ""Tall Rectangle""]",4-Block Stick,120.0,True
+21.9,"[""Elbow Bottom-Left Corner"", ""Tall Rectangle""]",Elbow Bottom-Left Corner,30.0,False
+31.2,"[""Elbow Bottom-Left Corner""]",Elbow Bottom-Left Corner,125.0,True
+26.6,"[""L Shape Left"", ""T Shape Down"", ""Cross""]",L Shape Left,25.0,False
+34.4,"[""L Shape Left"", ""T Shape Down""]",L Shape Left,20.0,False
+40.6,"[""L Shape Left""]",L Shape Left,20.0,False
+46.9,"[""T Shape Down"", ""3-Block Vertical Stick"", ""Bottom-Left Corner""]",T Shape Down,20.0,False
+53.1,"[""3-Block Vertical Stick"", ""Bottom-Left Corner""]",3-Block Vertical Stick,15.0,False
+57.8,"[""3-Block Vertical Stick""]",3-Block Vertical Stick,315.0,True
+37.5,"[""Flat L"", ""3-Block Vertical Stick"", ""Small Square""]",Flat L,120.0,True
+31.2,"[""3-Block Vertical Stick"", ""Small Square""]",3-Block Vertical Stick,20.0,False
+37.5,"[""3-Block Vertical Stick""]",3-Block Vertical Stick,115.0,True
+29.7,"[""Top-Right Corner"", ""S Shape Tall Right"", ""T Shape Tall Right""]",Top-Right Corner,15.0,False
+34.4,"[""S Shape Tall Right"", ""T Shape Tall Right""]",S Shape Tall Right,20.0,False
+40.6,"[""T Shape Tall Right""]",T Shape Tall Right,20.0,False
+46.9,"[""4-Block Vertical Stick"", ""Tall Rectangle"", ""3-Block Vertical Stick""]",4-Block Vertical Stick,130.0,True
+43.8,"[""4-Block Vertical Stick"", ""3-Block Vertical Stick""]",4-Block Vertical Stick,20.0,False
+50.0,"[""3-Block Vertical Stick""]",3-Block Vertical Stick,15.0,False
+54.7,"[""Tall Rectangle"", ""T Shape Up"", ""Cross""]",T Shape Up,20.0,False
+60.9,"[""Tall Rectangle"", ""Cross""]",,,False

@@ -13,6 +13,9 @@ struct DebugPanelView: View {
     let onResetHearts: () -> Void
     let onForceCheck: () -> Void
     let onViewShapes: () -> Void
+    let onTestHighScoreAnimation: () -> Void
+    let onSetTestHighScore: () -> Void
+    let onSimulateHighScoreCrossing: () -> Void
     
     var body: some View {
         NavigationView {
@@ -71,6 +74,32 @@ struct DebugPanelView: View {
                                         subtitle: "Reset revive heart count to 3 for testing",
                                         color: .red,
                                         action: onResetHearts
+                                    )
+                                }
+                            }
+                            
+                            // High Score Animation Testing Section
+                            DebugSection(title: "High Score Animation") {
+                                VStack(spacing: 12) {
+                                    DebugButton(
+                                        title: "Set Test High Score",
+                                        subtitle: "Set high score to 500 for testing animation",
+                                        color: .purple,
+                                        action: onSetTestHighScore
+                                    )
+                                    
+                                    DebugButton(
+                                        title: "Test Animation",
+                                        subtitle: "Force trigger high score animation",
+                                        color: .green,
+                                        action: onTestHighScoreAnimation
+                                    )
+                                    
+                                    DebugButton(
+                                        title: "Simulate High Score Crossing",
+                                        subtitle: "Test real-time high score detection during gameplay",
+                                        color: .orange,
+                                        action: onSimulateHighScoreCrossing
                                     )
                                 }
                             }
@@ -187,9 +216,15 @@ struct DebugPanelView_Previews: PreviewProvider {
             onNearlyFullBoard: {},
             onResetHearts: {},
             onForceCheck: {},
-            onViewShapes: {}
+            onViewShapes: {},
+            onTestHighScoreAnimation: {},
+            onSetTestHighScore: {},
+            onSimulateHighScoreCrossing: {}
         )
     }
 }
+        
+    
+
 
 #endif

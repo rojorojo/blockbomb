@@ -1,0 +1,226 @@
+{
+  "activityEntities" : [
+    "experimentCreated",
+    [
+      {
+        "createdDate" : "2025-06-10T03:16:21Z",
+        "event" : "experimentCreated",
+        "id" : "1F69DECE-3BC0-4D34-8E5A-4ECD0F7FD004",
+        "subtitle" : "BEMUP-Block-Data 1",
+        "title" : "Model Source Created"
+      }
+    ],
+    "trainingDataAdded",
+    [
+      {
+        "createdDate" : "2025-06-10T03:16:29Z",
+        "event" : "trainingDataAdded",
+        "id" : "ED8C7283-0DC0-4F62-ADFE-7F426DF0D038",
+        "subtitle" : "Repaired_ML_Dataset_Preview.csv",
+        "title" : "Training Data Added"
+      }
+    ]
+  ],
+  "contentDataResult" : {
+    "createdDate" : "2025-06-10T03:16:29Z"
+  },
+  "createdDate" : "2025-06-10T03:16:21Z",
+  "evaluationContainerEntity" : {
+    "createdDate" : "2025-06-10T03:20:33Z",
+    "evaluationEntities" : [
+
+    ],
+    "id" : "58456ae8-456c-4011-8aa8-90d10cb660f5",
+    "modifiedDate" : "2025-06-10T03:20:33Z",
+    "previewType" : "tabularClassifier",
+    "testingEvaluationEntity" : {
+      "analysedDataType" : "none",
+      "createdDate" : "2025-06-10T03:16:21Z",
+      "dataResult" : {
+        "createdDate" : "2025-06-10T03:16:29Z"
+      },
+      "id" : "d3b0d930-4a23-465a-b94d-b73112849403"
+    },
+    "trainingEvaluationEntity" : {
+      "analysedDataType" : "none",
+      "createdDate" : "2025-06-10T03:16:21Z",
+      "dataResult" : {
+        "createdDate" : "2025-06-10T03:16:29Z"
+      },
+      "id" : "2d82e375-c1c3-49cd-9372-bbbd4f067d50"
+    },
+    "validationEvaluationEntity" : {
+      "analysedDataType" : "auto",
+      "createdDate" : "2025-06-10T03:16:21Z",
+      "dataResult" : {
+        "createdDate" : "2025-06-10T03:16:29Z"
+      },
+      "id" : "f76e9b70-bc5b-4e69-a83d-422b6287a452"
+    }
+  },
+  "evaluationEntity" : {
+    "analysedDataType" : "none",
+    "dataResult" : {
+
+    },
+    "id" : "82df935d-fcdd-4e62-8bd4-379d5884be86"
+  },
+  "evaluationState" : "uninitialized",
+  "id" : "8DF83B41-D5B1-4CAB-8B9D-1240E242B5C7",
+  "modelEntity" : {
+    "createdDate" : "2025-06-10T03:16:21Z",
+    "experimentID" : "8DF83B41-D5B1-4CAB-8B9D-1240E242B5C7",
+    "id" : "E09DB452-05C6-4C91-A513-1465207DC402",
+    "modifiedDate" : "2025-06-10T03:16:21Z",
+    "preferredFilename" : "",
+    "title" : "",
+    "version" : "1.0"
+  },
+  "modifiedDate" : "2025-06-10T03:20:33Z",
+  "preferredFilename" : "BEMUP-Block-Data 1",
+  "settingEntity" : {
+    "algorithmType" : "maxEnt",
+    "augmentations" : [
+
+    ],
+    "featureNames" : [
+      "board_state"
+    ],
+    "generalClassifierType" : {
+      "auto" : {
+
+      }
+    },
+    "handActionClassifierAugmentations" : [
+
+    ],
+    "handPoseClassifierAugmentations" : [
+
+    ],
+    "harVideoAugmentations" : 0,
+    "seedType" : "default",
+    "styleTransferAlgorithmType" : "image",
+    "suggestedColumnTypes" : [
+      "String",
+      "String",
+      "String",
+      "String",
+      "Int",
+      "Int"
+    ],
+    "suggestedColumnValues" : [
+      "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+      "T Shape Up, 4-Block Stick, 5-Block Stick, S Shape Right, Small Square, T Shape Tall Left, 4-Block Stick, T Shape Tall Left, T Shape Tall Left",
+      "Elbow Bottom-Right Corner, Small Square, T Shape Tall Right, Elbow Bottom-Left Corner, Elbow Bottom-Right Corner, Bottom-Right Corner, Tall Rectangle, Flat L, 4-Block Vertical Stick",
+      "Large Square, Bottom-Left Corner, Cross, 4-Block Stick, Wide Rectangle, L Shape, Bottom-Right Corner, Small Square, S Shape Tall Left",
+      "1, 1, 1, 1, 1, 1, 1, 1, 1",
+      "1, 1, 1, 1, 1, 1, 1, 1, 1"
+    ],
+    "suggestedColumns" : [
+      "board_state",
+      "block_1",
+      "block_2",
+      "block_3",
+      "all_placeable",
+      "game_continues"
+    ],
+    "targetColumn" : "game_continues",
+    "taskType" : "generalClassifier",
+    "transferLearningEmbeddingType" : "dynamic"
+  },
+  "snapshotRole" : {
+    "withoutSnapshots" : 0
+  },
+  "state" : "uninitialized",
+  "title" : "BEMUP-Block-Data 1",
+  "trainingEntity" : {
+    "analysedDataType" : "datasource",
+    "checkpointMetrics" : {
+
+    },
+    "dataResult" : {
+      "classesCount" : 1,
+      "columnTypes" : [
+        "String",
+        "String",
+        "String",
+        "String",
+        "Int",
+        "Int"
+      ],
+      "columnValues" : [
+        "0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0, 0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0",
+        "T Shape Up, 4-Block Stick, 5-Block Stick, S Shape Right, Small Square, T Shape Tall Left, 4-Block Stick, T Shape Tall Left, T Shape Tall Left",
+        "Elbow Bottom-Right Corner, Small Square, T Shape Tall Right, Elbow Bottom-Left Corner, Elbow Bottom-Right Corner, Bottom-Right Corner, Tall Rectangle, Flat L, 4-Block Vertical Stick",
+        "Large Square, Bottom-Left Corner, Cross, 4-Block Stick, Wide Rectangle, L Shape, Bottom-Right Corner, Small Square, S Shape Tall Left",
+        "1, 1, 1, 1, 1, 1, 1, 1, 1",
+        "1, 1, 1, 1, 1, 1, 1, 1, 1"
+      ],
+      "columns" : [
+        "board_state",
+        "block_1",
+        "block_2",
+        "block_3",
+        "all_placeable",
+        "game_continues"
+      ],
+      "createdDate" : "2025-06-10T03:16:29Z",
+      "dataAnalysis" : {
+        "classifierAnalysis" : {
+
+        },
+        "issues" : [
+          {
+            "description" : "Target only contains 1 unique value.",
+            "severity" : "notReady"
+          },
+          {
+            "description" : "Data has 9 rows",
+            "severity" : "info"
+          }
+        ],
+        "objectDetectorAnalysis" : {
+          "details" : {
+
+          }
+        },
+        "summary" : {
+          "canUseValidation" : 0,
+          "classCount" : 1,
+          "sampleCount" : 9
+        }
+      },
+      "dataSourceID" : "337D3C67-07DF-432C-89EA-4FE01BDB9788",
+      "dataURL" : "file:///Users/robertjohnson/CodeAppsIOS/blockbomb/Repaired_ML_Dataset_Preview.csv",
+      "error" : {
+        "code" : 1000,
+        "domain" : "composer.error.domain",
+        "errorType" : "notReady",
+        "reason" : "Target only contains 1 unique value."
+      },
+      "itemsCount" : 9
+    },
+    "dataSourceID" : "337D3C67-07DF-432C-89EA-4FE01BDB9788",
+    "featureExtractionCheckpointMayBeAvailable" : false,
+    "progress" : [
+
+    ],
+    "snapshottableCheckpoints" : {
+
+    }
+  },
+  "validationEntity" : {
+    "analysedDataType" : "auto",
+    "dataResult" : {
+      "createdDate" : "2025-06-10T03:16:29Z"
+    },
+    "splitOptions" : {
+      "strategy" : {
+        "automatic" : {
+
+        }
+      }
+    }
+  },
+  "version" : "1.0"
+}

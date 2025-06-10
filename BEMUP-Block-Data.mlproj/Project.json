@@ -1,0 +1,29 @@
+{
+  "activityEntities" : [
+    "projectCreated",
+    [
+      {
+        "createdDate" : "2025-06-10T03:16:21Z",
+        "event" : "projectCreated",
+        "id" : "8D94166C-7A4B-4A33-8734-E2AA7D8AFDEC",
+        "subtitle" : "BEMUP-Block-Data",
+        "title" : "Project Created"
+      }
+    ]
+  ],
+  "authorName" : "Robert Johnson",
+  "createdDate" : "2025-06-10T03:16:21Z",
+  "description" : "",
+  "id" : "C4ABE8EC-7C54-4200-97E2-25345EB308EE",
+  "license" : "",
+  "location" : "",
+  "modifiedDate" : "2025-06-10T03:16:21Z",
+  "projectName" : "BEMUP-Block-Data",
+  "settingsEntity" : {
+    "snapshotOnExtendTraining" : true,
+    "snapshotOnResumeTraining" : false
+  },
+  "taskType" : "generalClassifier",
+  "title" : "Tabular Classification",
+  "version" : "1.1"
+}

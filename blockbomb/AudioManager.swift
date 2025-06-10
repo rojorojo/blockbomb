@@ -81,6 +81,7 @@ class AudioManager: ObservableObject {
             "combo_large",
             "game_over",
             "new_high_score",
+            "new_high_score_playing",
             "invalid_placement",
             "revive-heart"
         ]
@@ -259,6 +260,10 @@ class AudioManager: ObservableObject {
     
     func playNewHighScoreSound() {
         playSound("new_high_score")
+    }
+    
+    func playNewHighScorePlayingSound() {
+        playSound("new_high_score_playing", volume: 0.8)
     }
     
     func playInvalidPlacementSound() {

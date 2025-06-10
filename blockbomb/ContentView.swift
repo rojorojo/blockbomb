@@ -56,9 +56,24 @@ struct ContentView: View {
                     .padding(.horizontal)
                 
                 VStack(spacing: 20) {
+                    // Score display with high score animation overlay
                     ScoreView(
                         score: gameController.score,
                         highScore: gameController.highScore
+                    )
+                    .overlay(
+                        // High score animation overlay - positioned over ScoreView
+                        Group {
+                            if gameController.showHighScoreAnimation {
+                                HighScoreAnimationView {
+                                    // Animation completed, hide it
+                                    withAnimation(.easeOut(duration: 0.3)) {
+                                        gameController.showHighScoreAnimation = false
+                                    }
+                                }
+                                .transition(.opacity)
+                            }
+                        }
                     )
                     
                     
@@ -188,6 +203,33 @@ struct ContentView: View {
                     // Wait for the sheet to dismiss before presenting the shape gallery
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         gameController.gameScene?.presentSwiftUIShapeGallery()
+                    }
+                },
+                onTestHighScoreAnimation: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Force trigger high score animation
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        gameController.debugTestHighScoreAnimation()
+                    }
+                },
+                onSetTestHighScore: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Set test high score for animation testing
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        gameController.debugSetTestHighScore()
+                    }
+                },
+                onSimulateHighScoreCrossing: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Simulate real-time high score crossing
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        gameController.debugSimulateHighScoreCrossing()
                     }
                 }
             )
