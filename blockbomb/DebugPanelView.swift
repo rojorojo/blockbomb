@@ -5,6 +5,7 @@ import SwiftUI
 /// Only available in debug builds
 struct DebugPanelView: View {
     @Environment(\.presentationMode) var presentationMode
+    @State private var showRewardConfigPanel = false
     
     // Debug actions to be passed from the parent view
     let onTestBugScenario: () -> Void
@@ -236,6 +237,47 @@ struct DebugPanelView: View {
                                 }
                             }
                             
+                            // Reward Configuration Section
+                            DebugSection(title: "Reward Configuration") {
+                                VStack(spacing: 12) {
+                                    DebugButton(
+                                        title: "Open Config Panel",
+                                        subtitle: "Real-time reward economy tuning",
+                                        color: .purple,
+                                        action: {
+                                            showRewardConfigPanel = true
+                                        }
+                                    )
+                                    
+                                    DebugButton(
+                                        title: "Apply Test Preset",
+                                        subtitle: "Quick test configuration for debugging",
+                                        color: .green,
+                                        action: {
+                                            RewardConfig.shared.debugApplyTestPreset()
+                                        }
+                                    )
+                                    
+                                    DebugButton(
+                                        title: "Apply Production Preset",
+                                        subtitle: "Production-ready configuration values",
+                                        color: .blue,
+                                        action: {
+                                            RewardConfig.shared.debugApplyProductionPreset()
+                                        }
+                                    )
+                                    
+                                    DebugButton(
+                                        title: "Reset All Config",
+                                        subtitle: "Reset all configuration to defaults",
+                                        color: .red,
+                                        action: {
+                                            RewardConfig.shared.resetAllToDefaults()
+                                        }
+                                    )
+                                }
+                            }
+                            
                             // Game Content Section
                             DebugSection(title: "Game Content") {
                                 VStack(spacing: 12) {
@@ -270,6 +312,9 @@ struct DebugPanelView: View {
             }
         }
         .navigationViewStyle(StackNavigationViewStyle())
+        .sheet(isPresented: $showRewardConfigPanel) {
+            RewardConfigDebugView()
+        }
     }
 }
 

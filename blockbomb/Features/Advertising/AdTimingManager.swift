@@ -14,9 +14,20 @@ class AdTimingManager: ObservableObject {
     @Published var showBonusAdPrompt = false
     @Published var isInterstitialReady = false
     
-    // MARK: - Configuration
-    private let gamesBetweenInterstitials = 2 // Show interstitial every 2 games
-    private let bonusAdCooldownSeconds: TimeInterval = 120 // 2 minutes between bonus ad prompts
+    // MARK: - Configuration Integration
+    private let rewardConfig = RewardConfig.shared
+    private var cancellables = Set<AnyCancellable>()
+    
+    /// Games between interstitials from configuration
+    private var gamesBetweenInterstitials: Int {
+        return rewardConfig.gamesBetweenInterstitials
+    }
+    
+    /// Bonus ad cooldown from configuration
+    private var bonusAdCooldownSeconds: TimeInterval {
+        return TimeInterval(rewardConfig.bonusAdCooldownSeconds)
+    }
+    
     private let userDefaultsGameCountKey = "adTimingGameCount"
     private let userDefaultsLastBonusAdKey = "lastBonusAdTime"
     
@@ -51,6 +62,33 @@ class AdTimingManager: ObservableObject {
         
         // Listen for ad manager updates
         setupAdManagerObserver()
+        
+        // Setup configuration observers
+        setupConfigurationObservers()
+    }
+    
+    // MARK: - Configuration Observer
+    private func setupConfigurationObservers() {
+        NotificationCenter.default.publisher(for: .rewardConfigAdvertisingChanged)
+            .sink { [weak self] notification in
+                if let key = notification.userInfo?["key"] as? String,
+                   let value = notification.userInfo?["value"] as? Int {
+                    self?.handleConfigurationChange(key: key, value: value)
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    /// Handle configuration changes
+    private func handleConfigurationChange(key: String, value: Int) {
+        switch key {
+        case RewardConfigKey.gamesBetweenInterstitials.rawValue:
+            print("AdTimingManager: Games between interstitials updated to \(value)")
+        case RewardConfigKey.bonusAdCooldownSeconds.rawValue:
+            print("AdTimingManager: Bonus ad cooldown updated to \(value) seconds")
+        default:
+            break
+        }
     }
     
     // MARK: - Ad Manager Observer
@@ -63,8 +101,6 @@ class AdTimingManager: ObservableObject {
             }
             .store(in: &cancellables)
     }
-    
-    private var cancellables = Set<AnyCancellable>()
     
     // MARK: - Game Flow Integration
     

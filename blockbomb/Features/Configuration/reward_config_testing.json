@@ -1,0 +1,23 @@
+{
+  "version": "1.0",
+  "timestamp": "2025-06-11T10:00:00Z",
+  "configurations": {
+    "RewardConfig.pointsPerAd": 20,
+    "RewardConfig.defaultPointBalance": 100,
+    "RewardConfig.reviveHeartPrice": 15,
+    "RewardConfig.futureBonus1Price": 30,
+    "RewardConfig.futureBonus2Price": 60,
+    "RewardConfig.futureBonus3Price": 120,
+    "RewardConfig.gamesBetweenInterstitials": 1,
+    "RewardConfig.bonusAdCooldownSeconds": 30,
+    "RewardConfig.minGameDurationForAd": 10,
+    "RewardConfig.adWatchBonusMultiplier": 2,
+    "RewardConfig.firstTimePlayerBonus": 100,
+    "RewardConfig.dailyBonusPoints": 25
+  },
+  "metadata": {
+    "description": "Testing configuration with increased rewards and reduced cooldowns",
+    "author": "RewardConfig System",
+    "environment": "development"
+  }
+}

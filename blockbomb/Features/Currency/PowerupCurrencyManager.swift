@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 
 /// Manages the powerup currency system including persistence and point tracking
 class PowerupCurrencyManager: ObservableObject {
@@ -22,12 +23,25 @@ class PowerupCurrencyManager: ObservableObject {
     
     // MARK: - Constants
     private let userDefaultsKey = "powerupCurrencyPoints"
-    private let defaultPointBalance = 0
-    private let pointsPerAd = 10 // Configurable points earned per ad watched
+    
+    // MARK: - Configuration Integration
+    private let rewardConfig = RewardConfig.shared
+    private var cancellables = Set<AnyCancellable>()
+    
+    /// Default point balance from configuration
+    private var defaultPointBalance: Int {
+        return rewardConfig.defaultPointBalance
+    }
+    
+    /// Points per ad from configuration
+    private var pointsPerAd: Int {
+        return rewardConfig.pointsPerAd
+    }
     
     // MARK: - Initialization
     private init() {
         loadPoints()
+        setupConfigurationObservers()
     }
     
     // MARK: - Public Methods
@@ -98,6 +112,30 @@ class PowerupCurrencyManager: ObservableObject {
     }
     
     // MARK: - Private Methods
+    
+    /// Setup observers for configuration changes
+    private func setupConfigurationObservers() {
+        NotificationCenter.default.publisher(for: .rewardConfigCurrencyChanged)
+            .sink { [weak self] notification in
+                if let key = notification.userInfo?["key"] as? String,
+                   let value = notification.userInfo?["value"] as? Int {
+                    self?.handleConfigurationChange(key: key, value: value)
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    /// Handle configuration changes
+    private func handleConfigurationChange(key: String, value: Int) {
+        switch key {
+        case RewardConfigKey.pointsPerAd.rawValue:
+            print("PowerupCurrencyManager: Points per ad updated to \(value)")
+        case RewardConfigKey.defaultPointBalance.rawValue:
+            print("PowerupCurrencyManager: Default point balance updated to \(value)")
+        default:
+            break
+        }
+    }
     
     /// Load point balance from UserDefaults
     private func loadPoints() {

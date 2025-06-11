@@ -1,4 +1,5 @@
 import Foundation
+import Combine
 
 /// Enum defining all available powerup types in the shop
 enum PowerupType: String, CaseIterable {
@@ -91,14 +92,15 @@ class PowerupShopManager: ObservableObject {
     // MARK: - Private Properties
     private let currencyManager = PowerupCurrencyManager.shared
     private let reviveHeartManager = ReviveHeartManager.shared
+    private let rewardConfig = RewardConfig.shared
+    private var cancellables = Set<AnyCancellable>()
     
-    // MARK: - Configuration
-    private var powerupPricing: [PowerupType: Int] = [
-        .reviveHeart: 20,
-        .futureBonus1: 50,
-        .futureBonus2: 100,
-        .futureBonus3: 200
-    ]
+    // MARK: - Configuration Integration
+    
+    /// Dynamic powerup pricing from configuration
+    private var powerupPricing: [PowerupType: Int] {
+        return rewardConfig.powerupPrices
+    }
     
     private var powerupAvailability: [PowerupType: Bool] = [
         .reviveHeart: true,
@@ -110,6 +112,7 @@ class PowerupShopManager: ObservableObject {
     // MARK: - Initialization
     private init() {
         updateAvailablePowerups()
+        setupConfigurationObservers()
     }
     
     // MARK: - Public Methods
@@ -208,7 +211,18 @@ class PowerupShopManager: ObservableObject {
             return
         }
         
-        powerupPricing[type] = price
+        // Update price through RewardConfig system
+        switch type {
+        case .reviveHeart:
+            rewardConfig.setValue(price, for: .reviveHeartPrice)
+        case .futureBonus1:
+            rewardConfig.setValue(price, for: .futureBonus1Price)
+        case .futureBonus2:
+            rewardConfig.setValue(price, for: .futureBonus2Price)
+        case .futureBonus3:
+            rewardConfig.setValue(price, for: .futureBonus3Price)
+        }
+        
         updateAvailablePowerups()
         print("PowerupShopManager: Updated price for \(type.displayName) to \(price) points")
     }
@@ -224,6 +238,32 @@ class PowerupShopManager: ObservableObject {
     }
     
     // MARK: - Private Methods
+    
+    /// Setup observers for configuration changes
+    private func setupConfigurationObservers() {
+        NotificationCenter.default.publisher(for: .rewardConfigPowerupsChanged)
+            .sink { [weak self] notification in
+                if let key = notification.userInfo?["key"] as? String,
+                   let value = notification.userInfo?["value"] as? Int {
+                    self?.handleConfigurationChange(key: key, value: value)
+                }
+            }
+            .store(in: &cancellables)
+    }
+    
+    /// Handle configuration changes
+    private func handleConfigurationChange(key: String, value: Int) {
+        switch key {
+        case RewardConfigKey.reviveHeartPrice.rawValue,
+             RewardConfigKey.futureBonus1Price.rawValue,
+             RewardConfigKey.futureBonus2Price.rawValue,
+             RewardConfigKey.futureBonus3Price.rawValue:
+            print("PowerupShopManager: Powerup price updated - \(key): \(value)")
+            updateAvailablePowerups() // Refresh the available powerups with new prices
+        default:
+            break
+        }
+    }
     
     /// Update the available powerups array based on current pricing and availability
     private func updateAvailablePowerups() {
@@ -269,12 +309,12 @@ class PowerupShopManager: ObservableObject {
 extension PowerupShopManager {
     /// Debug method to reset all prices to default values
     func debugResetPrices() {
-        powerupPricing = [
-            .reviveHeart: 20,
-            .futureBonus1: 50,
-            .futureBonus2: 100,
-            .futureBonus3: 200
-        ]
+        // Reset all powerup prices through RewardConfig system
+        rewardConfig.resetToDefault(key: .reviveHeartPrice)
+        rewardConfig.resetToDefault(key: .futureBonus1Price)
+        rewardConfig.resetToDefault(key: .futureBonus2Price)
+        rewardConfig.resetToDefault(key: .futureBonus3Price)
+        
         updateAvailablePowerups()
         print("PowerupShopManager: Debug reset all prices to defaults")
     }
