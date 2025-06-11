@@ -274,6 +274,11 @@ class AudioManager: ObservableObject {
         playSound("revive-heart", volume: 0.8)
     }
     
+    func playAdRewardSound() {
+        // Use the existing bright positive reward sound for ad completion
+        playSound("new_high_score_playing", volume: 0.9)
+    }
+    
     // MARK: - Accessibility Support
     func triggerHapticFeedback(for event: GameAudioEvent) {
         guard UIDevice.current.userInterfaceIdiom == .phone else { return }
@@ -300,6 +305,9 @@ class AudioManager: ObservableObject {
         case .revive:
             let notification = UINotificationFeedbackGenerator()
             notification.notificationOccurred(.success)
+        case .adReward:
+            let notification = UINotificationFeedbackGenerator()
+            notification.notificationOccurred(.success)
         }
     }
 }
@@ -313,4 +321,5 @@ enum GameAudioEvent {
     case newHighScore
     case invalidPlacement
     case revive
+    case adReward
 }

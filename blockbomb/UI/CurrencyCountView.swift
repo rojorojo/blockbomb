@@ -8,7 +8,7 @@ struct CurrencyCountView: View {
     @State private var animationOpacity: Double = 1.0
     
     var body: some View {
-        VStack(spacing: 4) {
+        HStack(spacing: 4) {
             // Coin icon
             Image(systemName: "dollarsign.circle.fill")
                 .foregroundColor(BlockColors.amber)

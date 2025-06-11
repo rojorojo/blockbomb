@@ -14,10 +14,13 @@ class GameController: ObservableObject, PostReviveTracker {
     @Published var showHighScoreAnimation: Bool = false // Flag for real-time high score animation
     
     // Rarity system configuration
-    @Published var selectionMode: TetrominoShape.SelectionMode = .adaptiveBalanced
+    @Published var selectionMode: TetrominoShape.SelectionMode = .strategicWeighted
 
     // Internal reference to game scene
     private(set) var gameScene: GameScene?
+    
+    // Ad timing integration
+    private let adTimingManager = AdTimingManager.shared
     
     // Game state manager for revive heart functionality
     private var savedGameState: GameStateManager.GameState?
@@ -89,6 +92,9 @@ class GameController: ObservableObject, PostReviveTracker {
                 }
                 
                 self?.isGameOver = true
+                
+                // Notify ad timing manager about game end for potential interstitial
+                self?.adTimingManager.onGameEnd(gameController: self ?? GameController())
             }
         }
         

@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		EAA4F3ED2DD6B8F00053186B /* build_instructions.md in Resources */ = {isa = PBXBuildFile; fileRef = EAA4F3EC2DD6B8F00053186B /* build_instructions.md */; };
+		EAC053EF2DF8CF67007E345C /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = EAC053EE2DF8CF67007E345C /* GoogleMobileAds */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -70,6 +71,7 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EAC053EF2DF8CF67007E345C /* GoogleMobileAds in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -131,6 +133,7 @@
 			);
 			name = blockbomb;
 			packageProductDependencies = (
+				EAC053EE2DF8CF67007E345C /* GoogleMobileAds */,
 			);
 			productName = blockbomb;
 			productReference = EAA4F3AF2DD6705B0053186B /* blockbomb.app */;
@@ -214,6 +217,9 @@
 			);
 			mainGroup = EAA4F3A62DD6705B0053186B;
 			minimizedProjectReferenceProxies = 1;
+			packageReferences = (
+				EAC053ED2DF8CF67007E345C /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = EAA4F3B02DD6705B0053186B /* Products */;
 			projectDirPath = "";
@@ -422,6 +428,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "Block 'em Up!";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.puzzle-games";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "This app would like to track you across other apps to provide personalized ads that support free gameplay.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = armv7;
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
@@ -454,6 +461,7 @@
 				INFOPLIST_KEY_CFBundleDisplayName = "Block 'em Up!";
 				INFOPLIST_KEY_ITSAppUsesNonExemptEncryption = NO;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.puzzle-games";
+				INFOPLIST_KEY_NSUserTrackingUsageDescription = "This app would like to track you across other apps to provide personalized ads that support free gameplay.";
 				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
 				INFOPLIST_KEY_UIRequiredDeviceCapabilities = armv7;
 				INFOPLIST_KEY_UIStatusBarHidden = YES;
@@ -580,6 +588,25 @@
 			defaultConfigurationName = Release;
 		};
 /* End XCConfigurationList section */
+
+/* Begin XCRemoteSwiftPackageReference section */
+		EAC053ED2DF8CF67007E345C /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 12.6.0;
+			};
+		};
+/* End XCRemoteSwiftPackageReference section */
+
+/* Begin XCSwiftPackageProductDependency section */
+		EAC053EE2DF8CF67007E345C /* GoogleMobileAds */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EAC053ED2DF8CF67007E345C /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
+			productName = GoogleMobileAds;
+		};
+/* End XCSwiftPackageProductDependency section */
 	};
 	rootObject = EAA4F3A72DD6705B0053186B /* Project object */;
 }

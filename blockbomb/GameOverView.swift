@@ -14,11 +14,14 @@ struct GameOverView: View {
     @State private var showShop = false
     @State private var showPurchaseSuccess = false
     @State private var showAdSuccess = false
+    @State private var showAdRewardAnimation = false
+    @State private var adRewardPoints = 10
     @State private var showError = false
     @State private var errorMessage = ""
     @ObservedObject private var reviveHeartManager = ReviveHeartManager.shared
     @ObservedObject private var currencyManager = PowerupCurrencyManager.shared
     @ObservedObject private var shopManager = PowerupShopManager.shared
+    @ObservedObject private var adManager = AdManager.shared
     
     var body: some View {
         ZStack {
@@ -108,7 +111,7 @@ struct GameOverView: View {
                             .frame(width: 220, height: 50)
                             .overlay(
                                 RoundedRectangle(cornerRadius: 8)
-                                    .stroke(BlockColors.purple, lineWidth: 3)
+                                    .stroke(BlockColors.red, lineWidth: 3)
                             )
                         }
                     }
@@ -157,52 +160,30 @@ struct GameOverView: View {
                         }
                     }
                     
-                    // Watch Ad for Coins button - show if player needs more coins
-                    if !reviveHeartManager.hasHearts() && !shopManager.canPurchase(.reviveHeart) {
-                        Button(action: {
-                            // TODO: This will be implemented in Phase 3.1 (Ad Timing and Placement)
-                            // For now, simulate ad watching for testing
-                            currencyManager.awardAdPoints()
-                            showAdSuccess = true
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                showAdSuccess = false
-                            }
-                            print("Watched ad, earned 10 points!")
-                        }) {
-                            HStack {
-                                Image(systemName: "play.rectangle.fill")
-                                    .foregroundColor(BlockColors.cyan)
-                                Text("Watch Ad for Coins")
-                                    .font(.title3)
-                                    .foregroundColor(BlockColors.cyan)
-                                Image(systemName: "dollarsign.circle.fill")
-                                    .foregroundColor(BlockColors.amber)
-                            }
-                            .frame(width: 220, height: 50)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(BlockColors.cyan, lineWidth: 3)
-                            )
-                        }
-                    }
-                    
-                    // Shop Access button
+                    // Watch Ad for 10 Coins button - always available for earning coins
                     Button(action: {
-                        showShop = true
+                        watchAdForCoins()
                     }) {
-                        HStack {
-                            Image(systemName: "bag.fill")
-                                .foregroundColor(BlockColors.violet)
-                            Text("Powerup Shop")
-                                .font(.title3)
-                                .foregroundColor(BlockColors.violet)
+                        HStack(spacing: 8) {
+                            Image(systemName: "dollarsign.circle.fill")
+                                .foregroundColor(BlockColors.purple)
+                            /*Image(systemName: "xmark")
+                                .foregroundColor(BlockColors.purple)*/
+                            Text("10")
+                                .font(.title3.bold())
+                                .foregroundColor(BlockColors.purple)
+                            Text("Watch Ad")
+                                .font(.title3.bold())
+                                .foregroundColor(BlockColors.purple)
+                            
                         }
                         .frame(width: 220, height: 50)
                         .overlay(
                             RoundedRectangle(cornerRadius: 8)
-                                .stroke(BlockColors.violet, lineWidth: 2)
+                                .stroke(BlockColors.purple, lineWidth: 2)
                         )
                     }
+                    .disabled(!adManager.canShowRewardedAd && !adManager.isInitialized)
                     
                     Button(action: onRestart) {
                         Text("Play Again")
@@ -213,6 +194,23 @@ struct GameOverView: View {
                             .clipShape(RoundedRectangle(cornerRadius: 8))
                     }
                     Spacer()
+                    
+                    // Shop Access button
+                    Button(action: {
+                        showShop = true
+                    }) {
+                        HStack {
+                            Image(systemName: "cart.fill")
+                                .foregroundColor(BlockColors.purple)
+                            Text("Powerup Shop")
+                                .font(.title2.bold())
+                                .foregroundColor(BlockColors.purple)
+                        }
+                        .frame(width: 220, height: 50)
+                        
+                    }
+                    
+                    
                     /*Button(action: onMainMenu) {
                         Text("Main Menu")
                             .font(.title3)
@@ -246,6 +244,18 @@ struct GameOverView: View {
                 )
             }
             
+            // Ad reward animation overlay
+            if showAdRewardAnimation {
+                AdRewardAnimationView(onAnimationComplete: {
+                    // Animation completed, hide it
+                    withAnimation(.easeOut(duration: 0.3)) {
+                        showAdRewardAnimation = false
+                    }
+                }, pointsEarned: adRewardPoints)
+                .transition(.opacity)
+                .zIndex(200) // High z-index to ensure it's above all other UI elements
+            }
+            
             if showError {
                 errorOverlay(message: errorMessage)
             }
@@ -255,8 +265,96 @@ struct GameOverView: View {
                 isAnimating = true
             }
         }
+        .onReceive(NotificationCenter.default.publisher(for: .interstitialAdRewardEarned)) { notification in
+            // Handle interstitial ad rewards that happen while GameOverView is displayed
+            if let points = notification.userInfo?["points"] as? Int {
+                print("GameOverView: Received interstitial ad reward notification with \(points) points")
+                
+                // Show animation in GameOverView for better visibility
+                adRewardPoints = points
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    showAdRewardAnimation = true
+                }
+                print("GameOverView: Showing ad reward animation for interstitial ad")
+            }
+        }
         .sheet(isPresented: $showShop) {
             PowerupShopView()
+        }
+    }
+    
+    // MARK: - Ad Watching Methods
+    
+    /// Handle watching an ad for coins
+    private func watchAdForCoins() {
+        // Get the root view controller for presenting the ad
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first,
+              let rootViewController = window.rootViewController else {
+            print("GameOverView: Could not find root view controller for ad presentation")
+            handleAdFallback()
+            return
+        }
+        
+        if adManager.canShowRewardedAd {
+            // Show real ad
+            adManager.showRewardedAd(from: rootViewController) { [weak currencyManager] success, points in
+                DispatchQueue.main.async {
+                    // Track ad analytics
+                    AdAnalyticsManager.shared.trackRewardedAdCompletion(
+                        success: success,
+                        pointsEarned: points,
+                        adType: "game_over_coins"
+                    )
+                    
+                    if success {
+                        currencyManager?.addPoints(points)
+                        
+                        // Show ad reward animation instead of simple success overlay
+                        adRewardPoints = points
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            showAdRewardAnimation = true
+                        }
+                        
+                        print("GameOverView: Watched ad, earned \(points) points!")
+                    } else {
+                        handleAdFallback()
+                    }
+                }
+            }
+        } else {
+            // Use emergency fallback
+            adManager.handleAdUnavailable { [weak currencyManager] success, points in
+                DispatchQueue.main.async {
+                    // Track fallback analytics
+                    AdAnalyticsManager.shared.trackRewardedAdCompletion(
+                        success: success,
+                        pointsEarned: points,
+                        adType: "game_over_fallback"
+                    )
+                    
+                    if success {
+                        currencyManager?.addPoints(points)
+                        
+                        // Show ad reward animation for fallback too
+                        adRewardPoints = points
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            showAdRewardAnimation = true
+                        }
+                        
+                        print("GameOverView: Used ad fallback, earned \(points) points!")
+                    }
+                }
+            }
+        }
+    }
+    
+    /// Handle ad fallback when ads are unavailable
+    private func handleAdFallback() {
+        errorMessage = "Ad not available - check network"
+        showError = true
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            showError = false
         }
     }
     

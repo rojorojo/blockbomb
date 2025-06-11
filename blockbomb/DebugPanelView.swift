@@ -27,6 +27,17 @@ struct DebugPanelView: View {
     let onMakeAllPowerupsAvailable: () -> Void
     let onResetShopPrices: () -> Void
     
+    // Ad Manager debug actions
+    let onTestRewardedAd: () -> Void
+    let onForceReloadAds: () -> Void
+    let onSimulateAdReward: () -> Void
+    
+    // Ad Timing debug actions
+    let onTriggerInterstitialAd: () -> Void
+    let onPromptBonusAd: () -> Void
+    let onResetAdTimers: () -> Void
+    let onSimulateGameCounts: () -> Void
+    
     var body: some View {
         NavigationView {
             ZStack {
@@ -136,6 +147,65 @@ struct DebugPanelView: View {
                                         subtitle: "Reset all powerup prices to defaults",
                                         color: .orange,
                                         action: onResetShopPrices
+                                    )
+                                }
+                            }
+                            
+                            // Ad Manager Testing Section
+                            DebugSection(title: "Ad Manager") {
+                                VStack(spacing: 12) {
+                                    DebugButton(
+                                        title: "Test Rewarded Ad",
+                                        subtitle: "Simulate showing a rewarded ad",
+                                        color: .green,
+                                        action: onTestRewardedAd
+                                    )
+                                    
+                                    DebugButton(
+                                        title: "Force Reload Ads",
+                                        subtitle: "Reset and reload all ad instances",
+                                        color: .blue,
+                                        action: onForceReloadAds
+                                    )
+                                    
+                                    DebugButton(
+                                        title: "Simulate Ad Reward",
+                                        subtitle: "Grant ad reward without showing ad",
+                                        color: .orange,
+                                        action: onSimulateAdReward
+                                    )
+                                }
+                            }
+                            
+                            // Ad Timing Testing Section
+                            DebugSection(title: "Ad Timing") {
+                                VStack(spacing: 12) {
+                                    DebugButton(
+                                        title: "Trigger Interstitial Ad",
+                                        subtitle: "Force show interstitial ad",
+                                        color: .purple,
+                                        action: onTriggerInterstitialAd
+                                    )
+                                    
+                                    DebugButton(
+                                        title: "Prompt Bonus Ad",
+                                        subtitle: "Show bonus ad prompt",
+                                        color: .yellow,
+                                        action: onPromptBonusAd
+                                    )
+                                    
+                                    DebugButton(
+                                        title: "Reset Ad Timers",
+                                        subtitle: "Reset game count and cooldown timers",
+                                        color: .blue,
+                                        action: onResetAdTimers
+                                    )
+                                    
+                                    DebugButton(
+                                        title: "Simulate Game Counts",
+                                        subtitle: "Add 5 game completions for interstitial testing",
+                                        color: .green,
+                                        action: onSimulateGameCounts
                                     )
                                 }
                             }
@@ -287,7 +357,14 @@ struct DebugPanelView_Previews: PreviewProvider {
             onSimulateAds: {},
             onTestReviveHeartPurchase: {},
             onMakeAllPowerupsAvailable: {},
-            onResetShopPrices: {}
+            onResetShopPrices: {},
+            onTestRewardedAd: {},
+            onForceReloadAds: {},
+            onSimulateAdReward: {},
+            onTriggerInterstitialAd: {},
+            onPromptBonusAd: {},
+            onResetAdTimers: {},
+            onSimulateGameCounts: {}
         )
     }
 }
