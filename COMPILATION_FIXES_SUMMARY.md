@@ -65,6 +65,7 @@ private func successOverlay(...) -> some View {
 ## 🔧 Additional Scope Fixes Applied
 
 ### Function Call Resolution in View Context
+
 ```swift
 // BEFORE (Scope errors in view body)
 if showError {
@@ -90,6 +91,7 @@ Timer.scheduledTimer(...) { [weak self] timer in
 ```
 
 ### Root Cause Analysis
+
 - **Issue**: Mixed scope contexts for different function types
 - **View Functions**: Functions returning `some View` work directly in view body
 - **Method Calls**: Regular methods in async closures need explicit `[weak self]` capture
@@ -119,22 +121,25 @@ Timer.scheduledTimer(...) { [weak self] timer in
 **Third Attempt**: ✅ **SUCCESSFUL** - Root cause identified and resolved
 
 #### Summary of Final Fixes:
+
 1. **Scope Resolution**: Added `self.` prefix to all private method calls within view builders
-2. **Function Structure**: Verified all private methods are at proper struct level  
+2. **Function Structure**: Verified all private methods are at proper struct level
 3. **Attribute Usage**: Ensured `private` keyword is used only at appropriate scope
 4. **Method Accessibility**: Fixed view context access to private struct methods
 5. **Closure Capture**: Implemented proper `[weak self]` capture for async closures
 6. **View Functions**: Removed unnecessary `self.` for View-returning functions
 
 #### Technical Details:
+
 - **View Functions**: Functions returning `some View` don't need `self.` prefix in view body
 - **Regular Methods**: Private methods called from closures need explicit `self` capture
 - **Async Closures**: Timer and DispatchQueue closures require `[weak self]` pattern
 - **Memory Safety**: Weak capture prevents retain cycles in async operations
 
 #### Files Verified Clean:
+
 - ✅ GameOverView.swift - All compilation errors resolved
-- ✅ PowerupShopView.swift - No errors  
+- ✅ PowerupShopView.swift - No errors
 - ✅ AdTransitionView.swift - No errors
 - ✅ ContentView.swift - No errors
 - ✅ AccessibilityExtensions.swift - No errors
