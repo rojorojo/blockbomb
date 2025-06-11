@@ -4,21 +4,23 @@ import Combine
 /// Enum defining all available powerup types in the shop
 enum PowerupType: String, CaseIterable {
     case reviveHeart = "revive_heart"
-    case futureBonus1 = "future_bonus_1"
-    case futureBonus2 = "future_bonus_2"
-    case futureBonus3 = "future_bonus_3"
+    // TODO: Temporarily hidden - will be enabled in future update
+    // case futureBonus1 = "future_bonus_1"
+    // case futureBonus2 = "future_bonus_2"
+    // case futureBonus3 = "future_bonus_3"
     
     /// Display name for the powerup
     var displayName: String {
         switch self {
         case .reviveHeart:
             return "Revive Heart"
-        case .futureBonus1:
-            return "Future Bonus 1"
-        case .futureBonus2:
-            return "Future Bonus 2"
-        case .futureBonus3:
-            return "Future Bonus 3"
+        // TODO: Temporarily hidden - will be enabled in future update
+        // case .futureBonus1:
+        //     return "Future Bonus 1"
+        // case .futureBonus2:
+        //     return "Future Bonus 2"
+        // case .futureBonus3:
+        //     return "Future Bonus 3"
         }
     }
     
@@ -27,12 +29,13 @@ enum PowerupType: String, CaseIterable {
         switch self {
         case .reviveHeart:
             return "Continue playing when you run out of moves"
-        case .futureBonus1:
-            return "Coming soon - Special bonus powerup"
-        case .futureBonus2:
-            return "Coming soon - Advanced powerup"
-        case .futureBonus3:
-            return "Coming soon - Premium powerup"
+        // TODO: Temporarily hidden - will be enabled in future update
+        // case .futureBonus1:
+        //     return "Coming soon - Special bonus powerup"
+        // case .futureBonus2:
+        //     return "Coming soon - Advanced powerup"
+        // case .futureBonus3:
+        //     return "Coming soon - Premium powerup"
         }
     }
 }
@@ -103,10 +106,11 @@ class PowerupShopManager: ObservableObject {
     }
     
     private var powerupAvailability: [PowerupType: Bool] = [
-        .reviveHeart: true,
-        .futureBonus1: false, // Coming soon
-        .futureBonus2: false, // Coming soon
-        .futureBonus3: false  // Coming soon
+        .reviveHeart: true
+        // TODO: Temporarily hidden - will be enabled in future update
+        // .futureBonus1: false, // Coming soon
+        // .futureBonus2: false, // Coming soon
+        // .futureBonus3: false  // Coming soon
     ]
     
     // MARK: - Initialization
@@ -215,12 +219,13 @@ class PowerupShopManager: ObservableObject {
         switch type {
         case .reviveHeart:
             rewardConfig.setValue(price, for: .reviveHeartPrice)
-        case .futureBonus1:
-            rewardConfig.setValue(price, for: .futureBonus1Price)
-        case .futureBonus2:
-            rewardConfig.setValue(price, for: .futureBonus2Price)
-        case .futureBonus3:
-            rewardConfig.setValue(price, for: .futureBonus3Price)
+        // TODO: Temporarily hidden - will be enabled in future update
+        // case .futureBonus1:
+        //     rewardConfig.setValue(price, for: .futureBonus1Price)
+        // case .futureBonus2:
+        //     rewardConfig.setValue(price, for: .futureBonus2Price)
+        // case .futureBonus3:
+        //     rewardConfig.setValue(price, for: .futureBonus3Price)
         }
         
         updateAvailablePowerups()
@@ -254,10 +259,11 @@ class PowerupShopManager: ObservableObject {
     /// Handle configuration changes
     private func handleConfigurationChange(key: String, value: Int) {
         switch key {
-        case RewardConfigKey.reviveHeartPrice.rawValue,
-             RewardConfigKey.futureBonus1Price.rawValue,
-             RewardConfigKey.futureBonus2Price.rawValue,
-             RewardConfigKey.futureBonus3Price.rawValue:
+        case RewardConfigKey.reviveHeartPrice.rawValue:
+            // TODO: Temporarily hidden - will be enabled in future update
+            // RewardConfigKey.futureBonus1Price.rawValue,
+            // RewardConfigKey.futureBonus2Price.rawValue,
+            // RewardConfigKey.futureBonus3Price.rawValue:
             print("PowerupShopManager: Powerup price updated - \(key): \(value)")
             updateAvailablePowerups() // Refresh the available powerups with new prices
         default:
@@ -288,9 +294,10 @@ class PowerupShopManager: ObservableObject {
         switch type {
         case .reviveHeart:
             return deliverReviveHeart()
-        case .futureBonus1, .futureBonus2, .futureBonus3:
-            // Future powerups not yet implemented
-            return .purchaseError("This powerup is not yet implemented")
+        // TODO: Temporarily hidden - will be enabled in future update
+        // case .futureBonus1, .futureBonus2, .futureBonus3:
+        //     // Future powerups not yet implemented
+        //     return .purchaseError("This powerup is not yet implemented")
         }
     }
     
@@ -311,9 +318,10 @@ extension PowerupShopManager {
     func debugResetPrices() {
         // Reset all powerup prices through RewardConfig system
         rewardConfig.resetToDefault(key: .reviveHeartPrice)
-        rewardConfig.resetToDefault(key: .futureBonus1Price)
-        rewardConfig.resetToDefault(key: .futureBonus2Price)
-        rewardConfig.resetToDefault(key: .futureBonus3Price)
+        // TODO: Temporarily hidden - will be enabled in future update
+        // rewardConfig.resetToDefault(key: .futureBonus1Price)
+        // rewardConfig.resetToDefault(key: .futureBonus2Price)
+        // rewardConfig.resetToDefault(key: .futureBonus3Price)
         
         updateAvailablePowerups()
         print("PowerupShopManager: Debug reset all prices to defaults")

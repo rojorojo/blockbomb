@@ -10,9 +10,10 @@ enum RewardConfigKey: String, CaseIterable {
     
     // Powerup Pricing Configuration
     case reviveHeartPrice = "RewardConfig.reviveHeartPrice"
-    case futureBonus1Price = "RewardConfig.futureBonus1Price"
-    case futureBonus2Price = "RewardConfig.futureBonus2Price"
-    case futureBonus3Price = "RewardConfig.futureBonus3Price"
+    // TODO: Temporarily hidden - will be enabled in future update
+    // case futureBonus1Price = "RewardConfig.futureBonus1Price"
+    // case futureBonus2Price = "RewardConfig.futureBonus2Price"
+    // case futureBonus3Price = "RewardConfig.futureBonus3Price"
     
     // Ad Frequency Configuration
     case gamesBetweenInterstitials = "RewardConfig.gamesBetweenInterstitials"
@@ -29,9 +30,10 @@ enum RewardConfigKey: String, CaseIterable {
         case .pointsPerAd: return "Points Per Ad"
         case .defaultPointBalance: return "Default Point Balance"
         case .reviveHeartPrice: return "Revive Heart Price"
-        case .futureBonus1Price: return "Future Bonus 1 Price"
-        case .futureBonus2Price: return "Future Bonus 2 Price"
-        case .futureBonus3Price: return "Future Bonus 3 Price"
+        // TODO: Temporarily hidden - will be enabled in future update
+        // case .futureBonus1Price: return "Future Bonus 1 Price"
+        // case .futureBonus2Price: return "Future Bonus 2 Price"
+        // case .futureBonus3Price: return "Future Bonus 3 Price"
         case .gamesBetweenInterstitials: return "Games Between Interstitials"
         case .bonusAdCooldownSeconds: return "Bonus Ad Cooldown (seconds)"
         case .minGameDurationForAd: return "Min Game Duration for Ad"
@@ -46,9 +48,10 @@ enum RewardConfigKey: String, CaseIterable {
         case .pointsPerAd: return "Points awarded for watching a rewarded ad"
         case .defaultPointBalance: return "Starting point balance for new players"
         case .reviveHeartPrice: return "Cost in points to purchase a revive heart"
-        case .futureBonus1Price: return "Cost for future bonus powerup 1"
-        case .futureBonus2Price: return "Cost for future bonus powerup 2"
-        case .futureBonus3Price: return "Cost for future bonus powerup 3"
+        // TODO: Temporarily hidden - will be enabled in future update
+        // case .futureBonus1Price: return "Cost for future bonus powerup 1"
+        // case .futureBonus2Price: return "Cost for future bonus powerup 2"
+        // case .futureBonus3Price: return "Cost for future bonus powerup 3"
         case .gamesBetweenInterstitials: return "Number of games before showing interstitial ads"
         case .bonusAdCooldownSeconds: return "Cooldown time between bonus ad opportunities"
         case .minGameDurationForAd: return "Minimum game duration before showing ads"
@@ -62,7 +65,7 @@ enum RewardConfigKey: String, CaseIterable {
         switch self {
         case .pointsPerAd, .defaultPointBalance, .adWatchBonusMultiplier, .firstTimePlayerBonus, .dailyBonusPoints:
             return .currency
-        case .reviveHeartPrice, .futureBonus1Price, .futureBonus2Price, .futureBonus3Price:
+        case .reviveHeartPrice: // TODO: Temporarily hidden futureBonus1Price, futureBonus2Price, futureBonus3Price
             return .powerups
         case .gamesBetweenInterstitials, .bonusAdCooldownSeconds, .minGameDurationForAd:
             return .advertising
@@ -103,7 +106,7 @@ struct RewardConfigValue {
         switch key {
         case .pointsPerAd: return 100
         case .defaultPointBalance: return 1000
-        case .reviveHeartPrice, .futureBonus1Price, .futureBonus2Price, .futureBonus3Price: return 500
+        case .reviveHeartPrice: return 500
         case .gamesBetweenInterstitials: return 20
         case .bonusAdCooldownSeconds: return 3600 // 1 hour max
         case .minGameDurationForAd: return 300 // 5 minutes max
@@ -151,9 +154,10 @@ class RewardConfig: ObservableObject {
         .pointsPerAd: 10,
         .defaultPointBalance: 0,
         .reviveHeartPrice: 20,
-        .futureBonus1Price: 50,
-        .futureBonus2Price: 100,
-        .futureBonus3Price: 200,
+        // TODO: Temporarily hidden - will be enabled in future update
+        // .futureBonus1Price: 50,
+        // .futureBonus2Price: 100,
+        // .futureBonus3Price: 200,
         .gamesBetweenInterstitials: 2,
         .bonusAdCooldownSeconds: 120,
         .minGameDurationForAd: 30,
@@ -336,10 +340,11 @@ class RewardConfig: ObservableObject {
     /// Get all powerup prices as dictionary
     var powerupPrices: [PowerupType: Int] {
         return [
-            .reviveHeart: getValue(for: .reviveHeartPrice),
-            .futureBonus1: getValue(for: .futureBonus1Price),
-            .futureBonus2: getValue(for: .futureBonus2Price),
-            .futureBonus3: getValue(for: .futureBonus3Price)
+            .reviveHeart: getValue(for: .reviveHeartPrice)
+            // TODO: Temporarily hidden - will be enabled in future update
+            // .futureBonus1: getValue(for: .futureBonus1Price),
+            // .futureBonus2: getValue(for: .futureBonus2Price),
+            // .futureBonus3: getValue(for: .futureBonus3Price)
         ]
     }
     

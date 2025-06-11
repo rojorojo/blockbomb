@@ -6,6 +6,7 @@ struct ContentView: View {
     @StateObject private var gameController = GameController()
     @StateObject private var adTimingManager = AdTimingManager.shared
     @StateObject private var adManager = AdManager.shared
+    @StateObject private var onboardingManager = OnboardingManager()
     @State private var showSettings = false
     @State private var showReviveAnimation = false
     @State private var showBonusAdPrompt = false
@@ -176,6 +177,9 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showSettings) {
             SettingsView()
+        }
+        .fullScreenCover(isPresented: $onboardingManager.shouldShowOnboarding) {
+            OnboardingView()
         }
         #if DEBUG
         .sheet(isPresented: $showDebugPanel) {

@@ -169,23 +169,24 @@ class PowerupIntegrationTests: XCTestCase {
         XCTAssertEqual(reviveHeartManager.heartCount, 0)
     }
     
-    func testFutureItemsPurchase() {
-        // Given: Player has enough coins
-        currencyManager.addPoints(100)
-        
-        // When: Attempting to purchase future items
-        let result1 = shopManager.purchasePowerup(.futureBonus1)
-        let result2 = shopManager.purchasePowerup(.futureBonus2)
-        let result3 = shopManager.purchasePowerup(.futureBonus3)
-        
-        // Then: Should fail as items are not available yet
-        XCTAssertEqual(result1, .itemNotAvailable)
-        XCTAssertEqual(result2, .itemNotAvailable)
-        XCTAssertEqual(result3, .itemNotAvailable)
-        
-        // And: Coins should remain unchanged
-        XCTAssertEqual(currencyManager.currentPoints, 100)
-    }
+    // TODO: Temporarily hidden - will be enabled in future update
+    // func testFutureItemsPurchase() {
+    //     // Given: Player has enough coins
+    //     currencyManager.addPoints(100)
+    //     
+    //     // When: Attempting to purchase future items
+    //     let result1 = shopManager.purchasePowerup(.futureBonus1)
+    //     let result2 = shopManager.purchasePowerup(.futureBonus2)
+    //     let result3 = shopManager.purchasePowerup(.futureBonus3)
+    //     
+    //     // Then: Should fail as items are not available yet
+    //     XCTAssertEqual(result1, .itemNotAvailable)
+    //     XCTAssertEqual(result2, .itemNotAvailable)
+    //     XCTAssertEqual(result3, .itemNotAvailable)
+    //     
+    //     // And: Coins should remain unchanged
+    //     XCTAssertEqual(currencyManager.currentPoints, 100)
+    // }
     
     // MARK: - Edge Case Tests
     

@@ -16,9 +16,10 @@ struct RewardConfigSystemTests {
         
         // Test default powerup prices
         #expect(config.getValue(for: .reviveHeartPrice) == 20, "Default revive heart price should be 20")
-        #expect(config.getValue(for: .futureBonus1Price) == 50, "Default future bonus 1 price should be 50")
-        #expect(config.getValue(for: .futureBonus2Price) == 100, "Default future bonus 2 price should be 100")
-        #expect(config.getValue(for: .futureBonus3Price) == 200, "Default future bonus 3 price should be 200")
+        // TODO: Temporarily hidden - will be enabled in future update
+        // #expect(config.getValue(for: .futureBonus1Price) == 50, "Default future bonus 1 price should be 50")
+        // #expect(config.getValue(for: .futureBonus2Price) == 100, "Default future bonus 2 price should be 100")
+        // #expect(config.getValue(for: .futureBonus3Price) == 200, "Default future bonus 3 price should be 200")
         
         // Test default advertising values
         #expect(config.getValue(for: .gamesBetweenInterstitials) == 2, "Default games between interstitials should be 2")
@@ -255,9 +256,10 @@ struct RewardConfigSystemTests {
         // Test powerup prices dictionary
         let powerupPrices = config.powerupPrices
         #expect(powerupPrices[.reviveHeart] == config.getValue(for: .reviveHeartPrice), "Powerup prices should match configuration")
-        #expect(powerupPrices[.futureBonus1] == config.getValue(for: .futureBonus1Price), "Powerup prices should match configuration")
-        #expect(powerupPrices[.futureBonus2] == config.getValue(for: .futureBonus2Price), "Powerup prices should match configuration")
-        #expect(powerupPrices[.futureBonus3] == config.getValue(for: .futureBonus3Price), "Powerup prices should match configuration")
+        // TODO: Temporarily hidden - will be enabled in future update
+        // #expect(powerupPrices[.futureBonus1] == config.getValue(for: .futureBonus1Price), "Powerup prices should match configuration")
+        // #expect(powerupPrices[.futureBonus2] == config.getValue(for: .futureBonus2Price), "Powerup prices should match configuration")
+        // #expect(powerupPrices[.futureBonus3] == config.getValue(for: .futureBonus3Price), "Powerup prices should match configuration")
     }
     
     // MARK: - Integration Tests

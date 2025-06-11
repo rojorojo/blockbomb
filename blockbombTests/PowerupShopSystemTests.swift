@@ -166,14 +166,16 @@ struct PowerupShopSystemTests {
         
         // Test default availability
         #expect(manager.isAvailable(.reviveHeart), "Revive heart should be available by default")
-        #expect(!manager.isAvailable(.futureBonus1), "Future bonuses should not be available by default")
+        // TODO: Temporarily hidden - will be enabled in future update
+        // #expect(!manager.isAvailable(.futureBonus1), "Future bonuses should not be available by default")
         
+        // TODO: Temporarily hidden - will be enabled in future update  
         // Test updating availability
-        manager.updateAvailability(for: .futureBonus1, available: true)
-        #expect(manager.isAvailable(.futureBonus1), "Future bonus should be available after update")
+        // manager.updateAvailability(for: .futureBonus1, available: true)
+        // #expect(manager.isAvailable(.futureBonus1), "Future bonus should be available after update")
         
-        manager.updateAvailability(for: .futureBonus1, available: false)
-        #expect(!manager.isAvailable(.futureBonus1), "Future bonus should be unavailable after update")
+        // manager.updateAvailability(for: .futureBonus1, available: false)
+        // #expect(!manager.isAvailable(.futureBonus1), "Future bonus should be unavailable after update")
     }
     
     @Test func testUpdatePriceAndAvailability() async throws {
@@ -221,17 +223,19 @@ struct PowerupShopSystemTests {
         #expect(PowerupType.reviveHeart.description.contains("Continue"), "Description should be meaningful")
         #expect(PowerupType.reviveHeart.rawValue == "revive_heart", "Raw value should be correct")
         
+        // TODO: Temporarily hidden - will be enabled in future update
         // Test future bonus properties
-        #expect(PowerupType.futureBonus1.displayName == "Future Bonus 1", "Display name should be correct")
-        #expect(PowerupType.futureBonus1.description.contains("Coming soon"), "Description should indicate coming soon")
+        // #expect(PowerupType.futureBonus1.displayName == "Future Bonus 1", "Display name should be correct")
+        // #expect(PowerupType.futureBonus1.description.contains("Coming soon"), "Description should indicate coming soon")
     }
     
     @Test func testPowerupTypeAllCases() async throws {
         let allTypes = PowerupType.allCases
         #expect(allTypes.contains(.reviveHeart), "All cases should include revive heart")
-        #expect(allTypes.contains(.futureBonus1), "All cases should include future bonus 1")
-        #expect(allTypes.contains(.futureBonus2), "All cases should include future bonus 2")
-        #expect(allTypes.contains(.futureBonus3), "All cases should include future bonus 3")
+        // TODO: Temporarily hidden - will be enabled in future update
+        // #expect(allTypes.contains(.futureBonus1), "All cases should include future bonus 1")
+        // #expect(allTypes.contains(.futureBonus2), "All cases should include future bonus 2")
+        // #expect(allTypes.contains(.futureBonus3), "All cases should include future bonus 3")
     }
     
     // MARK: - PurchaseResult Tests
@@ -265,14 +269,16 @@ struct PowerupShopSystemTests {
         
         // Change prices
         manager.updatePrice(for: .reviveHeart, price: 100)
-        manager.updatePrice(for: .futureBonus1, price: 200)
+        // TODO: Temporarily hidden - will be enabled in future update
+        // manager.updatePrice(for: .futureBonus1, price: 200)
         
         // Reset prices
         manager.debugResetPrices()
         
         // Verify reset
         #expect(manager.getPrice(for: .reviveHeart) == 20, "Revive heart price should be reset to 20")
-        #expect(manager.getPrice(for: .futureBonus1) == 50, "Future bonus 1 price should be reset to 50")
+        // TODO: Temporarily hidden - will be enabled in future update
+        // #expect(manager.getPrice(for: .futureBonus1) == 50, "Future bonus 1 price should be reset to 50")
     }
     
     @Test func testDebugMakeAllAvailable() async throws {
@@ -375,18 +381,22 @@ struct PowerupShopSystemTests {
         
         // Change configuration
         manager.updatePrice(for: .reviveHeart, price: 25)
-        manager.updateAvailability(for: .futureBonus1, available: true)
+        // TODO: Temporarily hidden - will be enabled in future update
+        // manager.updateAvailability(for: .futureBonus1, available: true)
         
         // Verify changes are reflected in shop
         let powerups = manager.getPowerups()
         let reviveHeart = powerups.first(where: { $0.type == .reviveHeart })
-        let futureBonus = powerups.first(where: { $0.type == .futureBonus1 })
+        // TODO: Temporarily hidden - will be enabled in future update
+        // let futureBonus = powerups.first(where: { $0.type == .futureBonus1 })
         
         #expect(reviveHeart?.price == 25, "Price change should be reflected")
-        #expect(futureBonus?.isAvailable == true, "Availability change should be reflected")
+        // TODO: Temporarily hidden - will be enabled in future update
+        // #expect(futureBonus?.isAvailable == true, "Availability change should be reflected")
         
         // Reset for cleanup
         manager.debugResetPrices()
-        manager.updateAvailability(for: .futureBonus1, available: false)
+        // TODO: Temporarily hidden - will be enabled in future update
+        // manager.updateAvailability(for: .futureBonus1, available: false)
     }
 }
