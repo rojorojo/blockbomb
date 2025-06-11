@@ -71,9 +71,7 @@ struct PowerupShopView: View {
                     .scaleEffect(animationScale)
                     .animation(.spring(response: 0.4, dampingFraction: 0.6), value: currencyManager.points)
                 
-                Text("coins")
-                    .font(.body)
-                    .foregroundColor(BlockColors.amber.opacity(0.8))
+                
             }
         }
     }
@@ -218,13 +216,13 @@ struct PowerupItemView: View {
                         .foregroundColor(.white)
                     
                     Text(powerupType.description)
-                        .font(.caption)
+                        .font(.body)
                         .foregroundColor(.white.opacity(0.8))
                         .lineLimit(2)
                     
                     Text(statusText)
-                        .font(.caption2)
-                        .foregroundColor(itemColor.opacity(0.8))
+                        .font(.body)
+                        .foregroundColor(itemColor)
                 }
                 
                 Spacer()
@@ -260,7 +258,7 @@ struct PowerupItemView: View {
         .cornerRadius(16)
         .overlay(
             RoundedRectangle(cornerRadius: 16)
-                .stroke(canPurchase && powerupType == .reviveHeart ? BlockColors.amber.opacity(0.5) : Color.clear, lineWidth: 1)
+                .stroke(canPurchase && powerupType == .reviveHeart ? BlockColors.amber : Color.clear, lineWidth: 3)
         )
     }
 }

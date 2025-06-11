@@ -102,8 +102,8 @@ struct GameOverView: View {
                             HStack {
                                 Image(systemName: "heart.fill")
                                     .foregroundColor(BlockColors.red)
-                                Image(systemName: "xmark")
-                                    .foregroundColor(BlockColors.red)
+                                /*Image(systemName: "xmark")
+                                    .foregroundColor(BlockColors.red)*/
                                 Text("\(reviveHeartManager.heartCount)")
                                     .font(.title3)
                                     .foregroundColor(BlockColors.red)

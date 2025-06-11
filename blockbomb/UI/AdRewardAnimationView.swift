@@ -24,7 +24,7 @@ struct AdRewardAnimationView: View {
     var body: some View {
         ZStack {
             // Semi-transparent background overlay
-            Color.black.opacity(0.3)
+            Color.black.opacity(0.7)
                 .edgesIgnoringSafeArea(.all)
                 .opacity(opacity)
             

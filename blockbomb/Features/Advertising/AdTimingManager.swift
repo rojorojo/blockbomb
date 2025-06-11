@@ -15,7 +15,7 @@ class AdTimingManager: ObservableObject {
     @Published var isInterstitialReady = false
     
     // MARK: - Configuration
-    private let gamesBetweenInterstitials = 3 // Show interstitial every 3 games
+    private let gamesBetweenInterstitials = 2 // Show interstitial every 2 games
     private let bonusAdCooldownSeconds: TimeInterval = 120 // 2 minutes between bonus ad prompts
     private let userDefaultsGameCountKey = "adTimingGameCount"
     private let userDefaultsLastBonusAdKey = "lastBonusAdTime"
