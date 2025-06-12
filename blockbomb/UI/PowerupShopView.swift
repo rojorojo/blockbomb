@@ -22,7 +22,7 @@ struct PowerupShopView: View {
                 Color(red: 0.02, green: 0, blue: 0.22, opacity: 1)
                     .edgesIgnoringSafeArea(.all)
                 
-                VStack(spacing: 24) {
+                VStack(spacing: 32) {
                     // Header with currency display
                     headerView
                     
@@ -112,7 +112,7 @@ struct PowerupShopView: View {
     
     // MARK: - Header View
     private var headerView: some View {
-        VStack(spacing: 12) {
+        VStack(spacing: 32) {
             HStack {
                 /*Button(action: { showAdModelHelp = true }) {
                     Image(systemName: "questionmark.circle")
@@ -357,11 +357,11 @@ struct PowerupItemView: View {
                     Text(powerupType.displayName)
                         .font(.headline)
                         .fontWeight(.bold)
-                        .foregroundColor(.white)
+                        .foregroundColor(Color(red: 1, green: 0.92, blue: 0.8))
                     
                     Text(powerupType.description)
                         .font(.body)
-                        .foregroundColor(.white.opacity(0.8))
+                        .foregroundColor(Color(red: 1, green: 0.92, blue: 0.8))
                         .lineLimit(2)
                     
                     Text(statusText)
@@ -376,10 +376,10 @@ struct PowerupItemView: View {
                     HStack {
                         Image(systemName: "dollarsign.circle.fill")
                             .foregroundColor(BlockColors.amber)
-                            .font(.caption)
+                            .font(.body)
                         
                         Text("\(price)")
-                            .font(.caption)
+                            .font(.body)
                             .fontWeight(.bold)
                             .foregroundColor(BlockColors.amber)
                     }
@@ -441,10 +441,7 @@ struct PowerupItemView: View {
         .padding(20)
         .background(Color(red: 0.13, green: 0.12, blue: 0.28))
         .cornerRadius(16)
-        .overlay(
-            RoundedRectangle(cornerRadius: 16)
-                .stroke(canPurchase && powerupType == .reviveHeart ? BlockColors.amber : Color.clear, lineWidth: 3)
-        )
+        
         .onTapGesture {
             // Toggle tooltip visibility on item tap
             showTooltip.toggle()

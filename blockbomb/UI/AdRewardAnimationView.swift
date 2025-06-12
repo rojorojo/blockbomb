@@ -68,7 +68,7 @@ struct AdRewardAnimationView: View {
                 }
                 
                 // Points earned text with animation
-                Text("+\(pointsEarned) Points")
+                Text("+\(pointsEarned) coins")
                     .font(.system(size: 24, weight: .bold))
                     .foregroundColor(BlockColors.amber)
                     .scaleEffect(textScale)

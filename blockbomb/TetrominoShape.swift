@@ -102,7 +102,7 @@ enum TetrominoShape: CaseIterable {
             return .valuable
             
         // Premium (5%) - Maximum versatility and game-changing potential
-        case .blockSingle, .cross:
+        case .blockSingle, .cross, .squareSmall, .rectWide, .rectTall, .squareBig, .stick4Vert, .stick5Vert:
             return .premium
         }
     }

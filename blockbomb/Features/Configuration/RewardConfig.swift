@@ -153,7 +153,7 @@ class RewardConfig: ObservableObject {
     private let defaultValues: [RewardConfigKey: Int] = [
         .pointsPerAd: 10,
         .defaultPointBalance: 0,
-        .reviveHeartPrice: 20,
+        .reviveHeartPrice: 50,
         // TODO: Temporarily hidden - will be enabled in future update
         // .futureBonus1Price: 50,
         // .futureBonus2Price: 100,

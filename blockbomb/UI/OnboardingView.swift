@@ -50,7 +50,7 @@ struct OnboardingView: View {
                     Button(action: dismissOnboarding) {
                         Text("Skip")
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.white.opacity(0.7))
+                            .foregroundColor(BlockColors.violet)
                             .padding(.horizontal, 16)
                             .padding(.vertical, 8)
                     }
@@ -89,7 +89,7 @@ struct OnboardingView: View {
                                 Text("Previous")
                             }
                             .font(.system(size: 16, weight: .medium))
-                            .foregroundColor(.white.opacity(0.8))
+                            .foregroundColor(Color(red: 1, green: 0.92, blue: 0.8))
                             .padding(.horizontal, 20)
                             .padding(.vertical, 12)
                             .background(Color.white.opacity(0.1))
@@ -109,7 +109,7 @@ struct OnboardingView: View {
                             }
                         }
                         .font(.system(size: 16, weight: .semibold))
-                        .foregroundColor(.white)
+                        .foregroundColor(Color(red: 1, green: 0.92, blue: 0.8))
                         .padding(.horizontal, 24)
                         .padding(.vertical, 12)
                         .background(BlockColors.violet)
@@ -194,7 +194,7 @@ struct OnboardingPageView: View {
                 // Title
                 Text(page.title)
                     .font(.title.bold())
-                    .foregroundColor(.white)
+                    .foregroundColor(Color(red: 1, green: 0.92, blue: 0.8))
                     .multilineTextAlignment(.center)
                     .offset(y: animate ? 0 : 20)
                     .opacity(animate ? 1.0 : 0.0)
@@ -212,7 +212,7 @@ struct OnboardingPageView: View {
                 // Description
                 Text(page.description)
                     .font(.body)
-                    .foregroundColor(.white.opacity(0.8))
+                    .foregroundColor(Color(red: 1, green: 0.92, blue: 0.8))
                     .multilineTextAlignment(.center)
                     .lineLimit(nil)
                     .fixedSize(horizontal: false, vertical: true)
