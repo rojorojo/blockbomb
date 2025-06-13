@@ -34,40 +34,30 @@ struct GameOverView: View {
             // Game over content
             VStack(spacing: 30) {
                 
-                
-                
-                // Display different image based on whether it's a new high score
-                if isNewHighScore {
+                ZStack {
+                    // Display different image based on whether it's a new high score
+                    if isNewHighScore {
+                        Image("BEMUP-high-score-trophy")
+                            .resizable()
+                            .frame(width: 300, height: 305)
+                    } else {
+                        Spacer()
+                        Image("BlockEmUpLogo")
+                            .resizable()
+                            .frame(width: 144, height: 104)
+                        Spacer()
+                    }
                     
-                    Image("BEMUP-high-score-trophy")
-                        .resizable()
-                        .frame(width: 339, height: 345)
-                } else {
-                    Spacer()
-                    Image("BlockEmUpLogo")
-                        .resizable()
-                        .frame(width: 144, height: 104)
-                    Spacer()
+                    if !isNewHighScore {
+                        Text("So close!")
+                            .font(.system(size: 40, weight: .bold))
+                            .foregroundColor(BlockColors.cyan)
+                            .opacity(isAnimating ? 1 : 0)
+                            .scaleEffect(isAnimating ? 1 : 0.5)
+                            .padding(.top, 300)
+                    }
                 }
-                
-                
-                
-                // Display different text based on whether it's a new high score
-                if isNewHighScore {
-                    Text("You did it!")
-                        .font(.system(size: 40, weight: .bold))
-                        .foregroundColor(BlockColors.cyan)
-                        .opacity(isAnimating ? 1 : 0)
-                        .scaleEffect(isAnimating ? 1 : 0.5)
-                } else {
-                    Text("So close!")
-                        .font(.system(size: 40, weight: .bold))
-                        .foregroundColor(BlockColors.cyan)
-                        .opacity(isAnimating ? 1 : 0)
-                        .scaleEffect(isAnimating ? 1 : 0.5)
-                    Spacer()
-                }
-                
+
                 VStack {
                     
                     Text("\(finalScore)")
@@ -94,7 +84,7 @@ struct GameOverView: View {
                     }
                 }
                 
-                Spacer()
+                //Spacer() // This Spacer pushes buttons down, potentially off-screen
                 VStack(spacing: 15) {
                     // Revive button - only show if hearts available and revive callback exists
                     if let gameController = gameController,
@@ -119,53 +109,6 @@ struct GameOverView: View {
                         .accessibilityLabel("Revive with heart")
                         .accessibilityValue("You have \(reviveHeartManager.heartCount) hearts available")
                         .accessibilityHint("Use a revive heart to continue playing")
-                    }
-                    
-                    // Buy Revive Heart button - show if player has enough coins but no hearts
-                    if !reviveHeartManager.hasHearts() && shopManager.canPurchase(.reviveHeart) {
-                        Button(action: {
-                            let result = shopManager.purchasePowerup(.reviveHeart)
-                            if result.isSuccess {
-                                showPurchaseSuccess = true
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                    showPurchaseSuccess = false
-                                }
-                                print("Successfully purchased revive heart!")
-                            } else {
-                                switch result {
-                                case .insufficientFunds:
-                                    errorMessage = "Not enough coins"
-                                case .itemNotAvailable:
-                                    errorMessage = "Item not available"
-                                case .purchaseError:
-                                    errorMessage = "Purchase failed"
-                                default:
-                                    errorMessage = "Unknown error"
-                                }
-                                showError = true
-                                DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
-                                    showError = false
-                                }
-                            }
-                        }) {
-                            HStack {
-                                Image(systemName: "dollarsign.circle.fill")
-                                    .foregroundColor(BlockColors.amber)
-                                Text("Buy Heart (20 coins)")
-                                    .font(.title3)
-                                    .foregroundColor(BlockColors.amber)
-                                Image(systemName: "heart.fill")
-                                    .foregroundColor(BlockColors.red)
-                            }
-                            .frame(width: 220, height: 50)
-                            .overlay(
-                                RoundedRectangle(cornerRadius: 8)
-                                    .stroke(BlockColors.amber, lineWidth: 3)
-                            )
-                        }
-                        .accessibilityLabel("Buy revive heart")
-                        .accessibilityValue("Costs 20 coins, you have \(currencyManager.currentPoints)")
-                        .accessibilityHint("Purchase a revive heart to continue playing")
                     }
                     
                     // Watch Ad for 10 Coins button - always available for earning coins

@@ -170,11 +170,7 @@ struct PowerupShopView: View {
                 }
                 .accessibilityCurrencyDisplay(points: currencyManager.currentPoints)
                 
-                // Show offline indicator if no network
-                if !adManager.canShowRewardedAd && !adManager.canShowInterstitialAd {
-                    OfflineModeIndicator()
-                        .padding(.leading, 10)
-                }
+                
             }
         }
     }

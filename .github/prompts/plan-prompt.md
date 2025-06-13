@@ -22,6 +22,7 @@ RULES:
 
 FIRST:
 
+- Ask clarifying questions. Help me discover things I have not thought of.
 - Review #file:../project-overview.md to understand the project.
 
 THEN:
