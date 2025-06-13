@@ -29,29 +29,15 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		EA38ED802DFC553700C709A6 /* blockbomb.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = blockbomb.xcodeproj; path = blockbomb/Features/Configuration/blockbomb.xcodeproj; sourceTree = SOURCE_ROOT; };
 		EAA4F3AF2DD6705B0053186B /* blockbomb.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = blockbomb.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		EAA4F3C82DD6705C0053186B /* blockbombTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = blockbombTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EAA4F3D22DD6705C0053186B /* blockbombUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = blockbombUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		EAA4F3EC2DD6B8F00053186B /* build_instructions.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = build_instructions.md; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
-/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		EA3771EE2DE2149E0037DD0A /* Exceptions for "blockbomb" folder in "blockbomb" target */ = {
-			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
-			membershipExceptions = (
-				Info.plist,
-			);
-			target = EAA4F3AE2DD6705B0053186B /* blockbomb */;
-		};
-/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
-
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		EAA4F3B12DD6705B0053186B /* blockbomb */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
-			exceptions = (
-				EA3771EE2DE2149E0037DD0A /* Exceptions for "blockbomb" folder in "blockbomb" target */,
-			);
 			path = blockbomb;
 			sourceTree = "<group>";
 		};
@@ -93,13 +79,6 @@
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
-		EA38ED832DFC553700C709A6 /* Products */ = {
-			isa = PBXGroup;
-			children = (
-			);
-			name = Products;
-			sourceTree = "<group>";
-		};
 		EAA4F3A62DD6705B0053186B = {
 			isa = PBXGroup;
 			children = (
@@ -231,12 +210,6 @@
 			preferredProjectObjectVersion = 77;
 			productRefGroup = EAA4F3B02DD6705B0053186B /* Products */;
 			projectDirPath = "";
-			projectReferences = (
-				{
-					ProductGroup = EA38ED832DFC553700C709A6 /* Products */;
-					ProjectRef = EA38ED802DFC553700C709A6 /* blockbomb.xcodeproj */;
-				},
-			);
 			projectRoot = "";
 			targets = (
 				EAA4F3AE2DD6705B0053186B /* blockbomb */,
@@ -436,7 +409,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = blockbomb/blockbomb.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2025.2.06;
+				CURRENT_PROJECT_VERSION = 2025.2.07;
 				DEVELOPMENT_TEAM = R46J383A8D;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = blockbomb/Info.plist;
@@ -469,7 +442,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_ENTITLEMENTS = blockbomb/blockbomb.entitlements;
 				CODE_SIGN_STYLE = Automatic;
-				CURRENT_PROJECT_VERSION = 2025.2.06;
+				CURRENT_PROJECT_VERSION = 2025.2.07;
 				DEVELOPMENT_TEAM = R46J383A8D;
 				GENERATE_INFOPLIST_FILE = YES;
 				INFOPLIST_FILE = blockbomb/Info.plist;
