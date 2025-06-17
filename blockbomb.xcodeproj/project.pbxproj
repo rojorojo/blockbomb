@@ -7,6 +7,12 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		EA8C259A2E01BEA900DA70F0 /* FirebaseAI in Frameworks */ = {isa = PBXBuildFile; productRef = EA8C25992E01BEA900DA70F0 /* FirebaseAI */; };
+		EA8C259C2E01BEA900DA70F0 /* FirebaseAnalytics in Frameworks */ = {isa = PBXBuildFile; productRef = EA8C259B2E01BEA900DA70F0 /* FirebaseAnalytics */; };
+		EA8C259E2E01BEA900DA70F0 /* FirebaseAnalyticsCore in Frameworks */ = {isa = PBXBuildFile; productRef = EA8C259D2E01BEA900DA70F0 /* FirebaseAnalyticsCore */; };
+		EA8C25A02E01BEA900DA70F0 /* FirebaseAnalyticsIdentitySupport in Frameworks */ = {isa = PBXBuildFile; productRef = EA8C259F2E01BEA900DA70F0 /* FirebaseAnalyticsIdentitySupport */; };
+		EA8C25A22E01BEA900DA70F0 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */ = {isa = PBXBuildFile; productRef = EA8C25A12E01BEA900DA70F0 /* FirebaseAnalyticsOnDeviceConversion */; };
+		EA8C25A52E01C6FD00DA70F0 /* AWSS3 in Frameworks */ = {isa = PBXBuildFile; productRef = EA8C25A42E01C6FD00DA70F0 /* AWSS3 */; };
 		EAA4F3ED2DD6B8F00053186B /* build_instructions.md in Resources */ = {isa = PBXBuildFile; fileRef = EAA4F3EC2DD6B8F00053186B /* build_instructions.md */; };
 		EAC053EF2DF8CF67007E345C /* GoogleMobileAds in Frameworks */ = {isa = PBXBuildFile; productRef = EAC053EE2DF8CF67007E345C /* GoogleMobileAds */; };
 /* End PBXBuildFile section */
@@ -44,6 +50,20 @@
 			);
 			target = EAA4F3AE2DD6705B0053186B /* blockbomb */;
 		};
+		EA8C25962E01BD7000DA70F0 /* Exceptions for "blockbomb" folder in "blockbombTests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"GoogleService-Info.plist",
+			);
+			target = EAA4F3C72DD6705C0053186B /* blockbombTests */;
+		};
+		EA8C25972E01BD7000DA70F0 /* Exceptions for "blockbomb" folder in "blockbombUITests" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				"GoogleService-Info.plist",
+			);
+			target = EAA4F3D12DD6705C0053186B /* blockbombUITests */;
+		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
@@ -51,6 +71,8 @@
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
 				EA3771EE2DE2149E0037DD0A /* Exceptions for "blockbomb" folder in "blockbomb" target */,
+				EA8C25962E01BD7000DA70F0 /* Exceptions for "blockbomb" folder in "blockbombTests" target */,
+				EA8C25972E01BD7000DA70F0 /* Exceptions for "blockbomb" folder in "blockbombUITests" target */,
 			);
 			path = blockbomb;
 			sourceTree = "<group>";
@@ -72,7 +94,13 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				EA8C25A52E01C6FD00DA70F0 /* AWSS3 in Frameworks */,
 				EAC053EF2DF8CF67007E345C /* GoogleMobileAds in Frameworks */,
+				EA8C25A22E01BEA900DA70F0 /* FirebaseAnalyticsOnDeviceConversion in Frameworks */,
+				EA8C25A02E01BEA900DA70F0 /* FirebaseAnalyticsIdentitySupport in Frameworks */,
+				EA8C259A2E01BEA900DA70F0 /* FirebaseAI in Frameworks */,
+				EA8C259C2E01BEA900DA70F0 /* FirebaseAnalytics in Frameworks */,
+				EA8C259E2E01BEA900DA70F0 /* FirebaseAnalyticsCore in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -142,6 +170,12 @@
 			name = blockbomb;
 			packageProductDependencies = (
 				EAC053EE2DF8CF67007E345C /* GoogleMobileAds */,
+				EA8C25992E01BEA900DA70F0 /* FirebaseAI */,
+				EA8C259B2E01BEA900DA70F0 /* FirebaseAnalytics */,
+				EA8C259D2E01BEA900DA70F0 /* FirebaseAnalyticsCore */,
+				EA8C259F2E01BEA900DA70F0 /* FirebaseAnalyticsIdentitySupport */,
+				EA8C25A12E01BEA900DA70F0 /* FirebaseAnalyticsOnDeviceConversion */,
+				EA8C25A42E01C6FD00DA70F0 /* AWSS3 */,
 			);
 			productName = blockbomb;
 			productReference = EAA4F3AF2DD6705B0053186B /* blockbomb.app */;
@@ -227,6 +261,8 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				EAC053ED2DF8CF67007E345C /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */,
+				EA8C25982E01BEA900DA70F0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */,
+				EA8C25A32E01C6FD00DA70F0 /* XCRemoteSwiftPackageReference "aws-sdk-ios-spm" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = EAA4F3B02DD6705B0053186B /* Products */;
@@ -456,6 +492,10 @@
 				MARKETING_VERSION = 0.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = rojo.blockbomb;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -489,6 +529,10 @@
 				MARKETING_VERSION = 0.1.2;
 				PRODUCT_BUNDLE_IDENTIFIER = rojo.blockbomb;
 				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SUPPORTS_XR_DESIGNED_FOR_IPHONE_IPAD = NO;
 				SWIFT_EMIT_LOC_STRINGS = YES;
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -605,6 +649,22 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		EA8C25982E01BEA900DA70F0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/firebase/firebase-ios-sdk";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 11.14.0;
+			};
+		};
+		EA8C25A32E01C6FD00DA70F0 /* XCRemoteSwiftPackageReference "aws-sdk-ios-spm" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/aws-amplify/aws-sdk-ios-spm";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 2.41.0;
+			};
+		};
 		EAC053ED2DF8CF67007E345C /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/googleads/swift-package-manager-google-mobile-ads.git";
@@ -616,6 +676,36 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		EA8C25992E01BEA900DA70F0 /* FirebaseAI */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EA8C25982E01BEA900DA70F0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAI;
+		};
+		EA8C259B2E01BEA900DA70F0 /* FirebaseAnalytics */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EA8C25982E01BEA900DA70F0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalytics;
+		};
+		EA8C259D2E01BEA900DA70F0 /* FirebaseAnalyticsCore */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EA8C25982E01BEA900DA70F0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsCore;
+		};
+		EA8C259F2E01BEA900DA70F0 /* FirebaseAnalyticsIdentitySupport */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EA8C25982E01BEA900DA70F0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsIdentitySupport;
+		};
+		EA8C25A12E01BEA900DA70F0 /* FirebaseAnalyticsOnDeviceConversion */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EA8C25982E01BEA900DA70F0 /* XCRemoteSwiftPackageReference "firebase-ios-sdk" */;
+			productName = FirebaseAnalyticsOnDeviceConversion;
+		};
+		EA8C25A42E01C6FD00DA70F0 /* AWSS3 */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = EA8C25A32E01C6FD00DA70F0 /* XCRemoteSwiftPackageReference "aws-sdk-ios-spm" */;
+			productName = AWSS3;
+		};
 		EAC053EE2DF8CF67007E345C /* GoogleMobileAds */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = EAC053ED2DF8CF67007E345C /* XCRemoteSwiftPackageReference "swift-package-manager-google-mobile-ads" */;
