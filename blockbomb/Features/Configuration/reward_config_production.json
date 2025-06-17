@@ -1,0 +1,23 @@
+{
+  "version": "1.0",
+  "timestamp": "2025-06-11T10:00:00Z",
+  "configurations": {
+    "RewardConfig.pointsPerAd": 10,
+    "RewardConfig.defaultPointBalance": 0,
+    "RewardConfig.reviveHeartPrice": 20,
+    "RewardConfig.futureBonus1Price": 50,
+    "RewardConfig.futureBonus2Price": 100,
+    "RewardConfig.futureBonus3Price": 200,
+    "RewardConfig.gamesBetweenInterstitials": 2,
+    "RewardConfig.bonusAdCooldownSeconds": 120,
+    "RewardConfig.minGameDurationForAd": 30,
+    "RewardConfig.adWatchBonusMultiplier": 1,
+    "RewardConfig.firstTimePlayerBonus": 50,
+    "RewardConfig.dailyBonusPoints": 10
+  },
+  "metadata": {
+    "description": "Default production configuration for Block Puzzle Game",
+    "author": "RewardConfig System",
+    "environment": "production"
+  }
+}

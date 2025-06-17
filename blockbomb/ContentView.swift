@@ -4,8 +4,14 @@ import SwiftUI
 struct ContentView: View {
     // Use a single source of truth with @StateObject
     @StateObject private var gameController = GameController()
+    @StateObject private var adTimingManager = AdTimingManager.shared
+    @StateObject private var adManager = AdManager.shared
+    @StateObject private var onboardingManager = OnboardingManager()
     @State private var showSettings = false
     @State private var showReviveAnimation = false
+    @State private var showBonusAdPrompt = false
+    @State private var showAdRewardAnimation = false
+    @State private var adRewardPoints = 10
     #if DEBUG
     @State private var showDebugPanel = false
     #endif
@@ -50,6 +56,9 @@ struct ContentView: View {
                     #endif
                     
                     Spacer()
+                    
+                    // Currency display positioned opposite the settings button
+                    CurrencyCountView()
                     
                 }
                 .padding(.top, -10) // Reduce padding if needed
@@ -134,9 +143,43 @@ struct ContentView: View {
                 .transition(.opacity)
                 .zIndex(100)
             }
+            
+            // Bonus ad prompt overlay
+            if showBonusAdPrompt {
+                BonusAdPromptView(
+                    onWatchAd: {
+                        watchBonusAd()
+                    },
+                    onDismiss: {
+                        showBonusAdPrompt = false
+                        adTimingManager.showBonusAdPrompt = false
+                    }
+                )
+                .transition(.opacity)
+                .zIndex(50)
+            }
+            
+            // Ad reward animation overlay (positioned over currency display)
+            if showAdRewardAnimation {
+                AdRewardAnimationView(onAnimationComplete: {
+                    // Animation completed, hide it
+                    print("ContentView: Ad reward animation completed, hiding overlay")
+                    withAnimation(.easeOut(duration: 0.3)) {
+                        showAdRewardAnimation = false
+                    }
+                }, pointsEarned: adRewardPoints)
+                .transition(.opacity)
+                .zIndex(150) // High z-index to appear above all other UI elements including GameOverView
+            }
+            
+            // Floating bonus ad button disabled for less intrusive gameplay
+            // Players can watch ads for coins from the GameOverView instead
         }
         .sheet(isPresented: $showSettings) {
             SettingsView()
+        }
+        .fullScreenCover(isPresented: $onboardingManager.shouldShowOnboarding) {
+            OnboardingView()
         }
         #if DEBUG
         .sheet(isPresented: $showDebugPanel) {
@@ -231,10 +274,238 @@ struct ContentView: View {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                         gameController.debugSimulateHighScoreCrossing()
                     }
+                },
+                onResetPoints: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Reset currency points to 0 for testing
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        PowerupCurrencyManager.shared.debugSetPoints(0)
+                    }
+                },
+                onAddTestPoints: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Add 100 test points for purchase testing
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        PowerupCurrencyManager.shared.debugAddPoints(100)
+                    }
+                },
+                onSimulateAds: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Simulate watching 5 ads (50 points total)
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        PowerupCurrencyManager.shared.debugSimulateAds(5)
+                    }
+                },
+                onTestReviveHeartPurchase: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Test purchasing a revive heart
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        let result = PowerupShopManager.shared.purchasePowerup(.reviveHeart)
+                        print("Debug purchase result: \(result)")
+                    }
+                },
+                onMakeAllPowerupsAvailable: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Make all powerups available for testing
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        PowerupShopManager.shared.debugMakeAllAvailable()
+                    }
+                },
+                onResetShopPrices: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Reset all shop prices to defaults
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        PowerupShopManager.shared.debugResetPrices()
+                    }
+                },
+                onTestRewardedAd: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Test showing a rewarded ad
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+                              let window = windowScene.windows.first,
+                              let rootViewController = window.rootViewController else {
+                            print("Debug: Could not find root view controller")
+                            return
+                        }
+                        
+                        AdManager.shared.showRewardedAd(from: rootViewController) { success, points in
+                            print("Debug rewarded ad result: success=\(success), points=\(points)")
+                            if success {
+                                PowerupCurrencyManager.shared.addPoints(points)
+                            }
+                        }
+                    }
+                },
+                onForceReloadAds: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Force reload all ads
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        AdManager.shared.forceReloadAds()
+                    }
+                },
+                onSimulateAdReward: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Simulate ad reward without showing ad
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        AdManager.shared.simulateAdReward { success, points in
+                            print("Debug simulated ad reward: success=\(success), points=\(points)")
+                            if success {
+                                PowerupCurrencyManager.shared.addPoints(points)
+                                
+                                // Show ad reward animation for debug simulation too
+                                adRewardPoints = points
+                                withAnimation(.easeInOut(duration: 0.3)) {
+                                    showAdRewardAnimation = true
+                                }
+                            }
+                        }
+                    }
+                },
+                onTriggerInterstitialAd: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Force trigger interstitial ad
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        adTimingManager.debugForceInterstitial(gameController: gameController)
+                    }
+                },
+                onPromptBonusAd: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Force show bonus ad prompt
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        adTimingManager.promptBonusAd()
+                        showBonusAdPrompt = true
+                    }
+                },
+                onResetAdTimers: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Reset all ad timing counters
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        adTimingManager.debugResetGameCount()
+                        adTimingManager.debugResetBonusAdCooldown()
+                    }
+                },
+                onSimulateGameCounts: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Simulate multiple game completions for interstitial testing
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        // Simulate 5 games to trigger interstitial
+                        for _ in 1...5 {
+                            adTimingManager.onGameEnd(gameController: gameController)
+                        }
+                    }
                 }
             )
         }
         #endif
+        .onReceive(adTimingManager.$showBonusAdPrompt) { shouldShow in
+            if shouldShow {
+                showBonusAdPrompt = true
+            }
+        }
+        .onReceive(NotificationCenter.default.publisher(for: .interstitialAdRewardEarned)) { notification in
+            // Handle interstitial ad reward animation only when NOT in game over
+            // When in game over, GameOverView will handle the animation for better visibility
+            guard !gameController.isGameOver else {
+                print("ContentView: Skipping interstitial ad animation - GameOverView will handle it")
+                return
+            }
+            
+            if let points = notification.userInfo?["points"] as? Int {
+                print("ContentView: Received interstitial ad reward notification with \(points) points")
+                print("ContentView: Current showAdRewardAnimation state: \(showAdRewardAnimation)")
+                
+                adRewardPoints = points
+                withAnimation(.easeInOut(duration: 0.3)) {
+                    showAdRewardAnimation = true
+                }
+                print("ContentView: Set showAdRewardAnimation = true for interstitial ad reward")
+            } else {
+                print("ContentView: Received interstitial ad notification but no points found in userInfo")
+            }
+        }
+    }
+    
+    // MARK: - Bonus Ad Methods
+    
+    /// Handle watching a bonus ad during gameplay
+    private func watchBonusAd() {
+        guard let windowScene = UIApplication.shared.connectedScenes.first as? UIWindowScene,
+              let window = windowScene.windows.first,
+              let rootViewController = window.rootViewController else {
+            print("ContentView: Could not find root view controller for bonus ad")
+            showBonusAdPrompt = false
+            return
+        }
+        
+        if adManager.canShowRewardedAd {
+            adManager.showRewardedAd(from: rootViewController) { success, points in
+                DispatchQueue.main.async {
+                    showBonusAdPrompt = false
+                    adTimingManager.onBonusAdWatched(success: success, points: points)
+                    
+                    if success {
+                        PowerupCurrencyManager.shared.addPoints(points)
+                        
+                        // Show ad reward animation
+                        adRewardPoints = points
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            showAdRewardAnimation = true
+                        }
+                        
+                        print("ContentView: Bonus ad watched successfully, earned \(points) points")
+                    } else {
+                        print("ContentView: Bonus ad failed or was cancelled")
+                    }
+                }
+            }
+        } else {
+            // Use emergency fallback
+            adManager.handleAdUnavailable { success, points in
+                DispatchQueue.main.async {
+                    showBonusAdPrompt = false
+                    adTimingManager.onBonusAdWatched(success: success, points: points)
+                    
+                    if success {
+                        PowerupCurrencyManager.shared.addPoints(points)
+                        
+                        // Show ad reward animation for fallback too
+                        adRewardPoints = points
+                        withAnimation(.easeInOut(duration: 0.3)) {
+                            showAdRewardAnimation = true
+                        }
+                        
+                        print("ContentView: Used bonus ad fallback, earned \(points) points")
+                    }
+                }
+            }
+        }
     }
 }
 

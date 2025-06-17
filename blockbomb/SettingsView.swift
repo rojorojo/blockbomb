@@ -2,7 +2,11 @@ import SwiftUI
 
 struct SettingsView: View {
     @ObservedObject private var audioManager = AudioManager.shared
+    @ObservedObject private var currencyManager = PowerupCurrencyManager.shared
+    @ObservedObject private var shopManager = PowerupShopManager.shared
     @Environment(\.presentationMode) var presentationMode
+    
+    @State private var showShop = false
     
     var body: some View {
         NavigationView {
@@ -94,6 +98,55 @@ struct SettingsView: View {
                     }
                     
                 }
+                
+                // Powerup Shop Section
+                SettingBox {
+                    VStack(alignment: .leading, spacing: 16) {
+                        Text("Powerup Shop")
+                            .foregroundColor(.white)
+                            .font(.body.weight(.semibold))
+                        
+                        HStack {
+                            VStack(alignment: .leading, spacing: 4) {
+                                HStack {
+                                    Image(systemName: "dollarsign.circle.fill")
+                                        .foregroundColor(BlockColors.amber)
+                                    Text("\(currencyManager.currentPoints)")
+                                        .font(.title3)
+                                        .fontWeight(.bold)
+                                        .foregroundColor(BlockColors.amber)
+                                    Text("coins")
+                                        .font(.caption)
+                                        .foregroundColor(BlockColors.amber.opacity(0.8))
+                                }
+                                
+                                Text("Watch ads to earn coins for powerups")
+                                    .font(.caption2)
+                                    .foregroundColor(.white.opacity(0.7))
+                            }
+                            
+                            Spacer()
+                            
+                            Button(action: {
+                                showShop = true
+                            }) {
+                                HStack {
+                                    Image(systemName: "bag.fill")
+                                        .foregroundColor(BlockColors.violet)
+                                    Text("Shop")
+                                        .font(.body)
+                                        .fontWeight(.semibold)
+                                        .foregroundColor(BlockColors.violet)
+                                }
+                                .padding(.horizontal, 16)
+                                .padding(.vertical, 8)
+                                .background(BlockColors.violet.opacity(0.2))
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+                            }
+                        }
+                    }
+                }
+                
                 Spacer()
                 
                 // Close Button
@@ -115,6 +168,9 @@ struct SettingsView: View {
         }
         }
         .navigationViewStyle(StackNavigationViewStyle())
+        .sheet(isPresented: $showShop) {
+            PowerupShopView()
+        }
     }
     
     // MARK: - Test Functions
