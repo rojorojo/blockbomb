@@ -44,6 +44,9 @@ class GameController: ObservableObject, PostReviveTracker {
     func setGameScene(_ scene: GameScene) {
         gameScene = scene
         
+        // Start initial logging session
+        GameplayDataLogger.shared.startSession()
+        
         // Establish bidirectional connection
         scene.gameController = self
         
@@ -93,6 +96,9 @@ class GameController: ObservableObject, PostReviveTracker {
                 
                 self?.isGameOver = true
                 
+                // End the logging session
+                GameplayDataLogger.shared.endSession()
+                
                 // Notify ad timing manager about game end for potential interstitial
                 self?.adTimingManager.onGameEnd(gameController: self ?? GameController())
             }
@@ -141,6 +147,9 @@ class GameController: ObservableObject, PostReviveTracker {
     
     // Game control methods
     func restartGame() {
+        // Start a new logging session
+        GameplayDataLogger.shared.startSession()
+        
         withAnimation {
             isGameOver = false
             isNewHighScore = false // Reset new high score flag

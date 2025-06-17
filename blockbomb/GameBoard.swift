@@ -1158,3 +1158,22 @@ extension GameBoard {
         return problematicShapes
     }
 }
+
+// MARK: - Data Logging Support
+    
+extension GameBoard {
+    /// Get the current board state as a 2D boolean array for logging
+    func getBoardStateForLogging() -> [[Bool]] {
+        var boardState: [[Bool]] = []
+        
+        for i in 0..<rows {
+            var row: [Bool] = []
+            for j in 0..<columns {
+                row.append(grid[i][j] != nil)
+            }
+            boardState.append(row)
+        }
+        
+        return boardState
+    }
+}

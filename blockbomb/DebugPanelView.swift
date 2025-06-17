@@ -39,6 +39,10 @@ struct DebugPanelView: View {
     let onResetAdTimers: () -> Void
     let onSimulateGameCounts: () -> Void
     
+    // ML Data Logging debug actions
+    let onTestS3Upload: () -> Void
+    let onResetSessionCounter: () -> Void
+    
     var body: some View {
         NavigationView {
             ZStack {
@@ -278,6 +282,59 @@ struct DebugPanelView: View {
                                 }
                             }
                             
+                            // ML Data Logging Section
+                            DebugSection(title: "ML Data Logging") {
+                                VStack(spacing: 12) {
+                                    DebugButton(
+                                        title: "Test Firebase Upload",
+                                        subtitle: "Manually upload current CSV file to Firebase Storage",
+                                        color: .green,
+                                        action: onTestS3Upload
+                                    )
+                                    
+                                    DebugButton(
+                                        title: "Reset Session Counter",
+                                        subtitle: "Reset the 20-session counter to restart logging",
+                                        color: .orange,
+                                        action: onResetSessionCounter
+                                    )
+                                    
+                                    DebugButton(
+                                        title: "View Logging Status",
+                                        subtitle: "Check current logging and Firebase Storage configuration status",
+                                        color: .blue,
+                                        action: {
+                                            let logger = GameplayDataLogger.shared
+                                            let uploader = CSVFirebaseUploader.shared
+                                            print("=== ML Data Logging Status ===")
+                                            print("Sessions completed: \(logger.getCompletedSessionCount())/\(logger.getMaxSessions())")
+                                            print("Logging active: \(logger.isLoggingActive())")
+                                            print("CSV file size: \(logger.getCSVFileSize()) bytes")
+                                            print("Firebase Status: \(uploader.getConfigurationStatus())")
+                                            logger.debugCSVFileStatus()
+                                            print("===============================")
+                                        }
+                                    )
+                                    
+                                    DebugButton(
+                                        title: "Test Firebase Connection",
+                                        subtitle: "Test Firebase Storage connection with a simple upload",
+                                        color: .purple,
+                                        action: {
+                                            CSVFirebaseUploader.shared.testFirebaseStorageConnection { success, result in
+                                                DispatchQueue.main.async {
+                                                    if success {
+                                                        print("Debug Firebase Connection: SUCCESS - \(result ?? "unknown")")
+                                                    } else {
+                                                        print("Debug Firebase Connection: FAILED - \(result ?? "unknown error")")
+                                                    }
+                                                }
+                                            }
+                                        }
+                                    )
+                                }
+                            }
+                            
                             // Game Content Section
                             DebugSection(title: "Game Content") {
                                 VStack(spacing: 12) {
@@ -409,7 +466,9 @@ struct DebugPanelView_Previews: PreviewProvider {
             onTriggerInterstitialAd: {},
             onPromptBonusAd: {},
             onResetAdTimers: {},
-            onSimulateGameCounts: {}
+            onSimulateGameCounts: {},
+            onTestS3Upload: {},
+            onResetSessionCounter: {}
         )
     }
 }
