@@ -54,7 +54,7 @@ struct GameOverView: View {
                             .foregroundColor(BlockColors.cyan)
                             .opacity(isAnimating ? 1 : 0)
                             .scaleEffect(isAnimating ? 1 : 0.5)
-                            .padding(.top, 300)
+                            .padding(.top, 220)
                     }
                 }
 
