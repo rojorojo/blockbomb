@@ -2,450 +2,467 @@
 
 ## 🎯 FEATURE OVERVIEW
 
-**Multiplayer Block Puzzle Game with GameCenter Integration**
+**Game Center Turn-Based Competitive Block Puzzle**
 
-Implement a turn-based multiplayer feature where players use GameCenter to connect and compete in synchronized block puzzle matches. Each player has their own 8x8 grid, takes turns with the same 3 pieces, and competes for the highest score. The game uses GameCenter's turn-based multiplayer APIs for reliable, asynchronous gameplay.
+Implement a turn-based multiplayer feature using Game Center where two players compete for the highest score on separate 8x8 grids. Players alternate turns with identical piece sets, ensuring fair skill-based competition. The game supports asynchronous play with no time limits, and either player can end the game at any time.
 
 ## 🎮 GAME FLOW SUMMARY
 
-1. **Connection**: Player 1 uses GameCenter to connect with Player 2 by entering their GameCenter ID
-2. **Game Start**: Player 2 accepts the game request and the game begins
-3. **Turn System**: Players alternate turns, each seeing the same 3 pieces per round
-4. **Score Competition**: Both players maintain separate grids and scores, competing for highest total
-5. **Game End**: Game ends when one player cannot place pieces, winner determined by highest score
-6. **Emergency Controls**: Either player can end the game at any time with an "End Game" button
+1. **Match Creation**: Player creates or joins a Game Center turn-based match
+2. **Turn System**: Players alternate, each receiving the same 3 pieces per turn
+3. **Separate Grids**: Each player has their own 8x8 grid and score
+4. **Score Competition**: Players compete for the highest individual score
+5. **Flexible Ending**: Game ends when a player can't place pieces or either player chooses to end
+6. **Winner Determination**: Player with highest score wins the match
 
-## Phase 1: Core Multiplayer Infrastructure
+## Phase 1: Core Game Center Integration
 
-### 1.1 GameCenter Integration Setup
+### 1.1 Game Center Authentication Setup
 
 **AI Prompt:**
 
 ```
-Set up GameCenter integration for the BlockBomb iOS game to support turn-based multiplayer:
+Set up Game Center authentication and basic integration for BlockBomb:
 
 Requirements:
 - Add GameKit framework to the project
 - Create `GameCenterManager.swift` in `/Features/Multiplayer/` directory
-- Singleton pattern with proper GameCenter authentication
-- Player authentication and friend discovery
-- Turn-based match creation and management
-- Error handling for network issues and authentication failures
-- Integration with existing game architecture
-- Methods: `authenticatePlayer()`, `findFriends()`, `createMatch()`, `loadMatches()`
-- Privacy compliance and user consent for GameCenter features
-- Debug panel integration for testing multiplayer scenarios
+- Singleton pattern with proper Game Center authentication
+- Handle authentication states and user consent
+- Error handling for authentication failures
+- Integration with existing app architecture
+- Methods: `authenticatePlayer()`, `isAuthenticated()`, `getPlayerID()`
+- Accessibility support for Game Center authentication UI
+- Privacy compliance for Game Center features
 
 Follow the same architectural patterns as existing managers (AdManager, ReviveHeartManager).
 ```
 
-### 1.2 Multiplayer Game State Management
+Requirements:
+
+- [ ] Add GameKit framework to the project
+- [ ] Create `GameCenterManager.swift` in `/Features/Multiplayer/` directory
+- [ ] Singleton pattern with proper Game Center authentication
+- [ ] Handle authentication states and user consent
+- [ ] Error handling for authentication failures
+- [ ] Integration with existing app architecture
+- [ ] Methods: `authenticatePlayer()`, `isAuthenticated()`, `getPlayerID()`
+- [ ] Accessibility support for Game Center authentication UI
+- [ ] Privacy compliance for Game Center features
+
+Build and run the app to verify Game Center authentication works properly.
+
+### 1.2 Turn-Based Match Management
 
 **AI Prompt:**
 
 ```
-Create a comprehensive multiplayer game state management system:
+Create turn-based match management system using Game Center APIs:
 
 Requirements:
-- Create `MultiplayerGameManager.swift` in `/Features/Multiplayer/` directory
-- Define multiplayer game state structure with both player states
-- Synchronize piece generation (same 3 pieces for both players each turn)
-- Track turn progression and player scores separately
-- Handle game state serialization for GameCenter turn data
-- Manage player disconnections and reconnections
-- Emergency game termination by either player
-- Integration with existing GameController architecture
-- Methods: `startMultiplayerGame()`, `submitTurn()`, `endGame()`, `handleDisconnection()`
-- Accessibility support for multiplayer UI elements
+- Create `TurnBasedMatchManager.swift` in `/Features/Multiplayer/` directory
+- Handle GKTurnBasedMatch creation, loading, and management
+- Implement match data serialization for game state
+- Support for inviting friends and finding random opponents
+- Handle match lifecycle (active, ended, expired)
+- Error handling for network issues and match failures
+- Methods: `createMatch()`, `loadMatches()`, `submitTurn()`, `endMatch()`
+- Push notification support for turn alerts
+- Integration with existing game architecture patterns
 
-Build on existing GameStateManager patterns but extend for two-player scenarios.
+Build on GameCenterManager and follow existing manager patterns for consistency.
 ```
 
-### 1.3 Turn-Based Match Flow Controller
+Requirements:
+
+- [ ] Create `TurnBasedMatchManager.swift` in `/Features/Multiplayer/` directory
+- [ ] Handle GKTurnBasedMatch creation, loading, and management
+- [ ] Implement match data serialization for game state
+- [ ] Support for inviting friends and finding random opponents
+- [ ] Handle match lifecycle (active, ended, expired)
+- [ ] Error handling for network issues and match failures
+- [ ] Methods: `createMatch()`, `loadMatches()`, `submitTurn()`, `endMatch()`
+- [ ] Push notification support for turn alerts
+- [ ] Integration with existing game architecture patterns
+
+Build and run the app to test match creation and basic turn-based functionality.
+
+### 1.3 Multiplayer Game State Structure
 
 **AI Prompt:**
 
 ```
-Implement turn-based multiplayer match flow management:
+Define multiplayer game state structure and synchronization:
 
 Requirements:
-- Create `TurnBasedMatchController.swift` in `/Features/Multiplayer/` directory
-- Handle GameCenter turn-based match lifecycle
-- Coordinate turn submission and opponent notification
-- Manage match data encoding/decoding for GameCenter
-- Handle match timeouts and player disconnections
-- Implement graceful fallback for network issues
-- Integration with push notifications for turn alerts
-- Support for match saving and restoration
-- Error recovery and user feedback systems
-- Methods: `submitTurn()`, `loadMatch()`, `endMatch()`, `handleTimeout()`
+- Create `MultiplayerGameState.swift` in `/Features/Multiplayer/` directory
+- Define Codable structures for match data serialization
+- Track both players' grid states, scores, and current pieces
+- Implement synchronized piece generation using shared random seeds
+- Handle turn progression and player identification
+- Game state validation and conflict resolution
+- Methods: `encodeMatchData()`, `decodeMatchData()`, `generateSyncedPieces()`, `validateTurn()`
+- Integration with existing GameController and grid systems
+- Accessibility considerations for state communication
 
-Follow GameCenter best practices for turn-based multiplayer games.
+Build on existing game state patterns while adding multiplayer-specific synchronization.
 ```
+
+Requirements:
+
+- [ ] Create `MultiplayerGameState.swift` in `/Features/Multiplayer/` directory
+- [ ] Define Codable structures for match data serialization
+- [ ] Track both players' grid states, scores, and current pieces
+- [ ] Implement synchronized piece generation using shared random seeds
+- [ ] Handle turn progression and player identification
+- [ ] Game state validation and conflict resolution
+- [ ] Methods: `encodeMatchData()`, `decodeMatchData()`, `generateSyncedPieces()`, `validateTurn()`
+- [ ] Integration with existing GameController and grid systems
+- [ ] Accessibility considerations for state communication
+
+Build and run the app to verify game state serialization and piece synchronization.
+
+Write unit tests for MultiplayerGameState serialization and piece generation.
 
 ## Phase 2: Multiplayer UI Implementation
 
-### 2.1 Friend Selection and Match Creation
+### 2.1 Match Lobby and Creation Interface
 
 **AI Prompt:**
 
 ```
-Create friend selection and match creation UI for multiplayer games:
+Create match lobby interface for starting multiplayer games:
 
 Requirements:
-- Create `MultiplayerLobbyView.swift` in `/UI/Multiplayer/` directory
-- GameCenter friend list integration with search functionality
-- Match creation interface with friend invitation system
-- Loading states for GameCenter operations
-- Error handling for failed connections or invitations
-- Integration with existing game theme (BlockColors)
-- Accessibility labels and VoiceOver support
-- Match history and ongoing games display
-- Cancel/back navigation to main game
-- Methods: Display friends, send invitations, show match status
+- Create `MultiplayerLobbyView.swift` in `/UI/Views/` directory
+- Game Center friend list integration and random opponent matching
+- Match creation interface with clear game mode explanation
+- Active matches display with continue/resign options
+- Loading states for Game Center operations
+- Error handling UI for failed operations
+- Integration with existing navigation patterns (ContentView)
+- Accessibility labels and VoiceOver support for all interactive elements
+- Consistent theming with existing BlockColors and UI patterns
+- Methods: Display matches, create match, join match, show match details
 
-Use SwiftUI modal presentation patterns consistent with PowerupShopView and SettingsView.
+Use SwiftUI patterns consistent with existing views like PowerupShopView.
 ```
 
-### 2.2 Multiplayer Game Board UI
+Requirements:
+
+- [ ] Create `MultiplayerLobbyView.swift` in `/UI/Views/` directory
+- [ ] Game Center friend list integration and random opponent matching
+- [ ] Match creation interface with clear game mode explanation
+- [ ] Active matches display with continue/resign options
+- [ ] Loading states for Game Center operations
+- [ ] Error handling UI for failed operations
+- [ ] Integration with existing navigation patterns (ContentView)
+- [ ] Accessibility labels and VoiceOver support for all interactive elements
+- [ ] Consistent theming with existing BlockColors and UI patterns
+- [ ] Methods: Display matches, create match, join match, show match details
+
+Build and run the app to test the lobby interface and match creation flow.
+
+### 2.2 Multiplayer Game Interface
 
 **AI Prompt:**
 
 ```
-Adapt the existing game board for multiplayer display:
+Adapt existing game interface for multiplayer competitive play:
 
 Requirements:
-- Create `MultiplayerGameView.swift` in `/UI/Multiplayer/` directory
+- Create `MultiplayerGameView.swift` in `/UI/Views/` directory
 - Display current player's score in existing score position
 - Show opponent's score where "BEST" score normally appears
-- Turn indicator overlay: "<GameCenter ID> turn" when waiting
-- "End Game" button accessible at all times during multiplayer
-- Pause/waiting state visual indicators
-- Real-time score updates for both players
-- Consistent theming with existing BlockColors system
-- Accessibility support for multiplayer-specific elements
-- Integration with existing ContentView patterns
+- Turn indicator: show whose turn it is and waiting states
+- "End Game" button accessible during player's turn
+- Real-time opponent score updates and game state sync
+- Visual feedback for turn submission and opponent moves
+- Integration with existing GameScene and piece placement
+- Accessibility announcements for turn changes and score updates
+- Consistent with existing game UI patterns and theming
 
-Build on existing GameScene and ContentView architecture while adding multiplayer-specific UI layers.
+Build on existing ContentView and GameScene architecture while adding multiplayer UI layers.
 ```
 
-### 2.3 Turn Transition and Status UI
+Requirements:
+
+- [ ] Create `MultiplayerGameView.swift` in `/UI/Views/` directory
+- [ ] Display current player's score in existing score position
+- [ ] Show opponent's score where "BEST" score normally appears
+- [ ] Turn indicator: show whose turn it is and waiting states
+- [ ] "End Game" button accessible during player's turn
+- [ ] Real-time opponent score updates and game state sync
+- [ ] Visual feedback for turn submission and opponent moves
+- [ ] Integration with existing GameScene and piece placement
+- [ ] Accessibility announcements for turn changes and score updates
+- [ ] Consistent with existing game UI patterns and theming
+
+Build and run the app to test the multiplayer game interface and turn indicators.
+
+### 2.3 Turn Transition and Result Screens
 
 **AI Prompt:**
 
 ```
-Create smooth turn transition and status communication UI:
+Create smooth turn transitions and game result interfaces:
 
 Requirements:
-- Create `TurnTransitionView.swift` in `/UI/Multiplayer/` directory
-- Animated turn transition between players
-- Clear visual feedback for turn submission
-- Opponent action notifications and status updates
-- Network connectivity indicators
-- Loading states for turn processing
-- Error messaging for failed turn submissions
-- Emergency game end confirmation dialogs
-- Success animations for completed turns
-- Integration with existing animation patterns (similar to AdRewardAnimationView)
+- Create `TurnTransitionView.swift` and `MultiplayerResultView.swift` in `/UI/Views/` directory
+- Animated turn submission feedback and waiting states
+- Clear opponent move notifications and updates
+- Game end screens with winner announcement and final scores
+- Match statistics and replay/rematch options
+- Error handling for disconnections and failed submissions
+- Integration with existing animation patterns (GameOverView style)
+- Accessibility support for all transition states and results
+- Consistent theming and navigation patterns
 
-Follow the same animation and feedback patterns as existing reward and game state animations.
+Follow existing UI patterns from GameOverView and other result screens.
 ```
+
+Requirements:
+
+- [ ] Create `TurnTransitionView.swift` and `MultiplayerResultView.swift` in `/UI/Views/` directory
+- [ ] Animated turn submission feedback and waiting states
+- [ ] Clear opponent move notifications and updates
+- [ ] Game end screens with winner announcement and final scores
+- [ ] Match statistics and replay/rematch options
+- [ ] Error handling for disconnections and failed submissions
+- [ ] Integration with existing animation patterns (GameOverView style)
+- [ ] Accessibility support for all transition states and results
+- [ ] Consistent theming and navigation patterns
+
+Build and run the app to test turn transitions and result screens.
+
+Write UI tests for multiplayer interface flows and accessibility.
 
 ## Phase 3: Game Logic Integration
 
-### 3.1 Synchronized Piece Generation
+### 3.1 Multiplayer Game Controller
 
 **AI Prompt:**
 
 ```
-Implement synchronized piece generation for fair multiplayer gameplay:
+Extend existing GameController for multiplayer turn-based gameplay:
 
 Requirements:
-- Extend existing TetrominoShape selection system for multiplayer
-- Deterministic piece generation using shared random seed
-- Ensure both players get identical piece sets each turn
-- Integration with existing piece selection modes (balancedWeighted, etc.)
-- Maintain existing single-player piece generation compatibility
-- Handle edge cases for mid-game disconnections
+- Create `MultiplayerGameController.swift` extending existing GameController
+- Integrate with TurnBasedMatchManager for Game Center operations
+- Handle synchronized piece generation and turn management
+- Validate moves and prevent invalid game states
+- Coordinate turn submission and opponent updates
+- Emergency game ending and resignation handling
+- Methods: `startMultiplayerGame()`, `submitTurn()`, `endGame()`, `handleOpponentMove()`
+- Integration with existing game logic and scoring systems
+- Accessibility support for multiplayer game state changes
+
+Build on existing GameController patterns while adding multiplayer coordination.
+```
+
+Requirements:
+
+- [ ] Create `MultiplayerGameController.swift` extending existing GameController
+- [ ] Integrate with TurnBasedMatchManager for Game Center operations
+- [ ] Handle synchronized piece generation and turn management
+- [ ] Validate moves and prevent invalid game states
+- [ ] Coordinate turn submission and opponent updates
+- [ ] Emergency game ending and resignation handling
+- [ ] Methods: `startMultiplayerGame()`, `submitTurn()`, `endGame()`, `handleOpponentMove()`
+- [ ] Integration with existing game logic and scoring systems
+- [ ] Accessibility support for multiplayer game state changes
+
+Build and run the app to test multiplayer game logic and turn coordination.
+
+### 3.2 Synchronized Piece Generation System
+
+**AI Prompt:**
+
+```
+Implement fair piece generation for competitive multiplayer:
+
+Requirements:
+- Extend existing TetrominoShape system for multiplayer synchronization
+- Shared random seed generation and coordination between players
+- Ensure identical piece sets for both players each turn
+- Integration with existing piece selection algorithms
+- Handle edge cases for disconnections and resync scenarios
+- Maintain compatibility with single-player piece generation
+- Methods: `generateSyncedPieces()`, `setSeed()`, `validatePieceSync()`
 - Debug logging for piece synchronization verification
-- Methods: `generateSynchronizedPieces()`, `setSeed()`, `verifyPieceSync()`
-- Integration with existing GameController and GameScene architecture
+- Accessibility considerations for piece presentation
 
-Build on existing TetrominoShape.selection() system while adding multiplayer seed coordination.
+Build on existing TetrominoShape.selection() while adding multiplayer seed coordination.
 ```
-
-### 3.2 Turn Management and Validation
-
-**AI Prompt:**
-
-```
-Create robust turn management and move validation system:
 
 Requirements:
-- Extend existing GameController for multiplayer turn logic
-- Validate player moves and prevent cheating
-- Handle turn timeouts and missed moves
-- Coordinate with GameCenter for turn submission
-- Manage game state transitions between turns
-- Integration with existing game over detection
-- Score synchronization and validation
-- Emergency game termination handling
-- Methods: `validateTurn()`, `submitPlayerTurn()`, `handleTimeout()`, `endMultiplayerGame()`
-- Comprehensive error handling and recovery
 
-Build on existing game logic while adding multiplayer coordination and validation.
-```
+- [ ] Extend existing TetrominoShape system for multiplayer synchronization
+- [ ] Shared random seed generation and coordination between players
+- [ ] Ensure identical piece sets for both players each turn
+- [ ] Integration with existing piece selection algorithms
+- [ ] Handle edge cases for disconnections and resync scenarios
+- [ ] Maintain compatibility with single-player piece generation
+- [ ] Methods: `generateSyncedPieces()`, `setSeed()`, `validatePieceSync()`
+- [ ] Debug logging for piece synchronization verification
+- [ ] Accessibility considerations for piece presentation
 
-### 3.3 Score Competition and Game End
+Build and run the app to verify piece synchronization works correctly.
+
+### 3.3 Competitive Scoring and Win Conditions
 
 **AI Prompt:**
 
 ```
-Implement score competition logic and multiplayer game ending:
+Implement competitive scoring and game end logic for multiplayer:
 
 Requirements:
 - Track separate scores for both players throughout the match
 - Determine winner based on final scores when game ends
-- Handle simultaneous game over conditions
-- Create multiplayer-specific game over screens
-- Integration with existing GameOverView patterns
-- Statistics tracking for multiplayer matches
-- Handle edge cases (ties, disconnections during game over)
-- Post-game summary and rematch options
-- Methods: `determineWinner()`, `handleMultiplayerGameOver()`, `showResults()`
-- Accessibility support for results and winner announcement
+- Handle various end conditions (no moves available, player ends game)
+- Integration with existing scoring system and GameOverView patterns
+- Statistics tracking for multiplayer performance
+- Handle edge cases (ties, disconnections, simultaneous game over)
+- Methods: `determineWinner()`, `handleGameEnd()`, `calculateFinalScores()`
+- Accessibility announcements for score changes and game results
+- Privacy-compliant statistics collection
 
-Extend existing GameOverView and scoring systems for competitive multiplayer scenarios.
+Extend existing scoring and game over systems for competitive multiplayer.
 ```
-
-## Phase 4: Local Pass-and-Play Mode
-
-### 4.1 Local Multiplayer Controller
-
-**AI Prompt:**
-
-```
-Create local pass-and-play multiplayer mode for offline play:
 
 Requirements:
-- Create `LocalMultiplayerController.swift` in `/Features/Multiplayer/` directory
-- Same game rules as online multiplayer but device-local
-- Turn-based gameplay on single device
-- Player name input and management
-- Score tracking for both local players
-- Integration with existing game architecture
-- Pause/resume functionality between turns
-- Methods: `startLocalGame()`, `switchPlayer()`, `endLocalGame()`
-- Accessibility support for local multiplayer
 
-Provide offline multiplayer option using same game logic as GameCenter version.
-```
+- [ ] Track separate scores for both players throughout the match
+- [ ] Determine winner based on final scores when game ends
+- [ ] Handle various end conditions (no moves available, player ends game)
+- [ ] Integration with existing scoring system and GameOverView patterns
+- [ ] Statistics tracking for multiplayer performance
+- [ ] Handle edge cases (ties, disconnections, simultaneous game over)
+- [ ] Methods: `determineWinner()`, `handleGameEnd()`, `calculateFinalScores()`
+- [ ] Accessibility announcements for score changes and game results
+- [ ] Privacy-compliant statistics collection
 
-### 4.2 Local Multiplayer UI
+Build and run the app to test competitive scoring and win determination.
+
+Write unit tests for scoring logic and win condition detection.
+
+## Phase 4: Polish and Configuration
+
+### 4.1 Multiplayer Settings and Configuration
 
 **AI Prompt:**
 
 ```
-Create user interface for local pass-and-play multiplayer:
+Create configuration system for multiplayer features:
 
 Requirements:
-- Create `LocalMultiplayerView.swift` in `/UI/Multiplayer/` directory
-- Player setup screen with name entry
-- Clear turn indicators for device passing
-- "Pass Device" transition screens
-- Score display for both players
-- Game end and winner announcement
-- Integration with existing UI patterns
-- Accessibility labels for device passing instructions
-- Consistent theming with BlockColors system
+- Create `MultiplayerConfig.swift` in `/Features/Configuration/` directory
+- Extend existing RewardConfig patterns for multiplayer settings
+- Configurable match settings and player preferences
+- Debug settings for multiplayer testing and simulation
+- Integration with existing debug panel and settings
+- Privacy settings for Game Center integration
+- Methods: `getMultiplayerConfig()`, `updateSettings()`, `debugMultiplayer()`
+- Accessibility support for all configuration options
+- JSON configuration support for future updates
 
-Follow existing modal presentation and navigation patterns while optimizing for device-sharing scenarios.
+Build on existing configuration patterns while adding multiplayer-specific options.
 ```
-
-## Phase 5: Configuration and Polish
-
-### 5.1 Multiplayer Configuration System
-
-**AI Prompt:**
-
-```
-Create configuration system for multiplayer game settings:
 
 Requirements:
-- Extend existing RewardConfig for multiplayer settings
-- Configurable turn timeouts and match duration limits
-- Debug settings for multiplayer testing
-- Network timeout and retry configurations
-- Integration with existing debug panel
-- Multiplayer-specific analytics settings
-- Methods: `getMultiplayerConfig()`, `setTurnTimeout()`, `configureMatching()`
-- JSON configuration support for future server-side updates
 
-Build on existing RewardConfig patterns while adding multiplayer-specific configuration options.
-```
+- [ ] Create `MultiplayerConfig.swift` in `/Features/Configuration/` directory
+- [ ] Extend existing RewardConfig patterns for multiplayer settings
+- [ ] Configurable match settings and player preferences
+- [ ] Debug settings for multiplayer testing and simulation
+- [ ] Integration with existing debug panel and settings
+- [ ] Privacy settings for Game Center integration
+- [ ] Methods: `getMultiplayerConfig()`, `updateSettings()`, `debugMultiplayer()`
+- [ ] Accessibility support for all configuration options
+- [ ] JSON configuration support for future updates
 
-### 5.2 Multiplayer Analytics and Testing
+Build and run the app to test multiplayer configuration options.
+
+### 4.2 Analytics and Performance Monitoring
 
 **AI Prompt:**
 
 ```
-Implement analytics tracking and testing tools for multiplayer features:
+Implement analytics and monitoring for multiplayer features:
 
 Requirements:
 - Extend existing AdAnalyticsManager for multiplayer metrics
 - Track match completion rates, turn times, and player engagement
-- Debug tools for simulating multiplayer scenarios
-- Network connectivity testing and simulation
-- Match state verification and debugging tools
 - Privacy-compliant data collection for multiplayer sessions
-- Integration with existing debug panel
-- Methods: `trackMultiplayerMatch()`, `simulateOpponent()`, `testNetworkConditions()`
+- Performance monitoring for Game Center operations
+- Error tracking and network connectivity metrics
+- Integration with existing analytics infrastructure
+- Methods: `trackMultiplayerMatch()`, `logTurnTime()`, `monitorConnectivity()`
+- Debug analytics dashboard for multiplayer testing
+- Accessibility considerations for analytics collection
 
-Follow existing analytics patterns while adding multiplayer-specific metrics and testing capabilities.
+Follow existing analytics patterns while adding multiplayer-specific tracking.
 ```
-
-### 5.3 Accessibility and Polish
-
-**AI Prompt:**
-
-```
-Polish multiplayer experience with comprehensive accessibility support:
 
 Requirements:
-- VoiceOver support for all multiplayer UI elements
-- Clear audio cues for turn transitions and game events
-- Visual accessibility for colorblind players in multiplayer context
-- Large text support for multiplayer UI elements
-- Haptic feedback for multiplayer game events
-- Error messaging that's accessible and clear
-- Integration with existing accessibility systems
-- Testing with VoiceOver and accessibility tools
 
-Maintain high accessibility standards across all multiplayer features while ensuring inclusive gameplay.
-```
+- [ ] Extend existing AdAnalyticsManager for multiplayer metrics
+- [ ] Track match completion rates, turn times, and player engagement
+- [ ] Privacy-compliant data collection for multiplayer sessions
+- [ ] Performance monitoring for Game Center operations
+- [ ] Error tracking and network connectivity metrics
+- [ ] Integration with existing analytics infrastructure
+- [ ] Methods: `trackMultiplayerMatch()`, `logTurnTime()`, `monitorConnectivity()`
+- [ ] Debug analytics dashboard for multiplayer testing
+- [ ] Accessibility considerations for analytics collection
+
+Build and run the app to verify analytics integration.
+
+Run all unit and UI tests to ensure complete functionality.
 
 ## Implementation Order Priority
 
-### High Priority (Core Multiplayer)
+### High Priority (Core Functionality)
 
-1. **Phase 1.1** - GameCenter Integration Setup
-2. **Phase 1.2** - Multiplayer Game State Management
-3. **Phase 2.2** - Multiplayer Game Board UI
-4. **Phase 3.1** - Synchronized Piece Generation
+1. **Phase 1.1** - Game Center Authentication Setup
+2. **Phase 1.2** - Turn-Based Match Management
+3. **Phase 1.3** - Multiplayer Game State Structure
+4. **Phase 2.2** - Multiplayer Game Interface
 
-### Medium Priority (Full Online Experience)
+### Medium Priority (Complete Experience)
 
-5. **Phase 1.3** - Turn-Based Match Flow Controller
-6. **Phase 2.1** - Friend Selection and Match Creation
-7. **Phase 3.2** - Turn Management and Validation
-8. **Phase 2.3** - Turn Transition and Status UI
+5. **Phase 3.1** - Multiplayer Game Controller
+6. **Phase 3.2** - Synchronized Piece Generation System
+7. **Phase 2.1** - Match Lobby and Creation Interface
+8. **Phase 2.3** - Turn Transition and Result Screens
 
-### Lower Priority (Polish and Local Play)
+### Lower Priority (Polish)
 
-9. **Phase 3.3** - Score Competition and Game End
-10. **Phase 4.1** - Local Multiplayer Controller
-11. **Phase 4.2** - Local Multiplayer UI
-12. **Phase 5.1** - Multiplayer Configuration System
-13. **Phase 5.2** - Multiplayer Analytics and Testing
-14. **Phase 5.3** - Accessibility and Polish
+9. **Phase 3.3** - Competitive Scoring and Win Conditions
+10. **Phase 4.1** - Multiplayer Settings and Configuration
+11. **Phase 4.2** - Analytics and Performance Monitoring
 
 ## Technical Considerations
 
-### GameCenter Integration
+### Game Center Integration
 
-- **Turn-Based Multiplayer**: Use GKTurnBasedMatch for asynchronous gameplay
-- **Friend Discovery**: GKLocalPlayer.localPlayer().loadFriends() for friend finding
-- **Match Data**: Serialize game state in GKTurnBasedMatch.matchData
-- **Push Notifications**: Automatic turn notifications through GameCenter
-- **Authentication**: Handle GKLocalPlayer authentication gracefully
-- **Privacy**: Respect user GameCenter privacy settings
+- **Turn-Based API**: Use GKTurnBasedMatch for asynchronous competitive play
+- **Match Data**: Serialize complete game state in GKTurnBasedMatch.matchData
+- **Authentication**: Handle GKLocalPlayer authentication and privacy settings
+- **Push Notifications**: Leverage Game Center's automatic turn notifications
+- **Friend Discovery**: Use Game Center's friend system for match invitations
 
-### Game State Synchronization
+### Competitive Fairness
 
-- **Deterministic Logic**: Shared random seeds for identical piece generation
-- **State Validation**: Verify moves to prevent cheating or desync
-- **Conflict Resolution**: Handle edge cases like simultaneous moves
-- **Save/Restore**: Robust match state persistence through app lifecycle
-- **Network Resilience**: Graceful handling of connectivity issues
+- **Deterministic Logic**: Shared random seeds ensure identical piece generation
+- **State Validation**: Prevent cheating through server-side validation
+- **Synchronization**: Robust game state sync between players
+- **Conflict Resolution**: Handle edge cases and disconnection scenarios
 
-### Architecture Integration
+### User Experience
 
-- **Existing Patterns**: Build on GameController, GameScene, and ContentView
-- **SwiftUI Integration**: Use @Published properties and @ObservedObject patterns
-- **Debug Integration**: Extend existing DebugPanelView for multiplayer testing
-- **Analytics**: Extend AdAnalyticsManager for multiplayer metrics
-- **Audio/Visual**: Consistent with existing animation and sound systems
-
-### User Experience Design
-
-- **Clear Communication**: Always show whose turn it is and game status
-- **Emergency Controls**: "End Game" always accessible during multiplayer
-- **Network Feedback**: Clear indicators for connectivity and loading states
-- **Error Recovery**: Helpful error messages and recovery options
-- **Accessibility**: Full VoiceOver support and inclusive design
-
-### Performance Considerations
-
-- **Memory Management**: Efficient handling of GameCenter match objects
-- **Background Handling**: Proper app lifecycle management for multiplayer
-- **Network Optimization**: Minimize data usage for match synchronization
-- **Battery Efficiency**: Optimize for background processing and notifications
-
-## File Structure Changes
-
-### New Directories
-
-```
-blockbomb/Features/
-└── Multiplayer/
-    ├── GameCenterManager.swift
-    ├── MultiplayerGameManager.swift
-    ├── TurnBasedMatchController.swift
-    └── LocalMultiplayerController.swift
-```
-
-### New UI Components
-
-```
-blockbomb/UI/
-└── Multiplayer/
-    ├── MultiplayerLobbyView.swift
-    ├── MultiplayerGameView.swift
-    ├── TurnTransitionView.swift
-    └── LocalMultiplayerView.swift
-```
-
-### Configuration Extensions
-
-```
-blockbomb/Features/Configuration/
-└── MultiplayerConfig.swift (extends RewardConfig)
-```
-
-### Test Coverage
-
-```
-blockbombTests/
-├── GameCenterManagerTests.swift
-├── MultiplayerGameManagerTests.swift
-├── MultiplayerUITests.swift
-└── LocalMultiplayerTests.swift
-```
-
-## Privacy and Compliance
-
-### GameCenter Privacy
-
-- **User Consent**: Clear explanation of GameCenter features and data sharing
-- **Friend Access**: Respect user's GameCenter friend list privacy settings
-- **Match Data**: Only store necessary game state information
-- **Age Compliance**: Ensure COPPA compliance for younger players
-
-### Data Handling
-
-- **Minimal Data**: Only collect necessary match and score information
-- **Local Storage**: Prefer local storage over cloud when possible
-- **Encryption**: Use GameCenter's built-in security for match data
-- **User Control**: Allow users to disable multiplayer features
-
-This comprehensive plan provides a roadmap for implementing a robust multiplayer system that integrates seamlessly with the existing BlockBomb architecture while maintaining the high-quality user experience standards established in the current codebase.
+- **Clear Communication**: Always show game status and whose turn it is
+- **Emergency Controls**: "End Game" accessible to either player at any time
+- **Asynchronous Design**: No time pressure, play at your own pace
+- **Accessibility**: Full VoiceOver support and inclusive design throughout
+  This comprehensive plan provides a roadmap for implementing a robust multiplayer system that integrates seamlessly with the existing BlockBomb architecture while maintaining the high-quality user experience standards established in the current codebase.
