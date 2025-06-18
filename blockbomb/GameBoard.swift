@@ -1177,3 +1177,42 @@ extension GameBoard {
         return boardState
     }
 }
+
+// MARK: - Multiplayer Support Methods
+    
+extension GameBoard {
+    /// Set a block at a specific cell (for multiplayer game state restoration)
+    func setBlock(at cell: GridCell, color: SKColor) {
+        // Remove existing block if present
+        if let existingBlock = grid[cell.row][cell.column] {
+            existingBlock.removeFromParent()
+        }
+        
+        // Create and place new block
+        let block = createBlock(at: cell, color: color)
+        grid[cell.row][cell.column] = block
+        boardNode.addChild(block)
+    }
+    
+    /// Get the color of a block at a specific cell
+    func getBlockColor(at cell: GridCell) -> SKColor? {
+        guard cell.row >= 0 && cell.row < rows && cell.column >= 0 && cell.column < columns else {
+            return nil
+        }
+        
+        if let block = grid[cell.row][cell.column] {
+            return block.fillColor
+        }
+        
+        return nil
+    }
+    
+    /// Check if a cell is occupied
+    func isOccupied(at cell: GridCell) -> Bool {
+        guard cell.row >= 0 && cell.row < rows && cell.column >= 0 && cell.column < columns else {
+            return false
+        }
+        
+        return grid[cell.row][cell.column] != nil
+    }
+}

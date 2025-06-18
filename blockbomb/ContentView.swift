@@ -10,6 +10,7 @@ struct ContentView: View {
     @StateObject private var turnBasedMatchManager = TurnBasedMatchManager.shared
     @StateObject private var onboardingManager = OnboardingManager()
     @State private var showSettings = false
+    @State private var showMultiplayerLobby = false
     @State private var showReviveAnimation = false
     @State private var showBonusAdPrompt = false
     @State private var showAdRewardAnimation = false
@@ -44,6 +45,18 @@ struct ContentView: View {
                             .frame(width: 44, height: 44)
                             
                     }
+                    
+                    // Multiplayer button
+                    Button(action: {
+                        showMultiplayerLobby = true
+                    }) {
+                        Image(systemName: "person.2.fill")
+                            .font(.title2)
+                            .foregroundColor(BlockColors.blue)
+                            .frame(width: 44, height: 44)
+                    }
+                    .accessibilityLabel("Multiplayer")
+                    .accessibilityHint("Open multiplayer lobby to play with friends")
                     
                     #if DEBUG
                     // Debug panel button (only in debug builds)
@@ -179,6 +192,9 @@ struct ContentView: View {
         }
         .sheet(isPresented: $showSettings) {
             SettingsView()
+        }
+        .sheet(isPresented: $showMultiplayerLobby) {
+            MultiplayerLobbyView()
         }
         .fullScreenCover(isPresented: $onboardingManager.shouldShowOnboarding) {
             OnboardingView()

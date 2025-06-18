@@ -262,7 +262,7 @@ class TurnBasedMatchManager: NSObject, ObservableObject {
         guard let localPlayer = gameCenterManager.localPlayer else { return nil }
         
         // Find opponent (participant who is not the local player)
-        return match.participants?.first { participant in
+        return match.participants.first { participant in
             participant.player?.gamePlayerID != localPlayer.gamePlayerID
         }
     }
@@ -308,7 +308,7 @@ class TurnBasedMatchManager: NSObject, ObservableObject {
         }
         
         // Calculate match outcome for each participant
-        let outcomes = calculateMatchOutcomes(for: match, finalData: matchData)
+        let _ = calculateMatchOutcomes(for: match, finalData: matchData)
         
         match.endMatchInTurn(withMatch: matchData, completionHandler: { [weak self] error in
             DispatchQueue.main.async {
@@ -334,9 +334,9 @@ class TurnBasedMatchManager: NSObject, ObservableObject {
     ///   - match: The match to calculate outcomes for
     ///   - finalData: Final game state data
     /// - Returns: Array of match outcomes for each participant
-    private func calculateMatchOutcomes(for match: GKTurnBasedMatch, finalData: Data) -> [GKTurnBasedMatchOutcome] {
+    private func calculateMatchOutcomes(for match: GKTurnBasedMatch, finalData: Data) -> [GKTurnBasedMatch.Outcome] {
         // For now, return default outcomes - this will be enhanced when game state is implemented
-        return match.participants?.map { _ in GKTurnBasedMatchOutcome.none } ?? []
+        return match.participants.map { _ in GKTurnBasedMatch.Outcome.none }
     }
     
     /// Quit a match (resign)
@@ -429,8 +429,7 @@ class TurnBasedMatchManager: NSObject, ObservableObject {
     private func shouldRetryOperation(error: Error) -> Bool {
         let nsError = error as NSError
         return nsError.domain == GKErrorDomain && 
-               (nsError.code == GKError.communicationsFailure.rawValue ||
-                nsError.code == GKError.networkFailure.rawValue)
+               nsError.code == GKError.communicationsFailure.rawValue
     }
     
     /// Schedule a retry of match loading after a delay
