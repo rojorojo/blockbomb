@@ -1,4 +1,5 @@
 import SpriteKit
+import SwiftUI
 
 // Extension containing all touch handling functionality
 extension GameScene {
@@ -141,6 +142,11 @@ extension GameScene {
         // Check if we have a valid grid cell
         if let gridCell = currentGridCell {
             if gameBoard.canPlacePiece(selectedNode.gridPiece, at: gridCell) {
+                // Capture data for logging before placing the piece
+                let previousScore = score
+                let availablePieces = pieceNodes.map { $0.gridPiece.shape }
+                let selectedPieceShape = selectedNode.gridPiece.shape
+                
                 // Award points for the piece and cleared lines
                 let linesCleared = gameBoard.placePiece(selectedNode.gridPiece, at: gridCell)
                 let rowPoints = calculatePoints(forLines: linesCleared.rows)
@@ -149,6 +155,17 @@ extension GameScene {
                 let piecePoints = calculatePointsForPiece(selectedNode.gridPiece)
                 score += piecePoints + rowPoints + columnPoints + comboBonus
                 updateScoreLabel()
+                
+                // Log the gameplay move
+                let scoreDelta = score - previousScore
+                let totalLinesCleared = linesCleared.rows + linesCleared.columns
+                GameplayDataLogger.shared.logMove(
+                    boardState: gameBoard.getBoardStateForLogging(),
+                    availablePieces: availablePieces,
+                    selectedPiece: selectedPieceShape,
+                    scoreDelta: scoreDelta,
+                    linesCleared: totalLinesCleared
+                )
                 
                 // Play audio for different scenarios
                 if (linesCleared.rows > 0 && linesCleared.columns > 0) {

@@ -420,6 +420,32 @@ struct ContentView: View {
                             adTimingManager.onGameEnd(gameController: gameController)
                         }
                     }
+                },
+                onTestS3Upload: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Test manual Firebase Storage upload
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        GameplayDataLogger.shared.manualUploadToFirebase { success, result in
+                            DispatchQueue.main.async {
+                                if success {
+                                    print("Debug Firebase Upload: Success - \(result ?? "unknown")")
+                                } else {
+                                    print("Debug Firebase Upload: Failed - \(result ?? "unknown error")")
+                                }
+                            }
+                        }
+                    }
+                },
+                onResetSessionCounter: {
+                    // Dismiss debug panel first
+                    showDebugPanel = false
+                    
+                    // Reset the 20-session counter
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        GameplayDataLogger.shared.resetSessionCounter()
+                    }
                 }
             )
         }

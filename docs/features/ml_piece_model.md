@@ -16,13 +16,13 @@ Implement a simplified machine learning model using Create ML to improve piece s
 Create a CSV gameplay data logging system for the BlockBomb iOS game:
 
 Requirements:
-- [ ] Create GameplayDataLogger class in `/Features/ML/GameplayDataLogger.swift`
-- [ ] Log directly to CSV format for Create ML compatibility
-- [ ] Include headers: board_state, available_pieces, selected_piece, score_delta, lines_cleared, game_duration
-- [ ] Flatten board state to comma-separated values
-- [ ] Encode available pieces as binary features
-- [ ] Append each move to CSV file in Documents directory
-- [ ] Add session metadata (session_id, timestamp)
+- [x] Create GameplayDataLogger class in `/Features/ML/GameplayDataLogger.swift`
+- [x] Log directly to CSV format for Create ML compatibility
+- [x] Include headers: board_state, available_pieces, selected_piece, score_delta, lines_cleared, game_duration
+- [x] Flatten board state to comma-separated values
+- [x] Encode available pieces as binary features
+- [x] Append each move to CSV file in Documents directory
+- [x] Add session metadata (session_id, timestamp)
 
 Technical Specifications:
 - CSV format: direct Create ML input compatibility
@@ -41,10 +41,10 @@ Integration Points:
 - PieceManager for piece selection events
 
 Requirements:
-- [ ] Create GameplayDataLogger for direct CSV logging
-- [ ] Flatten board state and encode pieces for CSV
-- [ ] Log each move immediately to CSV file
-- [ ] Add session tracking with timestamps
+- [x] Create GameplayDataLogger for direct CSV logging
+- [x] Flatten board state and encode pieces for CSV
+- [x] Log each move immediately to CSV file
+- [x] Add session tracking with timestamps
 
 Return to ml_piece_model.md and mark the requirements complete. Do not implement new sections without my permission.
 ```
@@ -60,40 +60,40 @@ Return to ml_piece_model.md and mark the requirements complete. Do not implement
 **AI Prompt:**
 
 ```
-Create direct CSV upload to AWS S3 bucket for the BlockBomb iOS game:
+Create direct CSV upload to Firebase Storage for the BlockBomb iOS game:
 
 Requirements:
-- [ ] Add AWS SDK for iOS to project dependencies
-- [ ] Create S3Uploader class in `/Features/ML/S3Uploader.swift`
-- [ ] Upload CSV files directly to 'bemuplogs' S3 bucket
-- [ ] Add timestamp to filename for versioning
-- [ ] Add basic retry logic for failed uploads
-- [ ] Keep local CSV file for backup
-- [ ] Add manual upload trigger for testing
-- [ ] Configure AWS credentials and region
+- [x] Use existing Firebase integration (already configured)
+- [x] Create FirebaseStorageUploader class in `/Features/ML/FirebaseStorageUploader.swift`
+- [x] Upload CSV files directly to Firebase Storage after 20 game sessions
+- [x] Add timestamp to filename for versioning
+- [x] Add basic retry logic for failed uploads
+- [x] Keep local CSV file for backup
+- [x] Add manual upload trigger for testing
+- [x] Configure Firebase Storage rules
 
 Technical Specifications:
-- AWS SDK for iOS integration
-- S3 bucket: 'bemuplogs'
+- Firebase Storage integration (simpler than AWS)
+- Storage path: "gameplay_data" folder
 - Filename format: "gameplay_data_YYYYMMDD_HHMMSS.csv"
 - Simple retry mechanism (3 attempts)
 - Keep local file after upload for continued logging
 - Manual upload button for testing
-- AWS credentials configuration
+- No credentials needed (Firebase already configured)
 
 File Locations:
-- `/Features/ML/S3Uploader.swift`
-- `/Configuration/AWSConfig.swift`
+- `/Features/ML/FirebaseStorageUploader.swift`
+- `/Configuration/FirebaseStorageConfig.swift`
 
 Integration Points:
 - GameplayDataLogger for CSV file source
-- AWS S3 for file uploads
+- Firebase Storage for file uploads
 
 Requirements:
-- [ ] Add AWS SDK and configure S3 credentials
-- [ ] Create S3Uploader for direct CSV uploads to bemuplogs bucket
-- [ ] Add retry logic and timestamped filenames
-- [ ] Add manual upload trigger for testing
+- [x] Use Firebase Storage instead of AWS S3 (much simpler)
+- [x] Create FirebaseStorageUploader for direct CSV uploads
+- [x] Add retry logic and timestamped filenames
+- [x] Add manual upload trigger for testing
 
 Return to ml_piece_model.md and mark the requirements complete. Do not implement new sections without my permission.
 ```
