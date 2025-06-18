@@ -6,6 +6,8 @@ struct ContentView: View {
     @StateObject private var gameController = GameController()
     @StateObject private var adTimingManager = AdTimingManager.shared
     @StateObject private var adManager = AdManager.shared
+    @StateObject private var gameCenterManager = GameCenterManager.shared
+    @StateObject private var turnBasedMatchManager = TurnBasedMatchManager.shared
     @StateObject private var onboardingManager = OnboardingManager()
     @State private var showSettings = false
     @State private var showReviveAnimation = false

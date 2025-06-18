@@ -19,6 +19,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
         // Configure Firebase
         FirebaseApp.configure()
         
+        // Initialize Game Center Manager
+        _ = GameCenterManager.shared
+        
         // Create the SwiftUI view that provides the window contents
         let contentView = ContentView()
         

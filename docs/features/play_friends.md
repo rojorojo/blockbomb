@@ -35,20 +35,20 @@ Requirements:
 - Accessibility support for Game Center authentication UI
 - Privacy compliance for Game Center features
 
-Follow the same architectural patterns as existing managers (AdManager, ReviveHeartManager).
+Follow the same architectural patterns as existing managers (AdManager, ReviveHeartManager). When complete return to play_friends.md and mark the requirements complete. Do not implement any other parts of the plan without my approval.
 ```
 
 Requirements:
 
-- [ ] Add GameKit framework to the project
-- [ ] Create `GameCenterManager.swift` in `/Features/Multiplayer/` directory
-- [ ] Singleton pattern with proper Game Center authentication
-- [ ] Handle authentication states and user consent
-- [ ] Error handling for authentication failures
-- [ ] Integration with existing app architecture
-- [ ] Methods: `authenticatePlayer()`, `isAuthenticated()`, `getPlayerID()`
-- [ ] Accessibility support for Game Center authentication UI
-- [ ] Privacy compliance for Game Center features
+- [x] Add GameKit framework to the project
+- [x] Create `GameCenterManager.swift` in `/Features/Multiplayer/` directory
+- [x] Singleton pattern with proper Game Center authentication
+- [x] Handle authentication states and user consent
+- [x] Error handling for authentication failures
+- [x] Integration with existing app architecture
+- [x] Methods: `authenticatePlayer()`, `isAuthenticated()`, `getPlayerID()`
+- [x] Accessibility support for Game Center authentication UI
+- [x] Privacy compliance for Game Center features
 
 Build and run the app to verify Game Center authentication works properly.
 
@@ -70,20 +70,20 @@ Requirements:
 - Push notification support for turn alerts
 - Integration with existing game architecture patterns
 
-Build on GameCenterManager and follow existing manager patterns for consistency.
+Build on GameCenterManager and follow existing manager patterns for consistency. When complete return to play_friends.md and mark the requirements complete. Do not implement any other parts of the plan without my approval.
 ```
 
 Requirements:
 
-- [ ] Create `TurnBasedMatchManager.swift` in `/Features/Multiplayer/` directory
-- [ ] Handle GKTurnBasedMatch creation, loading, and management
-- [ ] Implement match data serialization for game state
-- [ ] Support for inviting friends and finding random opponents
-- [ ] Handle match lifecycle (active, ended, expired)
-- [ ] Error handling for network issues and match failures
-- [ ] Methods: `createMatch()`, `loadMatches()`, `submitTurn()`, `endMatch()`
-- [ ] Push notification support for turn alerts
-- [ ] Integration with existing game architecture patterns
+- [x] Create `TurnBasedMatchManager.swift` in `/Features/Multiplayer/` directory
+- [x] Handle GKTurnBasedMatch creation, loading, and management
+- [x] Implement match data serialization for game state
+- [x] Support for inviting friends and finding random opponents
+- [x] Handle match lifecycle (active, ended, expired)
+- [x] Error handling for network issues and match failures
+- [x] Methods: `createMatch()`, `loadMatches()`, `submitTurn()`, `endMatch()`
+- [x] Push notification support for turn alerts
+- [x] Integration with existing game architecture patterns
 
 Build and run the app to test match creation and basic turn-based functionality.
 
@@ -105,7 +105,7 @@ Requirements:
 - Integration with existing GameController and grid systems
 - Accessibility considerations for state communication
 
-Build on existing game state patterns while adding multiplayer-specific synchronization.
+Build on existing game state patterns while adding multiplayer-specific synchronization. When complete return to play_friends.md and mark the requirements complete. Do not implement any other parts of the plan without my approval.
 ```
 
 Requirements:
@@ -145,7 +145,7 @@ Requirements:
 - Consistent theming with existing BlockColors and UI patterns
 - Methods: Display matches, create match, join match, show match details
 
-Use SwiftUI patterns consistent with existing views like PowerupShopView.
+Use SwiftUI patterns consistent with existing views like PowerupShopView. When complete return to play_friends.md and mark the requirements complete. Do not implement any other parts of the plan without my approval.
 ```
 
 Requirements:
@@ -182,7 +182,7 @@ Requirements:
 - Accessibility announcements for turn changes and score updates
 - Consistent with existing game UI patterns and theming
 
-Build on existing ContentView and GameScene architecture while adding multiplayer UI layers.
+Build on existing ContentView and GameScene architecture while adding multiplayer UI layers. When complete return to play_friends.md and mark the requirements complete. Do not implement any other parts of the plan without my approval.
 ```
 
 Requirements:
@@ -218,7 +218,7 @@ Requirements:
 - Accessibility support for all transition states and results
 - Consistent theming and navigation patterns
 
-Follow existing UI patterns from GameOverView and other result screens.
+Follow existing UI patterns from GameOverView and other result screens. When complete return to play_friends.md and mark the requirements complete. Do not implement any other parts of the plan without my approval.
 ```
 
 Requirements:
@@ -257,7 +257,7 @@ Requirements:
 - Integration with existing game logic and scoring systems
 - Accessibility support for multiplayer game state changes
 
-Build on existing GameController patterns while adding multiplayer coordination.
+Build on existing GameController patterns while adding multiplayer coordination. When complete return to play_friends.md and mark the requirements complete. Do not implement any other parts of the plan without my approval.
 ```
 
 Requirements:
@@ -292,7 +292,7 @@ Requirements:
 - Debug logging for piece synchronization verification
 - Accessibility considerations for piece presentation
 
-Build on existing TetrominoShape.selection() while adding multiplayer seed coordination.
+Build on existing TetrominoShape.selection() while adding multiplayer seed coordination. When complete return to play_friends.md and mark the requirements complete. Do not implement any other parts of the plan without my approval.
 ```
 
 Requirements:
@@ -327,7 +327,7 @@ Requirements:
 - Accessibility announcements for score changes and game results
 - Privacy-compliant statistics collection
 
-Extend existing scoring and game over systems for competitive multiplayer.
+Extend existing scoring and game over systems for competitive multiplayer. When complete return to play_friends.md and mark the requirements complete. Do not implement any other parts of the plan without my approval.
 ```
 
 Requirements:
@@ -366,7 +366,7 @@ Requirements:
 - Accessibility support for all configuration options
 - JSON configuration support for future updates
 
-Build on existing configuration patterns while adding multiplayer-specific options.
+Build on existing configuration patterns while adding multiplayer-specific options. When complete return to play_friends.md and mark the requirements complete. Do not implement any other parts of the plan without my approval.
 ```
 
 Requirements:
@@ -401,7 +401,7 @@ Requirements:
 - Debug analytics dashboard for multiplayer testing
 - Accessibility considerations for analytics collection
 
-Follow existing analytics patterns while adding multiplayer-specific tracking.
+Follow existing analytics patterns while adding multiplayer-specific tracking. When complete return to play_friends.md and mark the requirements complete. Do not implement any other parts of the plan without my approval.
 ```
 
 Requirements:
