@@ -1174,3 +1174,364 @@ enum TetrominoShape: CaseIterable {
         return min(totalWeight / maxStrategicOpportunities, 1.0)
     }
 }
+
+// MARK: - Multiplayer Synchronization Extensions
+
+extension TetrominoShape {
+    /// Multiplayer-specific context for synchronized piece generation
+    struct MultiplayerContext {
+        let seed: UInt64
+        let turnNumber: Int
+        let selectionMode: SelectionMode
+        let gameBoard: GameBoard?
+        let gameController: PostReviveTracker?
+        
+        init(seed: UInt64, turnNumber: Int = 1, selectionMode: SelectionMode = .strategicWeighted, gameBoard: GameBoard? = nil, gameController: PostReviveTracker? = nil) {
+            self.seed = seed
+            self.turnNumber = turnNumber
+            self.selectionMode = selectionMode
+            self.gameBoard = gameBoard
+            self.gameController = gameController
+        }
+    }
+    
+    /// Generate synchronized pieces for multiplayer using shared seed
+    /// Ensures identical piece sets for both players each turn
+    /// - Parameters:
+    ///   - count: Number of pieces to generate (default: 3)
+    ///   - context: Multiplayer context containing seed and game state
+    /// - Returns: Array of synchronized TetrominoShapes
+    static func generateSyncedPieces(count: Int = 3, context: MultiplayerContext) -> [TetrominoShape] {
+        print("TetrominoShape.generateSyncedPieces: Starting generation with seed \(context.seed), turn \(context.turnNumber)")
+        
+        // Create deterministic generator with combined seed
+        let combinedSeed = context.seed ^ UInt64(context.turnNumber)
+        var generator = SeededRandomGenerator(seed: combinedSeed)
+        
+        var pieces: [TetrominoShape] = []
+        
+        // Check for special game modes that override multiplayer synchronization
+        if let controller = context.gameController, controller.isInPostReviveMode(), let board = context.gameBoard {
+            print("TetrominoShape.generateSyncedPieces: Using post-revive priority selection (multiplayer)")
+            // Use synchronized post-revive selection
+            pieces = syncedPostRevivePrioritySelection(count: count, gameBoard: board, generator: &generator)
+        } else if let board = context.gameBoard, board.isInRescueMode() {
+            print("TetrominoShape.generateSyncedPieces: Using rescue mode selection (multiplayer)")
+            // Use synchronized rescue mode selection
+            pieces = syncedRescueModeSelection(count: count, gameBoard: board, generator: &generator)
+        } else {
+            // Normal synchronized selection based on mode
+            pieces = generateSyncedByMode(count: count, mode: context.selectionMode, gameBoard: context.gameBoard, generator: &generator)
+        }
+        
+        print("TetrominoShape.generateSyncedPieces: Generated \(pieces.count) pieces: \(pieces.map { $0.displayName })")
+        
+        // Validate piece synchronization
+        let isValid = validatePieceSync(pieces: pieces, expectedCount: count)
+        if !isValid {
+            print("TetrominoShape.generateSyncedPieces: WARNING - Piece synchronization validation failed!")
+        }
+        
+        return pieces
+    }
+    
+    /// Set a new seed for multiplayer synchronization
+    /// - Parameter seed: The shared random seed for all players
+    static func setSeed(_ seed: UInt64) {
+        // Store seed in a static property for consistency checks
+        _multiplayerSeed = seed
+        print("TetrominoShape.setSeed: Set multiplayer seed to \(seed)")
+    }
+    
+    /// Validate piece synchronization integrity
+    /// - Parameters:
+    ///   - pieces: Array of generated pieces to validate
+    ///   - expectedCount: Expected number of pieces
+    /// - Returns: True if pieces are valid for synchronization
+    static func validatePieceSync(pieces: [TetrominoShape], expectedCount: Int) -> Bool {
+        // Basic validation checks
+        guard pieces.count == expectedCount else {
+            print("TetrominoShape.validatePieceSync: FAIL - Count mismatch. Expected: \(expectedCount), Got: \(pieces.count)")
+            return false
+        }
+        
+        guard pieces.allSatisfy({ TetrominoShape.allCases.contains($0) }) else {
+            print("TetrominoShape.validatePieceSync: FAIL - Invalid piece shapes detected")
+            return false
+        }
+        
+        // Check for reasonable distribution (no more than 2 identical pieces)
+        let shapeCounts = Dictionary(grouping: pieces) { $0 }.mapValues { $0.count }
+        if shapeCounts.values.contains(where: { $0 > 2 }) {
+            print("TetrominoShape.validatePieceSync: WARNING - Unusual piece distribution detected: \(shapeCounts)")
+        }
+        
+        print("TetrominoShape.validatePieceSync: PASS - Pieces validated successfully")
+        return true
+    }
+    
+    /// Seeded random generator for deterministic multiplayer piece generation
+    struct SeededRandomGenerator: RandomNumberGenerator {
+        private var state: UInt64
+        
+        init(seed: UInt64) {
+            self.state = seed == 0 ? 1 : seed // Avoid zero state
+        }
+        
+        mutating func next() -> UInt64 {
+            // Linear congruential generator (same as system, but deterministic)
+            state = state &* 1103515245 &+ 12345
+            return state
+        }
+        
+        /// Get a random Int in the specified range
+        mutating func next(upperBound: Int) -> Int {
+            precondition(upperBound > 0)
+            return Int(next() % UInt64(upperBound))
+        }
+    }
+    
+    // MARK: - Private Helper Methods
+    
+    /// Generate pieces by selection mode using seeded generator
+    private static func generateSyncedByMode(count: Int, mode: SelectionMode, gameBoard: GameBoard?, generator: inout SeededRandomGenerator) -> [TetrominoShape] {
+        switch mode {
+        case .balanced:
+            return syncedBalancedSelection(count: count, generator: &generator)
+        case .weightedRandom:
+            return syncedWeightedRandomSelection(count: count, generator: &generator)
+        case .balancedWeighted:
+            return syncedBalancedWeightedSelection(count: count, generator: &generator)
+        case .categoryBalanced:
+            return syncedCategoryBalancedSelection(count: count, generator: &generator)
+        case .adaptiveBalanced:
+            return syncedAdaptiveBalancedSelection(count: count, gameBoard: gameBoard, generator: &generator)
+        case .strategicWeighted:
+            return syncedStrategicWeightedSelection(count: count, gameBoard: gameBoard, generator: &generator)
+        }
+    }
+    
+    /// Synchronized version of balanced selection
+    private static func syncedBalancedSelection(count: Int, generator: inout SeededRandomGenerator) -> [TetrominoShape] {
+        var selectedShapes: [TetrominoShape] = []
+        let shuffledCategories = Category.allCases.shuffled(using: &generator)
+        
+        for category in shuffledCategories {
+            if selectedShapes.count >= count { break }
+            
+            let shapesInCategory = shapes(in: category).shuffled(using: &generator)
+            if let shape = shapesInCategory.first(where: { !selectedShapes.contains($0) }) {
+                selectedShapes.append(shape)
+            }
+        }
+        
+        // Fill remaining with random shapes
+        if selectedShapes.count < count {
+            let remainingShapes = allCases.filter { !selectedShapes.contains($0) }.shuffled(using: &generator)
+            selectedShapes.append(contentsOf: remainingShapes.prefix(count - selectedShapes.count))
+        }
+        
+        return selectedShapes
+    }
+    
+    /// Synchronized version of weighted random selection
+    private static func syncedWeightedRandomSelection(count: Int, generator: inout SeededRandomGenerator) -> [TetrominoShape] {
+        var selectedShapes: [TetrominoShape] = []
+        let maxAttempts = count * 10 // Prevent infinite loops
+        var attempts = 0
+        
+        while selectedShapes.count < count && attempts < maxAttempts {
+            attempts += 1
+            
+            // Calculate total weight
+            let totalWeight = Rarity.allCases.reduce(0) { $0 + $1.weight }
+            
+            // Generate random value
+            let randomValue = generator.next(upperBound: totalWeight)
+            
+            // Find rarity based on weight
+            var currentWeight = 0
+            var selectedRarity: Rarity = .common
+            
+            for rarity in Rarity.allCases {
+                currentWeight += rarity.weight
+                if randomValue < currentWeight {
+                    selectedRarity = rarity
+                    break
+                }
+            }
+            
+            // Get shapes of selected rarity
+            let shapesOfRarity = allCases.filter { $0.rarity == selectedRarity }
+            if !shapesOfRarity.isEmpty {
+                let randomIndex = generator.next(upperBound: shapesOfRarity.count)
+                let selectedShape = shapesOfRarity[randomIndex]
+                
+                if !selectedShapes.contains(selectedShape) {
+                    selectedShapes.append(selectedShape)
+                }
+            }
+        }
+        
+        // Fill any remaining slots with truly random shapes
+        while selectedShapes.count < count {
+            let randomIndex = generator.next(upperBound: allCases.count)
+            let shape = allCases[randomIndex]
+            if !selectedShapes.contains(shape) {
+                selectedShapes.append(shape)
+            }
+        }
+        
+        return selectedShapes
+    }
+    
+    /// Synchronized version of category balanced selection
+    private static func syncedCategoryBalancedSelection(count: Int, generator: inout SeededRandomGenerator) -> [TetrominoShape] {
+        var selectedShapes: [TetrominoShape] = []
+        let shuffledCategories = Category.allCases.shuffled(using: &generator)
+        
+        // Try to select one shape from each category
+        for category in shuffledCategories {
+            if selectedShapes.count >= count { break }
+            
+            let shapesInCategory = shapes(in: category)
+            if !shapesInCategory.isEmpty {
+                let randomIndex = generator.next(upperBound: shapesInCategory.count)
+                let selectedShape = shapesInCategory[randomIndex]
+                
+                if !selectedShapes.contains(selectedShape) {
+                    selectedShapes.append(selectedShape)
+                }
+            }
+        }
+        
+        // Fill remaining with weighted random selection
+        while selectedShapes.count < count {
+            let remaining = syncedWeightedRandomSelection(count: 1, generator: &generator)
+            if let shape = remaining.first, !selectedShapes.contains(shape) {
+                selectedShapes.append(shape)
+            }
+        }
+        
+        return selectedShapes
+    }
+    
+    /// Synchronized version of balanced weighted selection
+    private static func syncedBalancedWeightedSelection(count: Int, generator: inout SeededRandomGenerator) -> [TetrominoShape] {
+        // Use weighted random selection for multiplayer balance
+        return syncedWeightedRandomSelection(count: count, generator: &generator)
+    }
+    
+    /// Synchronized version of adaptive balanced selection
+    private static func syncedAdaptiveBalancedSelection(count: Int, gameBoard: GameBoard?, generator: inout SeededRandomGenerator) -> [TetrominoShape] {
+        // For multiplayer, use strategic weighted to maintain fairness
+        return syncedStrategicWeightedSelection(count: count, gameBoard: gameBoard, generator: &generator)
+    }
+    
+    /// Synchronized version of strategic weighted selection
+    private static func syncedStrategicWeightedSelection(count: Int, gameBoard: GameBoard?, generator: inout SeededRandomGenerator) -> [TetrominoShape] {
+        // For multiplayer fairness, use weighted random without board-specific adaptations
+        // Both players get same pieces regardless of their individual board states
+        return syncedWeightedRandomSelection(count: count, generator: &generator)
+    }
+    
+    /// Synchronized version of post-revive priority selection
+    private static func syncedPostRevivePrioritySelection(count: Int, gameBoard: GameBoard, generator: inout SeededRandomGenerator) -> [TetrominoShape] {
+        // Use smaller, easier-to-place pieces for post-revive mode
+        let priorityShapes: [TetrominoShape] = [
+            .blockSingle, .squareSmall, .stick3, .stick3Vert,
+            .cornerTopLeft, .cornerBottomLeft, .cornerTopRight, .cornerBottomRight
+        ]
+        
+        var selectedShapes: [TetrominoShape] = []
+        
+        // Try to select from priority shapes first
+        let shuffledPriority = priorityShapes.shuffled(using: &generator)
+        for shape in shuffledPriority {
+            if selectedShapes.count >= count { break }
+            if !selectedShapes.contains(shape) {
+                selectedShapes.append(shape)
+            }
+        }
+        
+        // Fill remaining with general selection if needed
+        while selectedShapes.count < count {
+            let remaining = syncedWeightedRandomSelection(count: 1, generator: &generator)
+            if let shape = remaining.first, !selectedShapes.contains(shape) {
+                selectedShapes.append(shape)
+            }
+        }
+        
+        return selectedShapes
+    }
+    
+    /// Synchronized version of rescue mode selection
+    private static func syncedRescueModeSelection(count: Int, gameBoard: GameBoard, generator: inout SeededRandomGenerator) -> [TetrominoShape] {
+        // Favor single blocks and small pieces in rescue mode
+        let rescueShapes: [TetrominoShape] = [
+            .blockSingle, .squareSmall, .stick3, .stick3Vert
+        ]
+        
+        var selectedShapes: [TetrominoShape] = []
+        
+        // Prioritize rescue shapes
+        let shuffledRescue = rescueShapes.shuffled(using: &generator)
+        for shape in shuffledRescue {
+            if selectedShapes.count >= count { break }
+            selectedShapes.append(shape)
+        }
+        
+        // Fill remaining if needed
+        while selectedShapes.count < count {
+            let remaining = syncedWeightedRandomSelection(count: 1, generator: &generator)
+            if let shape = remaining.first, !selectedShapes.contains(shape) {
+                selectedShapes.append(shape)
+            }
+        }
+        
+        return selectedShapes
+    }
+    
+    /// Static storage for multiplayer seed (for validation and debugging)
+    @ThreadSafe private static var _multiplayerSeed: UInt64 = 0
+}
+
+// MARK: - Thread Safety Helper
+
+@propertyWrapper
+struct ThreadSafe<Value> {
+    private var value: Value
+    private let lock = NSLock()
+    
+    init(wrappedValue: Value) {
+        self.value = wrappedValue
+    }
+    
+    var wrappedValue: Value {
+        get {
+            lock.lock()
+            defer { lock.unlock() }
+            return value
+        }
+        set {
+            lock.lock()
+            defer { lock.unlock() }
+            value = newValue
+        }
+    }
+}
+
+// MARK: - Accessibility Extensions
+
+extension TetrominoShape {
+    /// Accessibility description for piece synchronization status
+    static func accessibilityDescriptionForSyncedPieces(_ pieces: [TetrominoShape]) -> String {
+        let pieceNames = pieces.map { $0.displayName }.joined(separator: ", ")
+        return "Synchronized pieces for this turn: \(pieceNames). Both players have identical piece sets."
+    }
+    
+    /// Voice-over friendly description of piece generation
+    static func voiceOverDescriptionForPieceGeneration(seed: UInt64, turnNumber: Int) -> String {
+        return "Generating fair pieces for turn \(turnNumber) using shared random seed. Both players will receive identical piece sets."
+    }
+}

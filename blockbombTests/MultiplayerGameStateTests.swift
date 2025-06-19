@@ -86,8 +86,8 @@ class MultiplayerGameStateTests: XCTestCase {
     }
     
     func testPieceDataConversion() {
-        // Create a test GridPiece
-        let shape = TetrominoShape.squareSmall
+        // Create a test GridPiece with rectangle shape (naturally blue)
+        let shape = TetrominoShape.rectWide
         let color = BlockColors.blue
         let gridPiece = GridPiece(shape: shape, color: color)
         
@@ -98,7 +98,7 @@ class MultiplayerGameStateTests: XCTestCase {
         XCTAssertNotNil(convertedPiece, "Should successfully convert back to GridPiece")
         XCTAssertEqual(convertedPiece?.shape, shape, "Shape should be preserved")
         XCTAssertEqual(pieceData.shape, shape.displayName, "Display name should match")
-        XCTAssertEqual(pieceData.colorName, "blue", "Color name should be extracted")
+        XCTAssertEqual(pieceData.colorName, "blue", "Color name should be 'blue' for rectangles category")
     }
     
     // MARK: - Serialization Tests

@@ -24,19 +24,18 @@ extension MultiplayerGameController {
 // MARK: - Extensions
 
 extension TetrominoShape {
-    /// Get color name for multiplayer synchronization
-    var colorName: String {
-        // Return a default color name based on the shape's category
+    /// Get proper color name for multiplayer synchronization based on actual uiColor
+    var properColorName: String {
         switch self.category {
-        case .squares: return "yellow"
+        case .squares: return "red"
         case .rectangles: return "blue"
-        case .sticks: return "cyan"
+        case .sticks: return "teal"
         case .lShapes: return "orange"
         case .corners: return "green"
         case .tShapes: return "purple"
-        case .elbows: return "red"
+        case .elbows: return "fuchsia"
         case .sShapes: return "pink"
-        case .special: return "teal"
+        case .special: return "yellow"
         }
     }
 }

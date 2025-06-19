@@ -91,6 +91,53 @@ class MultiplayerAccessibility {
         announceAccessibilityUpdate(message)
     }
     
+    /// Announce score changes for accessibility
+    func announceScoreUpdate(playerScore: Int, opponentScore: Int, scoreGain: Int, isPlayerScore: Bool) {
+        guard let gameController = gameController else { return }
+        
+        let playerName = isPlayerScore ? "You" : gameController.opponentName
+        let message = "\(playerName) scored \(scoreGain) points. Your score: \(playerScore). \(gameController.opponentName)'s score: \(opponentScore)"
+        
+        announceAccessibilityUpdate(message)
+        print("MultiplayerAccessibility: Announced score update - \(message)")
+    }
+    
+    /// Announce game end results with detailed information
+    func announceGameEndResults(reason: MultiplayerGameController.GameEndReason, 
+                               playerScore: Int, 
+                               opponentScore: Int) {
+        guard let gameController = gameController else { return }
+        
+        let baseMessage = getGameEndAccessibilityMessage(for: reason)
+        let scoreMessage = "Final scores: You \(playerScore), \(gameController.opponentName) \(opponentScore)"
+        let fullMessage = "\(baseMessage). \(scoreMessage)"
+        
+        announceAccessibilityUpdate(fullMessage)
+        
+        // Additional context for screen readers
+        DispatchQueue.main.asyncAfter(deadline: .now() + 2.0) {
+            let contextMessage: String
+            switch reason {
+            case .playerWon:
+                contextMessage = "You won by \(playerScore - opponentScore) points"
+            case .opponentWon:
+                contextMessage = "\(gameController.opponentName) won by \(opponentScore - playerScore) points"
+            default:
+                contextMessage = "Tap to view game options"
+            }
+            self.announceAccessibilityUpdate(contextMessage)
+        }
+        
+        print("MultiplayerAccessibility: Announced game end results")
+    }
+    
+    /// Announce competitive statistics for accessibility
+    func announceStatistics(_ stats: MultiplayerStatistics) {
+        let message = "Multiplayer statistics: \(stats.gamesPlayed) games played, \(stats.wins) wins, \(Int(stats.winRate * 100))% win rate, highest score \(stats.highestScore)"
+        announceAccessibilityUpdate(message)
+        print("MultiplayerAccessibility: Announced statistics - \(message)")
+    }
+    
     /// Configure VoiceOver support
     private func configureVoiceOverSupport() {
         // Set up custom accessibility actions if needed

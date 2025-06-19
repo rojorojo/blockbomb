@@ -11,17 +11,18 @@ class MultiplayerGameState {
     struct MatchState: Codable {
         let gameVersion: String
         let matchID: String
-        let player1: PlayerState
-        let player2: PlayerState
+        var player1: PlayerState
+        var player2: PlayerState
         let currentTurnPlayerID: String  // Player ID whose turn it is
         let turnNumber: Int
         let randomSeed: UInt64
         let currentPieces: [PieceData]  // Synchronized pieces for current turn
         let matchStartTime: Date
+        var isGameOver: Bool
+        var winner: String?
         let lastUpdateTime: Date
         var isGameEnded: Bool = false
         var gameEndTime: Date?
-        var winner: String?
         
         /// Check if the match state is valid and not corrupted
         var isValid: Bool {
@@ -83,7 +84,7 @@ class MultiplayerGameState {
         
         init(from gridPiece: GridPiece) {
             self.shape = gridPiece.shape.displayName
-            self.colorName = extractColorName(from: gridPiece.color)
+            self.colorName = gridPiece.shape.properColorName
             self.cells = gridPiece.cells.map { CellPosition(row: $0.row, column: $0.column) }
         }
         
@@ -133,28 +134,57 @@ class MultiplayerGameState {
     
     // MARK: - Synchronized Piece Generation
     
-    /// Generate synchronized pieces for both players using shared random seed
+    /// Generate synchronized pieces for both players using fair piece generation
     /// - Parameters:
-    ///   - seed: Random seed for deterministic generation
-    ///   - selectionMode: Piece selection mode to use
+    ///   - seed: Shared random seed for deterministic generation
+    ///   - selectionMode: Selection algorithm to use
+    ///   - turnNumber: Current turn number for seed variation
     /// - Returns: Array of 3 synchronized pieces
-    static func generateSyncedPieces(seed: UInt64, selectionMode: TetrominoShape.SelectionMode = .strategicWeighted) -> [PieceData] {
-        print("MultiplayerGameState: Generating synced pieces with seed: \(seed)")
+    static func generateSyncedPieces(seed: UInt64, selectionMode: TetrominoShape.SelectionMode = .strategicWeighted, turnNumber: Int = 1) -> [PieceData] {
+        print("MultiplayerGameState: Generating synced pieces with seed: \(seed), turn: \(turnNumber)")
         
-        // Create deterministic random generator with shared seed
-        var generator = MultiplayerGameState.SeededRandomGenerator(seed: seed)
+        // Create multiplayer context for fair piece generation
+        let context = TetrominoShape.MultiplayerContext(
+            seed: seed,
+            turnNumber: turnNumber,
+            selectionMode: selectionMode
+        )
         
-        // Generate 3 pieces using the seeded generator
+        // Generate synchronized pieces using the fair piece generation system
+        let shapes = TetrominoShape.generateSyncedPieces(count: 3, context: context)
+        
+        // Create deterministic generator for colors (separate from piece generation)
+        let colorSeed = seed ^ UInt64(turnNumber * 1000) // Offset seed for color generation
+        var colorGenerator = TetrominoShape.SeededRandomGenerator(seed: colorSeed)
+        
+        // Convert shapes to PieceData with synchronized colors
         var pieces: [PieceData] = []
-        for _ in 0..<3 {
-            let shape = TetrominoShape.generatePiece(using: &generator, mode: selectionMode)
-            let color = BlockColors.getRandomColor(using: &generator)
+        for shape in shapes {
+            let color = generateSyncedColor(using: &colorGenerator)
             let gridPiece = GridPiece(shape: shape, color: color)
             pieces.append(PieceData(from: gridPiece))
         }
         
         print("MultiplayerGameState: Generated pieces: \(pieces.map { $0.shape })")
+        
+        // Validate synchronization
+        let isValid = TetrominoShape.validatePieceSync(pieces: shapes, expectedCount: 3)
+        if !isValid {
+            print("MultiplayerGameState: WARNING - Generated pieces failed validation!")
+        }
+        
         return pieces
+    }
+    
+    /// Generate synchronized color using seeded generator
+    private static func generateSyncedColor(using generator: inout TetrominoShape.SeededRandomGenerator) -> SKColor {
+        let colors = [
+            SKColor(BlockColors.blue), SKColor(BlockColors.red), SKColor(BlockColors.green), 
+            SKColor(BlockColors.orange), SKColor(BlockColors.purple), SKColor(BlockColors.yellow), 
+            SKColor(BlockColors.pink), SKColor(BlockColors.teal)
+        ]
+        let randomIndex = generator.next(upperBound: colors.count)
+        return colors[randomIndex]
     }
     
     /// Generate a new random seed for piece synchronization
@@ -184,7 +214,7 @@ class MultiplayerGameState {
         let player2 = PlayerState(playerID: player2ID, displayName: player2Name)
         
         let seed = generateNewSeed()
-        let initialPieces = generateSyncedPieces(seed: seed)
+        let initialPieces = generateSyncedPieces(seed: seed, turnNumber: 1)
         
         return MatchState(
             gameVersion: gameVersion,
@@ -196,6 +226,8 @@ class MultiplayerGameState {
             randomSeed: seed,
             currentPieces: initialPieces,
             matchStartTime: Date(),
+            isGameOver: false,
+            winner: nil,
             lastUpdateTime: Date()
         )
     }
@@ -239,6 +271,8 @@ class MultiplayerGameState {
             randomSeed: newSeed,
             currentPieces: newPieces,
             matchStartTime: currentState.matchStartTime,
+            isGameOver: currentState.isGameOver,
+            winner: currentState.winner,
             lastUpdateTime: Date()
         )
     }
@@ -497,25 +531,117 @@ extension MultiplayerGameState {
     }
 }
 
-// MARK: - Extensions for Integration
+// MARK: - Debug Logging Extensions
 
-extension TetrominoShape {
-    /// Get TetrominoShape from display name
-    static func fromDisplayName(_ displayName: String) -> TetrominoShape? {
-        return TetrominoShape.allCases.first { $0.displayName == displayName }
+extension MultiplayerGameState {
+    /// Debug logging for piece synchronization verification
+    struct PieceSyncDebugLog {
+        let timestamp: Date
+        let seed: UInt64
+        let turnNumber: Int
+        let generatedPieces: [String]
+        let playerID: String
+        let validationResult: Bool
+        let selectionMode: String
+        
+        init(seed: UInt64, turnNumber: Int, pieces: [PieceData], playerID: String, validationResult: Bool, selectionMode: TetrominoShape.SelectionMode) {
+            self.timestamp = Date()
+            self.seed = seed
+            self.turnNumber = turnNumber
+            self.generatedPieces = pieces.map { $0.shape }
+            self.playerID = playerID
+            self.validationResult = validationResult
+            self.selectionMode = String(describing: selectionMode)
+        }
+        
+        /// Generate a detailed debug log entry
+        var debugDescription: String {
+            let formatter = ISO8601DateFormatter()
+            return """
+            [PIECE_SYNC_DEBUG] \(formatter.string(from: timestamp))
+            Player: \(playerID)
+            Seed: \(seed)
+            Turn: \(turnNumber)
+            Mode: \(selectionMode)
+            Pieces: \(generatedPieces.joined(separator: ", "))
+            Valid: \(validationResult)
+            """
+        }
     }
     
-    /// Generate piece using custom random generator
+    /// Log piece synchronization debug information
+    static func logPieceSyncDebug(seed: UInt64, turnNumber: Int, pieces: [PieceData], playerID: String, validationResult: Bool, selectionMode: TetrominoShape.SelectionMode) {
+        let debugLog = PieceSyncDebugLog(
+            seed: seed,
+            turnNumber: turnNumber,
+            pieces: pieces,
+            playerID: playerID,
+            validationResult: validationResult,
+            selectionMode: selectionMode
+        )
+        
+        print(debugLog.debugDescription)
+        
+        // Additional debug information
+        print("[PIECE_SYNC_DEBUG] Piece details:")
+        for (index, piece) in pieces.enumerated() {
+            print("  \(index + 1). \(piece.shape) (\(piece.colorName)) - \(piece.cells.count) cells")
+        }
+        
+        // Log validation specifics
+        if !validationResult {
+            print("[PIECE_SYNC_DEBUG] VALIDATION FAILED - Investigate synchronization issues")
+        }
+        
+        print("[PIECE_SYNC_DEBUG] ---")
+    }
+    
+    /// Generate comprehensive synchronization report
+    static func generateSyncReport(matchState: MatchState, localPieces: [TetrominoShape], remotePieces: [TetrominoShape]?) -> String {
+        var report = """
+        ===== MULTIPLAYER SYNCHRONIZATION REPORT =====
+        Match ID: \(matchState.matchID)
+        Turn: \(matchState.turnNumber)
+        Seed: \(matchState.randomSeed)
+        Current Player: \(matchState.currentTurnPlayerID)
+        
+        Local Pieces: \(localPieces.map { $0.displayName }.joined(separator: ", "))
+        """
+        
+        if let remote = remotePieces {
+            report += "\nRemote Pieces: \(remote.map { $0.displayName }.joined(separator: ", "))"
+            
+            let isSync = localPieces.count == remote.count && localPieces.elementsEqual(remote)
+            report += "\nSynchronization Status: \(isSync ? "SYNCHRONIZED" : "OUT OF SYNC")"
+            
+            if !isSync {
+                report += "\n⚠️  SYNCHRONIZATION ISSUE DETECTED ⚠️"
+                report += "\nRecommendation: Trigger resync procedure"
+            }
+        } else {
+            report += "\nRemote Pieces: Not available"
+            report += "\nSynchronization Status: Unable to verify"
+        }
+        
+        report += "\n" + String(repeating: "=", count: 50)
+        return report
+    }
+}
+
+// MARK: - Compatibility Extensions
+
+extension TetrominoShape {
+    /// Maintain backward compatibility with old generator method
+    @available(*, deprecated, message: "Use generateSyncedPieces with MultiplayerContext instead")
     static func generatePiece(using generator: inout MultiplayerGameState.SeededRandomGenerator, mode: SelectionMode) -> TetrominoShape {
-        // Use the generator to produce deterministic selection
-        let randomValue = generator.next()
-        let index = Int(randomValue % UInt64(TetrominoShape.allCases.count))
-        return TetrominoShape.allCases[index]
+        let randomIndex = generator.next(upperBound: UInt(allCases.count))
+        return allCases[Int(randomIndex)]
     }
 }
 
 extension BlockColors {
-    /// Get random color using custom generator
+    /// Maintain backward compatibility with old color generation
+    @available(*, deprecated, message: "Use generateSyncedColor in MultiplayerGameState instead")
     static func getRandomColor(using generator: inout MultiplayerGameState.SeededRandomGenerator) -> SKColor {
         let colors = [
             SKColor(blue), SKColor(red), SKColor(green), SKColor(orange), 
@@ -524,6 +650,15 @@ extension BlockColors {
         let randomValue = generator.next()
         let index = Int(randomValue % UInt64(colors.count))
         return colors[index]
+    }
+}
+
+// MARK: - Extensions for Integration
+
+extension TetrominoShape {
+    /// Get TetrominoShape from display name
+    static func fromDisplayName(_ displayName: String) -> TetrominoShape? {
+        return TetrominoShape.allCases.first { $0.displayName == displayName }
     }
 }
 

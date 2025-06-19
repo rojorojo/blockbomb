@@ -18,6 +18,7 @@ class MultiplayerGameController: GameController {
     @Published var opponentName: String = ""
     @Published var isWaitingForOpponent: Bool = false
     @Published var isSubmittingTurn: Bool = false
+    @Published var isGameActive: Bool = false
     @Published var multiplayerError: String? {
         didSet {
             matchManager.multiplayerError = multiplayerError
@@ -46,13 +47,19 @@ class MultiplayerGameController: GameController {
     private lazy var turnManager = MultiplayerTurnManager(gameController: self)
     private lazy var matchManager = MultiplayerMatchManager(gameController: self)
     private lazy var synchronization = MultiplayerSynchronization(gameController: self)
-    private lazy var accessibility = MultiplayerAccessibility(gameController: self)
+    internal lazy var accessibility = MultiplayerAccessibility(gameController: self)
+    private lazy var scoring = MultiplayerScoring(gameController: self)
     
     // MARK: - Initialization
     override init() {
         super.init()
         setupMultiplayerObservers()
         accessibility.setupAccessibilitySupport()
+        
+        // Load previous statistics
+        scoring.loadStatistics()
+        
+        print("MultiplayerGameController: Initialized with scoring system")
     }
     
     // MARK: - Setup Methods
@@ -208,12 +215,11 @@ class MultiplayerGameController: GameController {
     func endGame(reason: GameEndReason = .none) {
         print("MultiplayerGameController: Ending game with reason: \(reason)")
         
-        gameEndReason = reason
-        matchManager.endMatch(reason: reason)
+        // Use the new comprehensive game end handling
+        handleGameEnd(reason: reason)
         
-        // Announce game end for accessibility
-        let message = accessibility.getGameEndAccessibilityMessage(for: reason)
-        accessibility.announceAccessibilityUpdate(message)
+        // Still notify match manager for Game Center handling
+        matchManager.endMatch(reason: reason)
     }
     
     // MARK: - Internal Methods
@@ -266,6 +272,163 @@ class MultiplayerGameController: GameController {
         
         return opponentMoves.last
     }
+    // MARK: - Scoring Methods
+    
+    /// Determine the winner based on final scores
+    func determineWinner() -> GameEndReason {
+        return scoring.determineWinner(playerScore: score, opponentScore: opponentScore)
+    }
+    
+    /// Handle game end with comprehensive scoring logic
+    func handleGameEnd(reason: GameEndReason) {
+        print("MultiplayerGameController.handleGameEnd: Handling game end with reason: \(reason)")
+        
+        gameEndReason = reason
+        isGameOver = true
+        
+        // Use scoring system to handle the end
+        scoring.handleGameEnd(reason: reason, playerScore: score, opponentScore: opponentScore)
+        
+        // Update game state with final results
+        updateFinalGameState(endReason: reason)
+        
+        print("MultiplayerGameController.handleGameEnd: Game end handling complete")
+    }
+    
+    /// Calculate final scores with bonuses and penalties
+    func calculateFinalScores() -> (playerScore: Int, opponentScore: Int) {
+        return scoring.calculateFinalScores(
+            basePlayerScore: score,
+            baseOpponentScore: opponentScore,
+            endReason: gameEndReason
+        )
+    }
+    
+    /// Update scores during gameplay
+    override func updateScore(_ newScore: Int) {
+        super.updateScore(newScore)
+        
+        // Update scoring system with current scores
+        scoring.updateScores(playerScore: score, opponentScore: opponentScore)
+        
+        // Check for score-based end conditions
+        if let endReason = scoring.checkScoreEndConditions(playerScore: score, opponentScore: opponentScore) {
+            handleGameEnd(reason: endReason)
+        }
+    }
+    
+    /// Get current multiplayer statistics
+    func getMultiplayerStatistics() -> MultiplayerStatistics {
+        return scoring.getCurrentStatistics()
+    }
+    
+    // MARK: - Private Scoring Helpers
+    
+    /// Update final game state when game ends
+    private func updateFinalGameState(endReason: GameEndReason) {
+        guard let match = currentMatch else { return }
+        
+        // Calculate final scores
+        let finalScores = calculateFinalScores()
+        
+        // Update local scores
+        finalScore = finalScores.playerScore
+        
+        // Create final match state
+        if var currentState = matchState {
+            // Update the match state with final results
+            if let localPlayer = gameCenterManager.localPlayer {
+                let isPlayer1 = currentState.player1.playerID == localPlayer.gamePlayerID
+                
+                if isPlayer1 {
+                    currentState.player1.score = finalScores.playerScore
+                    currentState.player2.score = finalScores.opponentScore
+                } else {
+                    currentState.player2.score = finalScores.playerScore
+                    currentState.player1.score = finalScores.opponentScore
+                }
+                
+                currentState.isGameOver = true
+                currentState.winner = determineWinnerPlayerID(endReason: endReason)
+                
+                matchState = currentState
+            }
+        }
+        
+        // End the match in Game Center
+        endGameCenterMatch(endReason: endReason, finalScores: finalScores)
+    }
+    
+    /// Determine winner player ID for Game Center
+    private func determineWinnerPlayerID(endReason: GameEndReason) -> String? {
+        guard let localPlayer = gameCenterManager.localPlayer else { return nil }
+        
+        switch endReason {
+        case .playerWon, .opponentResigned:
+            return localPlayer.gamePlayerID
+        case .opponentWon, .playerResigned:
+            return getOpponentPlayerID()
+        case .connectionLost, .gameTimeout, .none:
+            return nil // No winner for these cases
+        }
+    }
+    
+    /// End the Game Center match with results
+    private func endGameCenterMatch(endReason: GameEndReason, finalScores: (playerScore: Int, opponentScore: Int)) {
+        guard let match = currentMatch else { return }
+        
+        var outcome: GKTurnBasedMatch.Outcome
+        
+        switch endReason {
+        case .playerWon, .opponentResigned:
+            outcome = .won
+        case .opponentWon, .playerResigned:
+            outcome = .lost
+        case .connectionLost, .gameTimeout:
+            outcome = .quit
+        case .none:
+            outcome = .tied
+        }
+        
+        // Serialize the final match state
+        if var currentState = matchState {
+            do {
+                let matchData = try JSONEncoder().encode(currentState)
+                turnBasedMatchManager.endMatch(match, matchData: matchData) { [weak self] success, error in
+                    DispatchQueue.main.async {
+                        if success {
+                            print("MultiplayerGameController: Match ended successfully in Game Center")
+                        } else {
+                            print("MultiplayerGameController: Failed to end match in Game Center: \(error?.localizedDescription ?? "Unknown error")")
+                            self?.multiplayerError = "Failed to submit final results"
+                        }
+                        self?.notifyGameEnd()
+                    }
+                }
+            } catch {
+                print("MultiplayerGameController: Failed to serialize final match state: \(error)")
+                multiplayerError = "Failed to prepare final results"
+                notifyGameEnd()
+            }
+        } else {
+            print("MultiplayerGameController: No match state available to serialize")
+            multiplayerError = "No match state available"
+            notifyGameEnd()
+        }
+    }
+    
+    // MARK: - Game End Notification
+    
+    /// Notify that the game has ended
+    private func notifyGameEnd() {
+        // Post notification about game end
+        NotificationCenter.default.post(name: .multiplayerGameEnded, object: self)
+        
+        // Update game state for UI
+        DispatchQueue.main.async { [weak self] in
+            self?.isGameActive = false
+        }
+    }
     
     // MARK: - Override Parent Methods
     
@@ -274,5 +437,23 @@ class MultiplayerGameController: GameController {
         super.pauseGame()
         // Note: In multiplayer, pausing only affects local display
         // Turn timer continues on server side
+    }
+    
+    // MARK: - Move Validation Methods
+    
+    /// Check if current game state allows for valid moves
+    func canPlayerMakeMove() -> Bool {
+        guard let gameScene = gameScene else { return false }
+        return gameScene.hasValidMoves()
+    }
+    
+    /// Handle no moves available scenario
+    func handleNoMovesAvailable() {
+        print("MultiplayerGameController: No moves available for current player")
+        
+        // Check if opponent can still move (would need opponent game state)
+        // For now, assume if local player can't move, game ends
+        let endReason = scoring.determineWinner(playerScore: score, opponentScore: opponentScore)
+        handleGameEnd(reason: endReason)
     }
 }

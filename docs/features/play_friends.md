@@ -330,15 +330,15 @@ Build on existing TetrominoShape.selection() while adding multiplayer seed coord
 
 Requirements:
 
-- [ ] Extend existing TetrominoShape system for multiplayer synchronization
-- [ ] Shared random seed generation and coordination between players
-- [ ] Ensure identical piece sets for both players each turn
-- [ ] Integration with existing piece selection algorithms
-- [ ] Handle edge cases for disconnections and resync scenarios
-- [ ] Maintain compatibility with single-player piece generation
-- [ ] Methods: `generateSyncedPieces()`, `setSeed()`, `validatePieceSync()`
-- [ ] Debug logging for piece synchronization verification
-- [ ] Accessibility considerations for piece presentation
+- [x] Extend existing TetrominoShape system for multiplayer synchronization
+- [x] Shared random seed generation and coordination between players
+- [x] Ensure identical piece sets for both players each turn
+- [x] Integration with existing piece selection algorithms
+- [x] Handle edge cases for disconnections and resync scenarios
+- [x] Maintain compatibility with single-player piece generation
+- [x] Methods: `generateSyncedPieces()`, `setSeed()`, `validatePieceSync()`
+- [x] Debug logging for piece synchronization verification
+- [x] Accessibility considerations for piece presentation
 
 Build and run the app to verify piece synchronization works correctly.
 
@@ -365,15 +365,15 @@ Extend existing scoring and game over systems for competitive multiplayer. When 
 
 Requirements:
 
-- [ ] Track separate scores for both players throughout the match
-- [ ] Determine winner based on final scores when game ends
-- [ ] Handle various end conditions (no moves available, player ends game)
-- [ ] Integration with existing scoring system and GameOverView patterns
-- [ ] Statistics tracking for multiplayer performance
-- [ ] Handle edge cases (ties, disconnections, simultaneous game over)
-- [ ] Methods: `determineWinner()`, `handleGameEnd()`, `calculateFinalScores()`
-- [ ] Accessibility announcements for score changes and game results
-- [ ] Privacy-compliant statistics collection
+- [x] Track separate scores for both players throughout the match
+- [x] Determine winner based on final scores when game ends
+- [x] Handle various end conditions (no moves available, player ends game)
+- [x] Integration with existing scoring system and GameOverView patterns
+- [x] Statistics tracking for multiplayer performance
+- [x] Handle edge cases (ties, disconnections, simultaneous game over)
+- [x] Methods: `determineWinner()`, `handleGameEnd()`, `calculateFinalScores()`
+- [x] Accessibility announcements for score changes and game results
+- [x] Privacy-compliant statistics collection
 
 Build and run the app to test competitive scoring and win determination.
 

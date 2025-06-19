@@ -70,5 +70,19 @@ class GameScene: SKScene {
         // Add debug button
         addDebugButton(safeAreaInsets: safeAreaInsets)
     }
+    
+    // MARK: - Game Logic
+    
+    /// Check if there are any valid moves available with the current pieces
+    func hasValidMoves() -> Bool {
+        // Check if any of the current pieces can be placed anywhere on the board
+        for pieceNode in pieceNodes {
+            if gameBoard.canPlacePieceAnywhere(pieceNode.gridPiece) {
+                return true
+            }
+        }
+        return false
+    }
+    
 }
 
