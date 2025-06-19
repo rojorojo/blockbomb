@@ -102,12 +102,15 @@ class MultiplayerTurnManager: ObservableObject {
     
     /// Get turn time remaining (in seconds)
     func getTurnTimeRemaining(for match: GKTurnBasedMatch?) -> TimeInterval? {
-        guard let match = match,
-              let turnTimeout = match.creationDate?.addingTimeInterval(MultiplayerGameController.maxTurnTimeLimit) else {
+        guard let match = match, let currentParticipant = match.currentParticipant else {
             return nil
         }
         
-        return max(0, turnTimeout.timeIntervalSinceNow)
+        guard let timeoutDate = currentParticipant.timeoutDate else {
+            return nil
+        }
+        
+        return timeoutDate.timeIntervalSinceNow
     }
     
     /// Check if turn is about to expire

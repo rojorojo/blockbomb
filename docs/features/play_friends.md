@@ -295,15 +295,15 @@ Build on existing GameController patterns while adding multiplayer coordination.
 
 Requirements:
 
-- [ ] Create `MultiplayerGameController.swift` extending existing GameController
-- [ ] Integrate with TurnBasedMatchManager for Game Center operations
-- [ ] Handle synchronized piece generation and turn management
-- [ ] Validate moves and prevent invalid game states
-- [ ] Coordinate turn submission and opponent updates
-- [ ] Emergency game ending and resignation handling
-- [ ] Methods: `startMultiplayerGame()`, `submitTurn()`, `endGame()`, `handleOpponentMove()`
-- [ ] Integration with existing game logic and scoring systems
-- [ ] Accessibility support for multiplayer game state changes
+- [x] Create `MultiplayerGameController.swift` extending existing GameController
+- [x] Integrate with TurnBasedMatchManager for Game Center operations
+- [x] Handle synchronized piece generation and turn management
+- [x] Validate moves and prevent invalid game states
+- [x] Coordinate turn submission and opponent updates
+- [x] Emergency game ending and resignation handling
+- [x] Methods: `startMultiplayerGame()`, `submitTurn()`, `endGame()`, `handleOpponentMove()`
+- [x] Integration with existing game logic and scoring systems
+- [x] Accessibility support for multiplayer game state changes
 
 Build and run the app to test multiplayer game logic and turn coordination.
 
