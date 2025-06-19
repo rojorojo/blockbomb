@@ -19,6 +19,9 @@ class MultiplayerGameState {
         let currentPieces: [PieceData]  // Synchronized pieces for current turn
         let matchStartTime: Date
         let lastUpdateTime: Date
+        var isGameEnded: Bool = false
+        var gameEndTime: Date?
+        var winner: String?
         
         /// Check if the match state is valid and not corrupted
         var isValid: Bool {
@@ -139,7 +142,7 @@ class MultiplayerGameState {
         print("MultiplayerGameState: Generating synced pieces with seed: \(seed)")
         
         // Create deterministic random generator with shared seed
-        var generator = SeededRandomGenerator(seed: seed)
+        var generator = MultiplayerGameState.SeededRandomGenerator(seed: seed)
         
         // Generate 3 pieces using the seeded generator
         var pieces: [PieceData] = []
@@ -477,18 +480,20 @@ class MultiplayerGameState {
 
 // MARK: - Seeded Random Generator
 
-/// Deterministic random number generator for synchronized piece generation
-struct SeededRandomGenerator: RandomNumberGenerator {
-    private var state: UInt64
-    
-    init(seed: UInt64) {
-        self.state = seed
-    }
-    
-    mutating func next() -> UInt64 {
-        // Linear congruential generator
-        state = state &* 1103515245 &+ 12345
-        return state
+extension MultiplayerGameState {
+    /// Deterministic random number generator for synchronized piece generation
+    struct SeededRandomGenerator: RandomNumberGenerator {
+        private var state: UInt64
+        
+        init(seed: UInt64) {
+            self.state = seed
+        }
+        
+        mutating func next() -> UInt64 {
+            // Linear congruential generator
+            state = state &* 1103515245 &+ 12345
+            return state
+        }
     }
 }
 
@@ -501,7 +506,7 @@ extension TetrominoShape {
     }
     
     /// Generate piece using custom random generator
-    static func generatePiece(using generator: inout SeededRandomGenerator, mode: SelectionMode) -> TetrominoShape {
+    static func generatePiece(using generator: inout MultiplayerGameState.SeededRandomGenerator, mode: SelectionMode) -> TetrominoShape {
         // Use the generator to produce deterministic selection
         let randomValue = generator.next()
         let index = Int(randomValue % UInt64(TetrominoShape.allCases.count))
@@ -511,7 +516,7 @@ extension TetrominoShape {
 
 extension BlockColors {
     /// Get random color using custom generator
-    static func getRandomColor(using generator: inout SeededRandomGenerator) -> SKColor {
+    static func getRandomColor(using generator: inout MultiplayerGameState.SeededRandomGenerator) -> SKColor {
         let colors = [
             SKColor(blue), SKColor(red), SKColor(green), SKColor(orange), 
             SKColor(purple), SKColor(yellow), SKColor(pink), SKColor(teal)

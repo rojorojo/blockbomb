@@ -45,7 +45,7 @@ extension GameScene {
         var detailedResults: [String] = []
         
         // Check if any piece can be placed anywhere (no rotations allowed)
-        for (index, piece) in pieceNodes.enumerated() {
+        for (_, piece) in pieceNodes.enumerated() {
             let canPlace = gameBoard.canPlacePieceAnywhere(piece.gridPiece)
             detailedResults.append("\(piece.gridPiece.shape.displayName): \(canPlace ? "CAN" : "CANNOT") place")
             
@@ -128,4 +128,59 @@ extension GameScene {
             return UIEdgeInsets(top: 44, left: 0, bottom: 34, right: 0) // Default values for older iOS
         }
     }
+    
+    // MARK: - Multiplayer Support
+    
+    /// Flag to indicate if the scene is in multiplayer mode
+    var multiplayerMode: Bool {
+        get {
+            return objc_getAssociatedObject(self, &AssociatedKeys.multiplayerMode) as? Bool ?? false
+        }
+        set {
+            objc_setAssociatedObject(self, &AssociatedKeys.multiplayerMode, newValue, .OBJC_ASSOCIATION_RETAIN)
+        }
+    }
+    
+    /// Get the current board state for multiplayer synchronization
+    /// Returns an 8x8 array representing the board state with color names for filled cells
+    func getBoardStateForMultiplayer() -> [[String?]] {
+        return gameBoard.getBoardStateForMultiplayer()
+    }
+    
+    /// Restore board state from multiplayer data
+    /// - Parameter boardState: 8x8 array with color names for filled cells
+    func restoreBoardState(_ boardState: [[String?]]) {
+        gameBoard.restoreBoardState(boardState)
+    }
+    
+    /// Set synchronized pieces for multiplayer gameplay
+    /// - Parameter pieces: Array of TetrominoShape pieces to use
+    func setSynchronizedPieces(_ pieces: [TetrominoShape]) {
+        // Remove existing pieces
+        pieceNodes.forEach { $0.removeFromParent() }
+        pieceNodes.removeAll()
+        
+        // Create new pieces from synchronized data
+        for (index, shape) in pieces.enumerated() {
+            let color = shape.color // Use shape's designated color
+            _ = GridPiece(shape: shape, color: color)
+            let pieceNode = PieceNode(shape: shape, color: color)
+            
+            // Position pieces in the piece area
+            let pieceAreaY = frame.minY + 120 // Bottom area for pieces
+            let pieceSpacing: CGFloat = 120
+            let startX = frame.midX - CGFloat(pieces.count - 1) * pieceSpacing / 2
+            pieceNode.position = CGPoint(x: startX + CGFloat(index) * pieceSpacing, y: pieceAreaY)
+            
+            pieceNodes.append(pieceNode)
+            addChild(pieceNode)
+        }
+        
+        print("GameScene: Set \(pieces.count) synchronized pieces for multiplayer")
+    }
+}
+
+// MARK: - Associated Object Keys for Multiplayer Properties
+private struct AssociatedKeys {
+    static var multiplayerMode = "multiplayerMode"
 }

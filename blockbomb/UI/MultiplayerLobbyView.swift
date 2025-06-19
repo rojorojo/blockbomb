@@ -493,6 +493,7 @@ struct MatchDetailsView: View {
     
     @State private var showResignConfirmation = false
     @State private var isLoading = false
+    @State private var showMultiplayerGame = false
     
     var body: some View {
         NavigationView {
@@ -527,8 +528,7 @@ struct MatchDetailsView: View {
                 VStack(spacing: 12) {
                     if canTakeTurn {
                         Button("Continue Match") {
-                            // TODO: Implement match continuation
-                            presentationMode.wrappedValue.dismiss()
+                            showMultiplayerGame = true
                         }
                         .font(.headline)
                         .foregroundColor(.white)
@@ -571,6 +571,13 @@ struct MatchDetailsView: View {
             }
         } message: {
             Text("Are you sure you want to resign this match? This action cannot be undone.")
+        }
+        .fullScreenCover(isPresented: $showMultiplayerGame) {
+            MultiplayerGameView(
+                gameController: GameController(),
+                match: match,
+                multiplayerGameState: MultiplayerGameState()
+            )
         }
     }
     

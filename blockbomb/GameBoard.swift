@@ -1215,4 +1215,87 @@ extension GameBoard {
         
         return grid[cell.row][cell.column] != nil
     }
+    
+    // MARK: - Multiplayer Support
+    
+    /// Get the current board state for multiplayer synchronization
+    /// Returns an 8x8 array representing the board state with color names for filled cells
+    func getBoardStateForMultiplayer() -> [[String?]] {
+        var boardState: [[String?]] = Array(repeating: Array(repeating: nil, count: columns), count: rows)
+        
+        for row in 0..<rows {
+            for col in 0..<columns {
+                if let block = grid[row][col] {
+                    // Convert block color to color name for serialization
+                    boardState[row][col] = getColorName(from: block.fillColor)
+                }
+            }
+        }
+        
+        return boardState
+    }
+    
+    /// Restore board state from multiplayer data
+    /// - Parameter boardState: 8x8 array with color names for filled cells
+    func restoreBoardState(_ boardState: [[String?]]) {
+        guard boardState.count == rows else {
+            print("GameBoard: Cannot restore board state - row count mismatch")
+            return
+        }
+        
+        // Clear current board
+        resetBoard()
+        
+        // Restore filled cells
+        for row in 0..<rows {
+            guard row < boardState.count && boardState[row].count == columns else {
+                print("GameBoard: Skipping invalid row \(row) in board state")
+                continue
+            }
+            
+            for col in 0..<columns {
+                if let colorName = boardState[row][col] {
+                    // Convert color name back to block
+                    let color = getColor(from: colorName)
+                    let blockNode = SKSpriteNode(texture: nil, color: color, size: CGSize(width: blockSize, height: blockSize))
+                    blockNode.position = CGPoint(x: CGFloat(col) * blockSize + blockSize/2, y: CGFloat(rows - 1 - row) * blockSize + blockSize/2)
+                    
+                    let block = Block(node: blockNode, fillColor: color)
+                    grid[row][col] = block
+                    boardNode.addChild(blockNode)
+                }
+            }
+        }
+        
+        print("GameBoard: Restored multiplayer board state")
+    }
+    
+    /// Convert a color to a string name for serialization
+    private func getColorName(from color: SKColor) -> String {
+        // Map common colors to names - this should match the colors used in TetrominoShape
+        switch color {
+        case BlockColors.cyan: return "cyan"
+        case BlockColors.yellow: return "yellow"
+        case BlockColors.purple: return "purple"
+        case BlockColors.green: return "green"
+        case BlockColors.red: return "red"
+        case BlockColors.blue: return "blue"
+        case BlockColors.orange: return "orange"
+        default: return "unknown"
+        }
+    }
+    
+    /// Convert a color name back to a color
+    private func getColor(from colorName: String) -> SKColor {
+        switch colorName {
+        case "cyan": return BlockColors.cyan
+        case "yellow": return BlockColors.yellow
+        case "purple": return BlockColors.purple
+        case "green": return BlockColors.green
+        case "red": return BlockColors.red
+        case "blue": return BlockColors.blue
+        case "orange": return BlockColors.orange
+        default: return BlockColors.gray // fallback color
+        }
+    }
 }
