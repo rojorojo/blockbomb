@@ -79,6 +79,21 @@ class TurnBasedMatchManager: NSObject, ObservableObject {
         matchRequest.maxPlayers = maxPlayers
         matchRequest.inviteMessage = inviteMessage
         
+        // Add timeout to prevent indefinite loading
+        // Use longer timeout since match maker UI can take time for user interaction
+        DispatchQueue.main.asyncAfter(deadline: .now() + 180.0) { [weak self] in
+            guard let self = self else { return }
+            
+            // If still creating match after timeout, treat as failure
+            if self.isCreatingMatch {
+                print("TurnBasedMatchManager: Match creation timeout after 3 minutes")
+                let timeoutError = NSError(domain: "TurnBasedMatchManager", 
+                                         code: -5, 
+                                         userInfo: [NSLocalizedDescriptionKey: "Match creation took too long - please try again"])
+                self.handleMatchCreationResult(match: nil, error: timeoutError)
+            }
+        }
+        
         // Present match maker view controller
         presentMatchMakerViewController(matchRequest: matchRequest)
     }
@@ -96,6 +111,17 @@ class TurnBasedMatchManager: NSObject, ObservableObject {
             return
         }
         
+        // Find the appropriate presenting controller
+        // If there's already a modal presented (like MultiplayerLobbyView), use that instead of root
+        let presentingController: UIViewController
+        if let currentlyPresentedController = rootViewController.presentedViewController {
+            presentingController = currentlyPresentedController
+            print("TurnBasedMatchManager: Presenting match maker from currently presented controller")
+        } else {
+            presentingController = rootViewController
+            print("TurnBasedMatchManager: Presenting match maker from root controller")
+        }
+        
         let matchMakerViewController = GKTurnBasedMatchmakerViewController(matchRequest: matchRequest)
         matchMakerViewController.turnBasedMatchmakerDelegate = self
         
@@ -103,8 +129,8 @@ class TurnBasedMatchManager: NSObject, ObservableObject {
         matchMakerViewController.view.accessibilityLabel = "Game Center Match Maker"
         matchMakerViewController.view.accessibilityHint = "Create or join a multiplayer match"
         
-        rootViewController.present(matchMakerViewController, animated: true) {
-            print("TurnBasedMatchManager: Match maker presented")
+        presentingController.present(matchMakerViewController, animated: true) {
+            print("TurnBasedMatchManager: Match maker presented successfully")
         }
     }
     

@@ -1,0 +1,36 @@
+{
+  "version": "1.0",
+  "timestamp": "2025-06-19T12:00:00Z",
+  "configurations": {
+    "MultiplayerConfig.maxMatchDurationMinutes": 30,
+    "MultiplayerConfig.turnTimeoutSeconds": 120,
+    "MultiplayerConfig.maxConcurrentMatches": 3,
+    "MultiplayerConfig.matchmakingTimeout": 30,
+    "MultiplayerConfig.winBonusPoints": 100,
+    "MultiplayerConfig.resignationPenalty": 50,
+    "MultiplayerConfig.scoreThresholdForInstantWin": 5000,
+    "MultiplayerConfig.tiebreakerScoreMultiplier": 2,
+    "MultiplayerConfig.connectionTimeoutSeconds": 15,
+    "MultiplayerConfig.maxReconnectionAttempts": 3,
+    "MultiplayerConfig.heartbeatIntervalSeconds": 30,
+    "MultiplayerConfig.dataCompressionEnabled": 1,
+    "MultiplayerConfig.allowRandomOpponents": 1,
+    "MultiplayerConfig.showOpponentScore": 1,
+    "MultiplayerConfig.enableChatFeatures": 0,
+    "MultiplayerConfig.autoAcceptRematch": 0,
+    "MultiplayerConfig.debugModeEnabled": 0,
+    "MultiplayerConfig.simulateNetworkDelay": 0,
+    "MultiplayerConfig.forceConnectionLoss": 0,
+    "MultiplayerConfig.logVerboseNetworking": 0,
+    "MultiplayerConfig.shareStatistics": 1,
+    "MultiplayerConfig.allowLeaderboards": 1,
+    "MultiplayerConfig.enableAchievements": 1,
+    "MultiplayerConfig.anonymousMode": 0
+  },
+  "metadata": {
+    "description": "Production configuration for Block Puzzle Game Multiplayer",
+    "author": "MultiplayerConfig System",
+    "environment": "production",
+    "targetVersion": "1.0"
+  }
+}

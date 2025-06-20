@@ -54,16 +54,38 @@ struct MultiplayerLobbyView: View {
                 if isCreatingMatch {
                     loadingOverlay
                 }
+                
+                // Authentication loading overlay (when trying to authenticate while already in lobby)
+                if gameCenterManager.isAuthenticating && gameCenterManager.isAuthenticated {
+                    authenticationLoadingOverlay
+                }
             }
         }
         .navigationBarHidden(true)
         .onAppear {
             loadMatches()
+            // Clear any lingering authentication errors when view appears
+            if gameCenterManager.isAuthenticated {
+                gameCenterManager.clearAuthenticationError()
+            }
         }
         .alert("Error", isPresented: $showError) {
             Button("OK") { showError = false }
         } message: {
             Text(errorMessage)
+        }
+        .alert("Authentication Error", isPresented: Binding<Bool>(
+            get: { gameCenterManager.authenticationError != nil && gameCenterManager.isAuthenticated },
+            set: { if !$0 { gameCenterManager.clearAuthenticationError() } }
+        )) {
+            Button("Retry") {
+                gameCenterManager.authenticatePlayer()
+            }
+            Button("Cancel", role: .cancel) {
+                gameCenterManager.clearAuthenticationError()
+            }
+        } message: {
+            Text(gameCenterManager.authenticationError ?? "Unknown authentication error")
         }
         .sheet(isPresented: $showCreateMatchOptions) {
             createMatchOptionsSheet
@@ -97,21 +119,76 @@ struct MultiplayerLobbyView: View {
                 .multilineTextAlignment(.center)
                 .padding(.horizontal, 40)
             
+            // Authentication Error Display
+            if let error = gameCenterManager.authenticationError {
+                VStack(spacing: 8) {
+                    HStack {
+                        Image(systemName: "exclamationmark.triangle.fill")
+                            .foregroundColor(.red)
+                        Text("Authentication Failed")
+                            .font(.headline)
+                            .foregroundColor(.red)
+                    }
+                    
+                    Text(error)
+                        .font(.body)
+                        .foregroundColor(.white.opacity(0.8))
+                        .multilineTextAlignment(.center)
+                        .padding(.horizontal, 20)
+                }
+                .padding()
+                .background(Color.red.opacity(0.2))
+                .cornerRadius(12)
+            }
+            
+            // Sign In Button
             Button(action: {
-                gameCenterManager.authenticatePlayer()
+                gameCenterManager.authenticatePlayer { success, error in
+                    if !success {
+                        print("MultiplayerLobbyView: Authentication failed: \(error?.localizedDescription ?? "Unknown error")")
+                    }
+                }
             }) {
                 HStack {
-                    Image(systemName: "person.circle.fill")
-                    Text("Sign In to Game Center")
+                    if gameCenterManager.isAuthenticating {
+                        ProgressView()
+                            .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                            .scaleEffect(0.8)
+                        Text("Signing In...")
+                    } else {
+                        Image(systemName: "person.circle.fill")
+                        Text(gameCenterManager.authenticationError != nil ? "Retry Sign In" : "Sign In to Game Center")
+                    }
                 }
                 .font(.headline)
                 .foregroundColor(.white)
                 .padding()
-                .background(BlockColors.blue)
+                .background(gameCenterManager.isAuthenticating ? BlockColors.slate : BlockColors.blue)
                 .cornerRadius(12)
             }
-            .accessibilityLabel("Sign in to Game Center")
+            .disabled(gameCenterManager.isAuthenticating)
+            .accessibilityLabel(gameCenterManager.authenticationError != nil ? "Retry Game Center sign in" : "Sign in to Game Center")
             .accessibilityHint("Authenticate with Game Center to access multiplayer features")
+            
+            // Return to Game Button
+            Button(action: {
+                presentationMode.wrappedValue.dismiss()
+            }) {
+                HStack {
+                    Image(systemName: "house.fill")
+                    Text("Return to Game")
+                }
+                .font(.body)
+                .foregroundColor(.white.opacity(0.8))
+                .padding()
+                .background(Color.clear)
+                .overlay(
+                    RoundedRectangle(cornerRadius: 12)
+                        .stroke(Color.white.opacity(0.3), lineWidth: 1)
+                )
+            }
+            .accessibilityLabel("Return to main game")
+            .accessibilityHint("Close multiplayer lobby and return to the main game screen")
         }
     }
     
@@ -266,6 +343,32 @@ struct MultiplayerLobbyView: View {
         .zIndex(100)
     }
     
+    private var authenticationLoadingOverlay: some View {
+        ZStack {
+            Color.black.opacity(0.3)
+                .edgesIgnoringSafeArea(.all)
+            
+            VStack(spacing: 16) {
+                ProgressView()
+                    .scaleEffect(1.5)
+                    .progressViewStyle(CircularProgressViewStyle(tint: .white))
+                
+                Text("Authenticating...")
+                    .font(.headline)
+                    .foregroundColor(.white)
+                
+                Text("Please complete Game Center sign-in")
+                    .font(.body)
+                    .foregroundColor(.white.opacity(0.8))
+                    .multilineTextAlignment(.center)
+            }
+            .padding(30)
+            .background(Color.black.opacity(0.8))
+            .cornerRadius(16)
+        }
+        .zIndex(99)
+    }
+    
     // MARK: - Create Match Options Sheet
     
     private var createMatchOptionsSheet: some View {
@@ -335,10 +438,27 @@ struct MultiplayerLobbyView: View {
                 if let error = error {
                     errorMessage = "Failed to create match: \(error.localizedDescription)"
                     showError = true
+                    print("MultiplayerLobbyView: Match creation failed: \(error.localizedDescription)")
                 } else if match != nil {
                     // Match created successfully - matchManager will handle UI updates
-                    print("Match created successfully")
+                    print("MultiplayerLobbyView: Match created successfully")
+                } else {
+                    // Unexpected case - neither error nor match
+                    errorMessage = "Failed to create match: Unknown error occurred"
+                    showError = true
+                    print("MultiplayerLobbyView: Match creation failed: Unknown error")
                 }
+            }
+        }
+        
+        // Add safety timeout to prevent UI from being stuck in loading state
+        // Use longer timeout than TurnBasedMatchManager (120s) to let it handle timeout first
+        DispatchQueue.main.asyncAfter(deadline: .now() + 150.0) {
+            if isCreatingMatch {
+                isCreatingMatch = false
+                errorMessage = "Match creation timed out. Please try again."
+                showError = true
+                print("MultiplayerLobbyView: Match creation timed out")
             }
         }
     }
@@ -353,10 +473,27 @@ struct MultiplayerLobbyView: View {
                 if let error = error {
                     errorMessage = "Failed to create match: \(error.localizedDescription)"
                     showError = true
+                    print("MultiplayerLobbyView: Random match creation failed: \(error.localizedDescription)")
                 } else if match != nil {
                     // Match created successfully - matchManager will handle UI updates
-                    print("Match created successfully")
+                    print("MultiplayerLobbyView: Random match created successfully")
+                } else {
+                    // Unexpected case - neither error nor match
+                    errorMessage = "Failed to create match: Unknown error occurred"
+                    showError = true
+                    print("MultiplayerLobbyView: Random match creation failed: Unknown error")
                 }
+            }
+        }
+        
+        // Add safety timeout to prevent UI from being stuck in loading state
+        // Use longer timeout than TurnBasedMatchManager (120s) to let it handle timeout first
+        DispatchQueue.main.asyncAfter(deadline: .now() + 150.0) {
+            if isCreatingMatch {
+                isCreatingMatch = false
+                errorMessage = "Match creation timed out. Please try again."
+                showError = true
+                print("MultiplayerLobbyView: Random match creation timed out")
             }
         }
     }

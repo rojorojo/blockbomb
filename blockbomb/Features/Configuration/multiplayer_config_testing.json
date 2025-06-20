@@ -1,0 +1,36 @@
+{
+  "version": "1.0",
+  "timestamp": "2025-06-19T12:00:00Z",
+  "configurations": {
+    "MultiplayerConfig.maxMatchDurationMinutes": 10,
+    "MultiplayerConfig.turnTimeoutSeconds": 60,
+    "MultiplayerConfig.maxConcurrentMatches": 5,
+    "MultiplayerConfig.matchmakingTimeout": 15,
+    "MultiplayerConfig.winBonusPoints": 50,
+    "MultiplayerConfig.resignationPenalty": 25,
+    "MultiplayerConfig.scoreThresholdForInstantWin": 2000,
+    "MultiplayerConfig.tiebreakerScoreMultiplier": 1,
+    "MultiplayerConfig.connectionTimeoutSeconds": 10,
+    "MultiplayerConfig.maxReconnectionAttempts": 5,
+    "MultiplayerConfig.heartbeatIntervalSeconds": 15,
+    "MultiplayerConfig.dataCompressionEnabled": 1,
+    "MultiplayerConfig.allowRandomOpponents": 1,
+    "MultiplayerConfig.showOpponentScore": 1,
+    "MultiplayerConfig.enableChatFeatures": 0,
+    "MultiplayerConfig.autoAcceptRematch": 1,
+    "MultiplayerConfig.debugModeEnabled": 1,
+    "MultiplayerConfig.simulateNetworkDelay": 200,
+    "MultiplayerConfig.forceConnectionLoss": 0,
+    "MultiplayerConfig.logVerboseNetworking": 1,
+    "MultiplayerConfig.shareStatistics": 1,
+    "MultiplayerConfig.allowLeaderboards": 1,
+    "MultiplayerConfig.enableAchievements": 1,
+    "MultiplayerConfig.anonymousMode": 0
+  },
+  "metadata": {
+    "description": "Testing configuration for Block Puzzle Game Multiplayer with faster matches and debug features",
+    "author": "MultiplayerConfig System",
+    "environment": "testing",
+    "targetVersion": "1.0"
+  }
+}

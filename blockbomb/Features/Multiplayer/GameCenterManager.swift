@@ -67,39 +67,53 @@ class GameCenterManager: NSObject, ObservableObject {
     ///   - viewController: Optional view controller to present for authentication UI
     ///   - error: Optional error from authentication attempt
     private func handleAuthenticationResult(viewController: UIViewController?, error: Error?) {
-        isAuthenticating = false
-        
-        if let error = error {
-            print("GameCenterManager: Authentication failed with error: \(error.localizedDescription)")
-            authenticationError = error.localizedDescription
-            isAuthenticated = false
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
             
-            // Retry logic for transient errors
-            if retryCount < maxRetryAttempts && shouldRetryAuthentication(error: error) {
-                scheduleRetryAuthentication()
-            } else {
-                authenticationCompletionHandler?(false, error)
+            self.isAuthenticating = false
+            
+            if let error = error {
+                print("GameCenterManager: Authentication failed with error: \(error.localizedDescription)")
+                self.authenticationError = error.localizedDescription
+                self.isAuthenticated = false
+                
+                // Retry logic for transient errors
+                if self.retryCount < self.maxRetryAttempts && self.shouldRetryAuthentication(error: error) {
+                    self.scheduleRetryAuthentication()
+                } else {
+                    self.authenticationCompletionHandler?(false, error)
+                    self.authenticationCompletionHandler = nil
+                }
+                return
             }
-            return
-        }
-        
-        if let viewController = viewController {
-            // Present authentication UI
-            print("GameCenterManager: Presenting Game Center authentication UI")
-            presentAuthenticationViewController(viewController)
-        } else if localPlayer?.isAuthenticated == true {
-            // Successfully authenticated
-            print("GameCenterManager: Successfully authenticated player: \(localPlayer?.displayName ?? "Unknown")")
-            isAuthenticated = true
-            authenticationError = nil
-            retryCount = 0
-            authenticationCompletionHandler?(true, nil)
-        } else {
-            // Authentication failed without specific error
-            print("GameCenterManager: Authentication failed - player not authenticated")
-            authenticationError = "Game Center authentication failed"
-            isAuthenticated = false
-            authenticationCompletionHandler?(false, nil)
+            
+            if let viewController = viewController {
+                // Present authentication UI
+                print("GameCenterManager: Presenting Game Center authentication UI")
+                self.presentAuthenticationViewController(viewController)
+            } else if self.localPlayer?.isAuthenticated == true {
+                // Successfully authenticated
+                print("GameCenterManager: Successfully authenticated player: \(self.localPlayer?.displayName ?? "Unknown")")
+                self.isAuthenticated = true
+                self.authenticationError = nil
+                self.retryCount = 0
+                
+                // Configure accessibility for successful authentication
+                DispatchQueue.main.async {
+                    UIAccessibility.post(notification: .announcement, 
+                                       argument: "Game Center authentication successful. You can now play with friends.")
+                }
+                
+                self.authenticationCompletionHandler?(true, nil)
+                self.authenticationCompletionHandler = nil
+            } else {
+                // Authentication failed without specific error
+                print("GameCenterManager: Authentication failed - player not authenticated")
+                self.authenticationError = "Game Center authentication failed"
+                self.isAuthenticated = false
+                self.authenticationCompletionHandler?(false, nil)
+                self.authenticationCompletionHandler = nil
+            }
         }
     }
     
@@ -111,6 +125,10 @@ class GameCenterManager: NSObject, ObservableObject {
               let rootViewController = window.rootViewController else {
             print("GameCenterManager: Error - Cannot find root view controller to present authentication")
             authenticationError = "Unable to present Game Center authentication"
+            isAuthenticated = false
+            isAuthenticating = false
+            authenticationCompletionHandler?(false, NSError(domain: "GameCenterManager", code: -3, userInfo: [NSLocalizedDescriptionKey: "Unable to present authentication UI"]))
+            authenticationCompletionHandler = nil
             return
         }
         
@@ -120,6 +138,7 @@ class GameCenterManager: NSObject, ObservableObject {
         
         rootViewController.present(viewController, animated: true) { [weak self] in
             print("GameCenterManager: Game Center authentication UI presented")
+            // Keep isAuthenticating true while UI is showing
             self?.isAuthenticating = true
         }
     }
@@ -164,16 +183,46 @@ class GameCenterManager: NSObject, ObservableObject {
             return
         }
         
-        // Trigger authentication - the authenticateHandler will be called
+        // Check if already authenticated
         if localPlayer.isAuthenticated {
-            // Already authenticated
             print("GameCenterManager: Player already authenticated")
             isAuthenticated = true
             isAuthenticating = false
             completion?(true, nil)
-        } else {
-            // Authentication will be handled by the authenticateHandler
-            print("GameCenterManager: Triggering authentication process")
+            return
+        }
+        
+        // Force authentication by accessing authenticateHandler property
+        // This triggers the authentication flow if not already in progress
+        print("GameCenterManager: Triggering authentication process")
+        
+        // Set a timeout to handle cases where authentication handler doesn't respond
+        DispatchQueue.main.asyncAfter(deadline: .now() + 10.0) { [weak self] in
+            guard let self = self else { return }
+            
+            // If still authenticating after timeout, treat as failure
+            if self.isAuthenticating && !self.isAuthenticated {
+                let timeoutError = NSError(domain: "GameCenterManager", 
+                                         code: -2, 
+                                         userInfo: [NSLocalizedDescriptionKey: "Authentication timeout - please try again"])
+                self.handleAuthenticationResult(viewController: nil, error: timeoutError)
+            }
+        }
+        
+        // Force trigger the authentication handler by accessing the property
+        // This is a workaround for cases where the handler wasn't properly triggered
+        if localPlayer.authenticateHandler == nil {
+            setupAuthenticationHandler()
+        }
+        
+        // Try to force authentication by creating a simple Game Center request
+        // This often triggers the authentication flow
+        GKLocalPlayer.local.loadDefaultLeaderboardIdentifier { [weak self] _, error in
+            // This call will trigger authentication if needed
+            // The actual result is handled by the authenticateHandler
+            if let error = error {
+                print("GameCenterManager: Authentication trigger attempt completed with: \(error.localizedDescription)")
+            }
         }
     }
     
@@ -217,6 +266,11 @@ class GameCenterManager: NSObject, ObservableObject {
         authenticationError = nil
         retryCount = 0
         authenticationCompletionHandler = nil
+    }
+    
+    /// Clear authentication error (useful for UI error handling)
+    func clearAuthenticationError() {
+        authenticationError = nil
     }
 }
 

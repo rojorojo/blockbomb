@@ -6,6 +6,8 @@ import SwiftUI
 struct DebugPanelView: View {
     @Environment(\.presentationMode) var presentationMode
     @State private var showRewardConfigPanel = false
+    @State private var showMultiplayerConfigPanel = false
+    @State private var showMultiplayerAnalytics = false
     
     // Debug actions to be passed from the parent view
     let onTestBugScenario: () -> Void
@@ -282,6 +284,56 @@ struct DebugPanelView: View {
                                 }
                             }
                             
+                            // Multiplayer Configuration Section
+                            DebugSection(title: "Multiplayer Configuration") {
+                                VStack(spacing: 12) {
+                                    DebugButton(
+                                        title: "Open Multiplayer Config",
+                                        subtitle: "Configure multiplayer settings and scenarios",
+                                        color: .blue,
+                                        action: {
+                                            showMultiplayerConfigPanel = true
+                                        }
+                                    )
+                                    
+                                    DebugButton(
+                                        title: "Fast Match Preset",
+                                        subtitle: "Quick matches for rapid testing",
+                                        color: .green,
+                                        action: {
+                                            MultiplayerConfig.shared.debugMultiplayer(scenario: .fastMatches)
+                                        }
+                                    )
+                                    
+                                    DebugButton(
+                                        title: "Connection Test Preset",
+                                        subtitle: "Simulate network issues and delays",
+                                        color: .orange,
+                                        action: {
+                                            MultiplayerConfig.shared.debugMultiplayer(scenario: .connectionTesting)
+                                        }
+                                    )
+                                    
+                                    DebugButton(
+                                        title: "Reset Multiplayer Config",
+                                        subtitle: "Reset all multiplayer settings to defaults",
+                                        color: .red,
+                                        action: {
+                                            MultiplayerConfig.shared.resetAllToDefaults()
+                                        }
+                                    )
+                                    
+                                    DebugButton(
+                                        title: "Analytics Dashboard",
+                                        subtitle: "View multiplayer analytics and performance metrics",
+                                        color: .purple,
+                                        action: {
+                                            showMultiplayerAnalytics = true
+                                        }
+                                    )
+                                }
+                            }
+                            
                             // ML Data Logging Section
                             DebugSection(title: "ML Data Logging") {
                                 VStack(spacing: 12) {
@@ -371,6 +423,12 @@ struct DebugPanelView: View {
         .navigationViewStyle(StackNavigationViewStyle())
         .sheet(isPresented: $showRewardConfigPanel) {
             RewardConfigDebugView()
+        }
+        .sheet(isPresented: $showMultiplayerConfigPanel) {
+            MultiplayerConfigDebugView()
+        }
+        .sheet(isPresented: $showMultiplayerAnalytics) {
+            MultiplayerAnalyticsDashboard()
         }
     }
 }
