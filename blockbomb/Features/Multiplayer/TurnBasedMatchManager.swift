@@ -143,24 +143,29 @@ class TurnBasedMatchManager: NSObject, ObservableObject {
         guard gameCenterManager.isPlayerAuthenticated() else {
             let error = NSError(domain: "TurnBasedMatchManager", 
                               code: -1, 
-                              userInfo: [NSLocalizedDescriptionKey: "Player not authenticated with Game Center"])
+                              userInfo: [NSLocalizedDescriptionKey: "Please sign into Game Center in Settings to play multiplayer games"])
+            print("TurnBasedMatchManager: Game Center authentication required for auto-matching")
             completion(nil, error)
             return
         }
-        
+
         isCreatingMatch = true
         matchError = nil
+        
+        // Store completion for delegate callbacks
+        self.matchCreationCompletion = completion
         
         let matchRequest = GKMatchRequest()
         matchRequest.minPlayers = minPlayers
         matchRequest.maxPlayers = maxPlayers
+        matchRequest.defaultNumberOfPlayers = maxPlayers
         
-        GKTurnBasedMatch.find(for: matchRequest) { [weak self] match, error in
-            DispatchQueue.main.async {
-                self?.handleMatchCreationResult(match: match, error: error)
-                completion(match, error)
-            }
-        }
+        // IMPORTANT: For auto-matching to work, we need to use the matchmaker UI
+        // This is the ONLY reliable way to connect random players in Game Center
+        print("TurnBasedMatchManager: Presenting Game Center matchmaker for auto-matching")
+        print("TurnBasedMatchManager: This will handle finding/creating matches automatically")
+        
+        presentMatchMakerViewController(matchRequest: matchRequest)
     }
     
     /// Handle the result of match creation
@@ -380,23 +385,123 @@ class TurnBasedMatchManager: NSObject, ObservableObject {
             return
         }
         
-        match.participantQuitInTurn(with: .quit, nextParticipants: [], turnTimeout: 0, match: match.matchData ?? Data()) { [weak self] error in
+        // Check if match is already ended
+        if match.status == .ended {
+            print("TurnBasedMatchManager: Match already ended, cannot quit")
+            let error = NSError(domain: "TurnBasedMatchManager", 
+                              code: -6, 
+                              userInfo: [NSLocalizedDescriptionKey: "Match has already ended"])
+            completion(false, error)
+            return
+        }
+        
+        // Get current player ID to determine if it's our turn
+        guard let currentPlayerID = gameCenterManager.getPlayerID() else {
+            let error = NSError(domain: "TurnBasedMatchManager", 
+                              code: -7, 
+                              userInfo: [NSLocalizedDescriptionKey: "Unable to get current player ID"])
+            completion(false, error)
+            return
+        }
+        
+        // Debug match state and participants
+        print("TurnBasedMatchManager: Match status: \(match.status.rawValue)")
+        print("TurnBasedMatchManager: Match participants count: \(match.participants.count)")
+        print("TurnBasedMatchManager: Current player ID: \(currentPlayerID)")
+        
+        if let currentParticipant = match.currentParticipant {
+            print("TurnBasedMatchManager: Current participant player ID: \(currentParticipant.player?.gamePlayerID ?? "nil")")
+            print("TurnBasedMatchManager: Current participant status: \(currentParticipant.status.rawValue)")
+        } else {
+            print("TurnBasedMatchManager: No current participant found")
+        }
+        
+        // Check if we are a participant in this match
+        let ourParticipant = match.participants.first { participant in
+            participant.player?.gamePlayerID == currentPlayerID
+        }
+        
+        guard let ourParticipant = ourParticipant else {
+            let error = NSError(domain: "TurnBasedMatchManager", 
+                              code: -8, 
+                              userInfo: [NSLocalizedDescriptionKey: "Current player is not a participant in this match"])
+            completion(false, error)
+            return
+        }
+        
+        print("TurnBasedMatchManager: Our participant status: \(ourParticipant.status.rawValue)")
+        
+        // Check if it's currently our turn
+        let isMyTurn = match.currentParticipant?.player?.gamePlayerID == currentPlayerID
+        print("TurnBasedMatchManager: Is my turn: \(isMyTurn)")
+        
+        // Use the appropriate quit method based on whose turn it is
+        if isMyTurn {
+            // If it's our turn, we must use participantQuitInTurn
+            print("TurnBasedMatchManager: Using participantQuitInTurn (it's our turn)")
+            quitInTurn(match: match, currentPlayerID: currentPlayerID, completion: completion)
+        } else {
+            // If it's not our turn, we should use participantQuitOutOfTurn
+            print("TurnBasedMatchManager: Using participantQuitOutOfTurn (not our turn)")
+            quitOutOfTurn(match: match, completion: completion)
+        }
+    }
+    
+    /// Quit when it's currently our turn
+    private func quitInTurn(match: GKTurnBasedMatch, currentPlayerID: String, completion: @escaping (Bool, Error?) -> Void) {
+        print("TurnBasedMatchManager: Quitting in turn - ending match")
+        
+        // Get match data safely
+        let matchData = match.matchData ?? Data()
+        
+        // For a 2-player game where we want to quit, we should end the match
+        // and set the opponent as the winner
+        var matchOutcomes: [GKTurnBasedParticipant] = []
+        
+        for participant in match.participants {
+            if participant.player?.gamePlayerID == currentPlayerID {
+                // We lose (quit)
+                participant.matchOutcome = .quit
+            } else {
+                // Opponent wins
+                participant.matchOutcome = .won
+            }
+            matchOutcomes.append(participant)
+        }
+        
+        match.endMatchInTurn(withMatch: matchData) { [weak self] error in
             DispatchQueue.main.async {
-                if let error = error {
-                    print("TurnBasedMatchManager: Match quit failed: \(error.localizedDescription)")
-                    self?.matchError = error.localizedDescription
-                    completion(false, error)
-                } else {
-                    print("TurnBasedMatchManager: Match quit successfully")
-                    self?.matchError = nil
-                    self?.removeMatchFromActiveList(match)
-                    completion(true, nil)
-                }
-                
-                // Reload matches to update status
-                self?.loadMatches()
+                self?.handleQuitResult(match: match, error: error, completion: completion)
             }
         }
+    }
+    
+    /// Quit when it's not our turn
+    private func quitOutOfTurn(match: GKTurnBasedMatch, completion: @escaping (Bool, Error?) -> Void) {
+        print("TurnBasedMatchManager: Quitting out of turn")
+        
+        match.participantQuitOutOfTurn(with: .quit) { [weak self] error in
+            DispatchQueue.main.async {
+                self?.handleQuitResult(match: match, error: error, completion: completion)
+            }
+        }
+    }
+    
+    /// Handle the result of either quit method
+    private func handleQuitResult(match: GKTurnBasedMatch, error: Error?, completion: @escaping (Bool, Error?) -> Void) {
+        if let error = error {
+            print("TurnBasedMatchManager: Match quit failed: \(error.localizedDescription)")
+            self.matchError = error.localizedDescription
+            completion(false, error)
+        } else {
+            print("TurnBasedMatchManager: Match quit successfully")
+            self.matchError = nil
+            self.removeMatchFromActiveList(match)
+            completion(true, nil)
+        }
+        
+        // Reload matches to update status
+        self.loadMatches()
     }
     
     // MARK: - Match Data Serialization
@@ -482,6 +587,26 @@ class TurnBasedMatchManager: NSObject, ObservableObject {
         turnSubmissionCompletion = nil
         matchLoadCompletion = nil
     }
+    
+    /// Get human-readable description of participant status
+    private func getParticipantStatusDescription(_ status: GKTurnBasedParticipant.Status) -> String {
+        switch status {
+        case .unknown:
+            return "Unknown"
+        case .invited:
+            return "Invited (waiting to join)"
+        case .declined:
+            return "Declined"
+        case .matching:
+            return "Matching"
+        case .active:
+            return "Active"
+        case .done:
+            return "Done"
+        @unknown default:
+            return "Unknown (\(status.rawValue))"
+        }
+    }
 }
 
 // MARK: - GKTurnBasedMatchmakerViewControllerDelegate
@@ -506,6 +631,14 @@ extension TurnBasedMatchManager: GKTurnBasedMatchmakerViewControllerDelegate {
     
     func turnBasedMatchmakerViewController(_ viewController: GKTurnBasedMatchmakerViewController, didFind match: GKTurnBasedMatch) {
         print("TurnBasedMatchManager: Match maker found match: \(match.matchID)")
+        print("TurnBasedMatchManager: Match status: \(match.status.rawValue)")
+        print("TurnBasedMatchManager: Participants count: \(match.participants.count)")
+        
+        // Log participant details
+        for (index, participant) in match.participants.enumerated() {
+            print("TurnBasedMatchManager: Participant \(index): \(participant.player?.displayName ?? "Unknown") - Status: \(participant.status.rawValue)")
+        }
+        
         viewController.dismiss(animated: true)
         handleMatchCreationResult(match: match, error: nil)
     }
@@ -553,6 +686,24 @@ extension TurnBasedMatchManager: GKLocalPlayerListener {
         // Handle quit request - for now just remove from active list
         DispatchQueue.main.async { [weak self] in
             self?.removeMatchFromActiveList(match)
+        }
+    }
+    
+    func player(_ player: GKPlayer, receivedTurnBasedInvitation invitation: GKTurnBasedMatch) {
+        print("TurnBasedMatchManager: Received turn-based invitation: \(invitation.matchID)")
+        print("TurnBasedMatchManager: Invitation status: \(invitation.status.rawValue)")
+        print("TurnBasedMatchManager: Participants: \(invitation.participants.count)")
+        
+        // For turn-based matches, we don't need to explicitly accept - they're automatically joined
+        // Just add it to our active matches
+        DispatchQueue.main.async { [weak self] in
+            print("TurnBasedMatchManager: Auto-joining turn-based match: \(invitation.matchID)")
+            self?.addMatchToActiveList(invitation)
+            self?.currentMatch = invitation
+            
+            // Post accessibility notification
+            UIAccessibility.post(notification: .announcement, 
+                               argument: "Joined BlockBomb multiplayer match")
         }
     }
 }

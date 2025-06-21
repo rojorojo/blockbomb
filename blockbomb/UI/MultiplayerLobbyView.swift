@@ -13,6 +13,7 @@ struct MultiplayerLobbyView: View {
     @State private var showGameCenterMatchmaker = false
     @State private var selectedMatch: GKTurnBasedMatch?
     @State private var showMatchDetails = false
+    @State private var refreshTimer: Timer?
     
     var body: some View {
         NavigationView {
@@ -41,6 +42,10 @@ struct MultiplayerLobbyView: View {
                             }
                             .padding(.horizontal, 20)
                         }
+                        .refreshable {
+                            print("MultiplayerLobbyView: Manual refresh triggered")
+                            loadMatches()
+                        }
                         
                         Spacer()
                         
@@ -68,6 +73,12 @@ struct MultiplayerLobbyView: View {
             if gameCenterManager.isAuthenticated {
                 gameCenterManager.clearAuthenticationError()
             }
+            // Start periodic refresh while in lobby
+            startPeriodicRefresh()
+        }
+        .onDisappear {
+            // Stop periodic refresh when leaving lobby
+            stopPeriodicRefresh()
         }
         .alert("Error", isPresented: $showError) {
             Button("OK") { showError = false }
@@ -497,6 +508,22 @@ struct MultiplayerLobbyView: View {
             }
         }
     }
+    
+    // MARK: - Timer Methods
+    
+    private func startPeriodicRefresh() {
+        stopPeriodicRefresh()
+        
+        refreshTimer = Timer.scheduledTimer(withTimeInterval: 15.0, repeats: true) { _ in
+            print("MultiplayerLobbyView: Periodic refresh triggered")
+            loadMatches()
+        }
+    }
+    
+    private func stopPeriodicRefresh() {
+        refreshTimer?.invalidate()
+        refreshTimer = nil
+    }
 }
 
 // MARK: - Supporting Views
@@ -631,6 +658,8 @@ struct MatchDetailsView: View {
     @State private var showResignConfirmation = false
     @State private var isLoading = false
     @State private var showMultiplayerGame = false
+    @State private var showResignError = false
+    @State private var resignErrorMessage = ""
     
     var body: some View {
         NavigationView {
@@ -676,8 +705,17 @@ struct MatchDetailsView: View {
                     }
                     
                     if match.status != .ended {
-                        Button("Resign Match") {
+                        Button(action: {
                             showResignConfirmation = true
+                        }) {
+                            HStack {
+                                if isLoading {
+                                    ProgressView()
+                                        .scaleEffect(0.8)
+                                        .foregroundColor(.red)
+                                }
+                                Text(isLoading ? "Resigning..." : "Resign Match")
+                            }
                         }
                         .font(.body)
                         .foregroundColor(.red)
@@ -685,6 +723,7 @@ struct MatchDetailsView: View {
                         .frame(maxWidth: .infinity)
                         .background(Color.red.opacity(0.1))
                         .cornerRadius(12)
+                        .disabled(isLoading)
                     }
                     
                     Button("Close") {
@@ -708,6 +747,14 @@ struct MatchDetailsView: View {
             }
         } message: {
             Text("Are you sure you want to resign this match? This action cannot be undone.")
+        }
+        .alert("Resign Failed", isPresented: $showResignError) {
+            Button("OK") { 
+                showResignError = false 
+                resignErrorMessage = ""
+            }
+        } message: {
+            Text(resignErrorMessage)
         }
         .fullScreenCover(isPresented: $showMultiplayerGame) {
             MultiplayerGameView(
@@ -755,6 +802,11 @@ struct MatchDetailsView: View {
     }
     
     private func resignMatch() {
+        guard !isLoading else { 
+            print("MatchDetailsView: Resign already in progress")
+            return 
+        }
+        
         isLoading = true
         
         matchManager.quitMatch(match) { success, error in
@@ -762,10 +814,16 @@ struct MatchDetailsView: View {
                 isLoading = false
                 
                 if success {
+                    print("MatchDetailsView: Match resigned successfully")
                     presentationMode.wrappedValue.dismiss()
                 } else if let error = error {
-                    // Handle error - could show alert
-                    print("Failed to resign match: \(error.localizedDescription)")
+                    print("MatchDetailsView: Failed to resign match: \(error.localizedDescription)")
+                    resignErrorMessage = error.localizedDescription
+                    showResignError = true
+                } else {
+                    print("MatchDetailsView: Unknown error during match resignation")
+                    resignErrorMessage = "An unknown error occurred while resigning the match"
+                    showResignError = true
                 }
             }
         }
